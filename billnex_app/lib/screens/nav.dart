@@ -1,8 +1,26 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 /// Stable navigation ids — decoupled from index so feature-flagged tabs
 /// (e.g. Customers) can appear/disappear without breaking callers.
 enum NavId { dash, billing, appointments, sales, customers, inventory, purchasing, reports, features, print }
+
+/// Localized label for a nav destination (falls back to the English spec).
+String navLabel(BuildContext context, NavId id) {
+  final l = L.of(context);
+  return switch (id) {
+    NavId.dash => l.navDashboard,
+    NavId.billing => l.navBilling,
+    NavId.appointments => l.navAppointments,
+    NavId.sales => l.navSales,
+    NavId.customers => l.navCustomers,
+    NavId.inventory => l.navInventory,
+    NavId.purchasing => l.navPurchases,
+    NavId.reports => l.navReports,
+    NavId.features => l.navFeatures,
+    NavId.print => l.navPrint,
+  };
+}
 
 class NavSpec {
   final NavId id;

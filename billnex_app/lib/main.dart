@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'l10n/app_localizations.dart';
 import 'data/catalog.dart';
 import 'models/system.dart';
 import 'state/app_state.dart';
@@ -19,6 +20,8 @@ void main() async {
     'dark' => ThemeMode.dark,
     _ => ThemeMode.system,
   });
+  final savedLang = await store.loadLang();
+  final locale = ValueNotifier<Locale?>(savedLang == null ? null : Locale(savedLang));
   await state.init();
 
   // Deep-link support (also drives previews): ?biz=restaurant&tab=1&theme=dark
@@ -34,6 +37,7 @@ void main() async {
     state.setRole(Role.values.firstWhere((r) => r.name == q['role'], orElse: () => Role.owner));
   }
   if (q['offline'] == '1') state.setOnline(false);
+  if (q['lang'] != null) locale.value = Locale(q['lang']!); // preview/deep-link
   final initialTab = int.tryParse(q['tab'] ?? '') ?? 0;
 
   final auth = AuthService();
@@ -46,17 +50,18 @@ void main() async {
   }
   if (q['lock'] == '1') locked = true; // preview/demo hook
 
-  runApp(BillNexApp(state: state, themeMode: themeMode, store: store, auth: auth, startLocked: locked, initialTab: initialTab));
+  runApp(BillNexApp(state: state, themeMode: themeMode, locale: locale, store: store, auth: auth, startLocked: locked, initialTab: initialTab));
 }
 
 class BillNexApp extends StatefulWidget {
   final AppState state;
   final ValueNotifier<ThemeMode> themeMode;
+  final ValueNotifier<Locale?> locale;
   final Store store;
   final AuthService auth;
   final bool startLocked;
   final int initialTab;
-  const BillNexApp({required this.state, required this.themeMode, required this.store, required this.auth, this.startLocked = false, this.initialTab = 0, super.key});
+  const BillNexApp({required this.state, required this.themeMode, required this.locale, required this.store, required this.auth, this.startLocked = false, this.initialTab = 0, super.key});
   @override
   State<BillNexApp> createState() => _BillNexAppState();
 }
@@ -64,12 +69,14 @@ class BillNexApp extends StatefulWidget {
 class _BillNexAppState extends State<BillNexApp> {
   late final AppState _state = widget.state;
   late final ValueNotifier<ThemeMode> _themeMode = widget.themeMode;
+  late final ValueNotifier<Locale?> _locale = widget.locale;
   late bool _locked = widget.startLocked;
 
   @override
   void initState() {
     super.initState();
     _themeMode.addListener(_persistTheme);
+    _locale.addListener(_persistLocale);
   }
 
   void _persistTheme() {
@@ -80,9 +87,12 @@ class _BillNexAppState extends State<BillNexApp> {
     });
   }
 
+  void _persistLocale() => widget.store.saveLang(_locale.value?.languageCode);
+
   @override
   void dispose() {
     _themeMode.removeListener(_persistTheme);
+    _locale.removeListener(_persistLocale);
     _state.dispose();
     _themeMode.dispose();
     super.dispose();
@@ -93,12 +103,17 @@ class _BillNexAppState extends State<BillNexApp> {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: _themeMode,
       builder: (context, mode, _) {
-        return MaterialApp(
+        return ValueListenableBuilder<Locale?>(
+          valueListenable: _locale,
+          builder: (context, locale, _) => MaterialApp(
           title: 'BillNex',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: mode,
+          locale: locale,
+          localizationsDelegates: L.localizationsDelegates,
+          supportedLocales: L.supportedLocales,
           home: _locked
               ? LockScreen(auth: widget.auth, onUnlocked: () => setState(() => _locked = false))
               : AnimatedBuilder(
@@ -114,9 +129,10 @@ class _BillNexAppState extends State<BillNexApp> {
                         ),
                       );
                     }
-                    return HomeShell(state: _state, themeMode: _themeMode, auth: widget.auth, initialTab: widget.initialTab);
+                    return HomeShell(state: _state, themeMode: _themeMode, locale: _locale, auth: widget.auth, initialTab: widget.initialTab);
                   },
                 ),
+          ),
         );
       },
     );

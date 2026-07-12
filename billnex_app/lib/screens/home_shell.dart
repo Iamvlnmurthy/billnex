@@ -3,6 +3,7 @@ import '../state/app_state.dart';
 import '../models/system.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import 'nav.dart';
 import 'dashboard_screen.dart';
 import 'features_screen.dart';
@@ -18,9 +19,10 @@ import 'templates_screen.dart';
 class HomeShell extends StatefulWidget {
   final AppState state;
   final ValueNotifier<ThemeMode> themeMode;
+  final ValueNotifier<Locale?>? locale;
   final AuthService? auth;
   final int initialTab;
-  const HomeShell({required this.state, required this.themeMode, this.auth, this.initialTab = 0, super.key});
+  const HomeShell({required this.state, required this.themeMode, this.locale, this.auth, this.initialTab = 0, super.key});
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -89,7 +91,7 @@ class _HomeShellState extends State<HomeShell> {
 
       return Scaffold(
         body: Column(children: [
-          _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth),
+          _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
           _TrustBar(state: widget.state),
           Expanded(
             child: Row(children: [
@@ -117,7 +119,7 @@ class _HomeShellState extends State<HomeShell> {
                 height: 66,
                 destinations: [
                   for (final id in primary)
-                    NavigationDestination(icon: Icon(kNavSpecs[id]!.icon), selectedIcon: Icon(kNavSpecs[id]!.activeIcon), label: kNavSpecs[id]!.label),
+                    NavigationDestination(icon: Icon(kNavSpecs[id]!.icon), selectedIcon: Icon(kNavSpecs[id]!.activeIcon), label: navLabel(context, id)),
                   if (showMore) const NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
                 ],
               ),
@@ -154,11 +156,36 @@ class _HomeShellState extends State<HomeShell> {
   }
 }
 
+/// Language switcher — sets the app locale and persists it.
+Future<void> showLanguagePicker(BuildContext context, ValueNotifier<Locale?> locale) {
+  const langs = [('English', null), ('हिंदी', 'hi'), ('తెలుగు', 'te')];
+  return showModalBottomSheet(
+    context: context,
+    showDragHandle: true,
+    builder: (ctx) => SafeArea(
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Padding(padding: const EdgeInsets.all(16), child: Align(alignment: Alignment.centerLeft, child: Text(L.of(ctx).language, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)))),
+        for (final (name, code) in langs)
+          ListTile(
+            leading: const Icon(Icons.translate),
+            title: Text(name),
+            trailing: (locale.value?.languageCode == code) ? const Icon(Icons.check) : null,
+            onTap: () {
+              locale.value = code == null ? null : Locale(code);
+              Navigator.pop(ctx);
+            },
+          ),
+      ]),
+    ),
+  );
+}
+
 class _TopBar extends StatelessWidget {
   final AppState state;
   final ValueNotifier<ThemeMode> themeMode;
   final AuthService? auth;
-  const _TopBar({required this.state, required this.themeMode, this.auth});
+  final ValueNotifier<Locale?>? locale;
+  const _TopBar({required this.state, required this.themeMode, this.auth, this.locale});
 
   @override
   Widget build(BuildContext context) {
@@ -226,6 +253,8 @@ class _TopBar extends StatelessWidget {
               if (auth != null) const PopupMenuItem(value: 'pin', child: ListTile(dense: true, leading: Icon(Icons.pin_outlined), title: Text('App-lock PIN'))),
             ],
           ),
+          if (locale != null)
+            IconButton(tooltip: 'Language', onPressed: () => showLanguagePicker(context, locale!), icon: const Icon(Icons.translate)),
           ValueListenableBuilder(
             valueListenable: themeMode,
             builder: (context, mode, _) {
@@ -370,12 +399,12 @@ class _TrustBar extends StatelessWidget {
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 Container(width: 8, height: 8, decoration: BoxDecoration(color: state.online ? bx.trustOnline : bx.warn, shape: BoxShape.circle)),
                 const SizedBox(width: 7),
-                Text(state.online ? 'Online' : 'Offline', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: state.online ? bx.trustOnline : bx.warn)),
+                Text(state.online ? L.of(context).online : L.of(context).offline, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: state.online ? bx.trustOnline : bx.warn)),
               ]),
             ),
           ),
           const SizedBox(width: 16),
-          seg('Queue', '${state.queueCount}'),
+          seg(L.of(context).queue, '${state.queueCount}'),
           if (state.queueCount > 0) ...[
             const SizedBox(width: 8),
             TextButton(onPressed: state.syncNow, style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero), child: const Text('Sync now', style: TextStyle(fontSize: 12.5))),
@@ -411,7 +440,7 @@ class _Rail extends StatelessWidget {
           for (final id in order)
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
-              child: _RailBtn(spec: kNavSpecs[id]!, on: current == id, onTap: () => onTap(id)),
+              child: _RailBtn(spec: kNavSpecs[id]!, label: navLabel(context, id), on: current == id, onTap: () => onTap(id)),
             ),
         ]),
       ),
@@ -421,9 +450,10 @@ class _Rail extends StatelessWidget {
 
 class _RailBtn extends StatelessWidget {
   final NavSpec spec;
+  final String label;
   final bool on;
   final VoidCallback onTap;
-  const _RailBtn({required this.spec, required this.on, required this.onTap});
+  const _RailBtn({required this.spec, required this.label, required this.on, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -441,7 +471,7 @@ class _RailBtn extends StatelessWidget {
         child: Column(children: [
           Icon(on ? spec.activeIcon : spec.icon, size: 22, color: on ? bx.accent : bx.muted),
           const SizedBox(height: 5),
-          Text(spec.label, textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: on ? bx.accent : bx.muted)),
+          Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: on ? bx.accent : bx.muted)),
         ]),
       ),
     );

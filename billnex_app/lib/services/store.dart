@@ -92,6 +92,17 @@ class Store implements Persistence {
   @override
   Future<void> saveTheme(String mode) async => (await _prefs).setString(_kTheme, mode);
 
+  static const _kLang = 'bx_lang';
+  Future<String?> loadLang() async => (await _prefs).getString(_kLang);
+  Future<void> saveLang(String? code) async {
+    final p = await _prefs;
+    if (code == null) {
+      await p.remove(_kLang);
+    } else {
+      await p.setString(_kLang, code);
+    }
+  }
+
   @override
   Future<int> loadRcptSeq() async => (await _prefs).getInt(_kRcptSeq) ?? 500;
   @override

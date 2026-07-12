@@ -24,6 +24,7 @@ void main() {
     await tester.pumpWidget(BillNexApp(
       state: state,
       themeMode: ValueNotifier(ThemeMode.light),
+      locale: ValueNotifier(null),
       store: Store(),
       auth: AuthService(),
     ));
