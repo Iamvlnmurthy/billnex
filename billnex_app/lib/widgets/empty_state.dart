@@ -1,5 +1,29 @@
 import 'package:flutter/material.dart';
+import '../data/catalog.dart';
 import '../theme/app_theme.dart';
+
+/// Theme-aware business-type icon (Codex biztype art) with a Material fallback.
+class BizIcon extends StatelessWidget {
+  final String bizKey;
+  final IconData fallback;
+  final double size;
+  const BizIcon({required this.bizKey, required this.fallback, this.size = 24, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    final slug = kBizIconSlug[bizKey];
+    if (slug == null) return Icon(fallback, size: size, color: bx.brand);
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Image.asset(
+      'assets/biztypes/${dark ? 'dark' : 'light'}/$slug@2x.png',
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      errorBuilder: (c, e, s) => Icon(fallback, size: size, color: bx.brand),
+    );
+  }
+}
 
 /// Renders a Codex-generated illustration, theme-aware (light/dark folder).
 class BxIllustration extends StatelessWidget {

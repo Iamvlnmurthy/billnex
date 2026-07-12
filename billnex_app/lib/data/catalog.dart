@@ -163,6 +163,22 @@ const List<BusinessType> kBusinessTypes = [
 BusinessType businessByKey(String key) => kBusinessTypes.firstWhere((b) => b.key == key);
 final Set<String> kBusinessKeys = kBusinessTypes.map((b) => b.key).toSet();
 
+/// Maps a business-type key to its Codex illustration slug (assets/biztypes/*).
+const Map<String, String> kBizIconSlug = {
+  'kirana': 'biztype-kirana-24',
+  'supermarket': 'biztype-supermarket-24',
+  'pharmacy': 'biztype-pharmacy-24',
+  'restaurant': 'biztype-restaurant-24',
+  'bakery': 'biztype-cafe-bakery-24',
+  'hardware': 'biztype-hardware-24',
+  'fashion': 'biztype-apparel-24',
+  'jewellery': 'biztype-jewellery-24',
+  'electronics': 'biztype-electronics-mobile-24',
+  'salon': 'biztype-salon-spa-24',
+  'wholesale': 'biztype-wholesale-distribution-24',
+  'clinic': 'biztype-clinic-diagnostic-24',
+};
+
 // ---------------------------------------------------------------------------
 // SAMPLE PRODUCTS per business (demo catalogue)
 // ---------------------------------------------------------------------------

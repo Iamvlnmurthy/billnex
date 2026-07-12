@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../data/catalog.dart';
 import '../state/app_state.dart';
@@ -10,6 +11,7 @@ import '../models/stock.dart';
 import '../models/sale.dart';
 import '../widgets/customer_picker.dart';
 import '../widgets/empty_state.dart';
+import 'scanner_screen.dart';
 
 class PosScreen extends StatelessWidget {
   final AppState state;
@@ -133,23 +135,37 @@ class _CatalogState extends State<_Catalog> {
   }
 
   Future<void> _scan(BuildContext context) async {
+    // Web/desktop have no reliable camera → go straight to manual entry.
+    String? code;
+    if (!kIsWeb) {
+      code = await Navigator.of(context).push<String>(MaterialPageRoute(builder: (_) => const ScannerScreen()));
+    } else {
+      code = '__manual__';
+    }
+    if (code == '__manual__') {
+      if (!context.mounted) return;
+      code = await _manualEntry(context);
+    }
+    if (code == null || code.trim().isEmpty) return;
+    final name = widget.state.addByCode(code);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(name != null ? '$name added ✓' : 'No product with barcode $code')));
+    }
+  }
+
+  Future<String?> _manualEntry(BuildContext context) {
     final c = TextEditingController();
-    final code = await showDialog<String>(
+    return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Enter / scan barcode'),
-        content: TextField(controller: c, autofocus: true, keyboardType: TextInputType.number, decoration: const InputDecoration(hintText: 'Barcode number', border: OutlineInputBorder())),
+        title: const Text('Enter barcode / SKU'),
+        content: TextField(controller: c, autofocus: true, decoration: const InputDecoration(hintText: 'Barcode or product code', border: OutlineInputBorder())),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Add')),
         ],
       ),
     );
-    if (code == null || code.trim().isEmpty) return;
-    final name = widget.state.addByCode(code);
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(name != null ? '$name added ✓' : 'No product with barcode $code')));
-    }
   }
 
   @override

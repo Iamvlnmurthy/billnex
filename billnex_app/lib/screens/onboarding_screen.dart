@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/catalog.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/empty_state.dart';
 import 'business_setup_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -19,6 +20,8 @@ class OnboardingScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 36, 20, 60),
             child: Column(children: [
               // Hero
+              const BxIllustration('illus-onboarding-business', size: 132),
+              const SizedBox(height: 10),
               _kicker(bx),
               const SizedBox(height: 16),
               Text.rich(
@@ -163,8 +166,9 @@ class _BizCardState extends State<_BizCard> with SingleTickerProviderStateMixin 
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Container(
                   width: 42, height: 42,
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(color: bx.brand.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(12)),
-                  child: Icon(b.icon, color: bx.brand, size: 23),
+                  child: BizIcon(bizKey: b.key, fallback: b.icon),
                 ),
                 const SizedBox(height: 12),
                 Text(b.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
