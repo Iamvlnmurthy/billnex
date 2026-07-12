@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'l10n/app_localizations.dart';
 import 'data/catalog.dart';
@@ -5,13 +6,21 @@ import 'models/system.dart';
 import 'state/app_state.dart';
 import 'services/store.dart';
 import 'services/auth_service.dart';
+import 'services/error_reporter.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_shell.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/lock_screen.dart';
 
-void main() async {
+void main() {
+  // Run inside a guarded zone so uncaught async errors are reported, not lost.
+  const reporter = ConsoleErrorReporter(); // swap for Crashlytics/Sentry adapter
+  runZonedGuarded(() => _bootstrap(), (error, stack) => reporter.report(error, stack, context: 'zone'));
+}
+
+Future<void> _bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
+  installErrorHandling(const ConsoleErrorReporter());
   final state = AppState();
   final store = Store();
   final savedTheme = await store.loadTheme();

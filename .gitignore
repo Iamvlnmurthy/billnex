@@ -7,6 +7,11 @@ billnex_app/.flutter-plugins-dependencies
 **/build/
 **/*.iml
 
+# Release signing secrets — never commit
+billnex_app/android/key.properties
+**/*.jks
+**/*.keystore
+
 # IDE / OS
 .idea/
 .vscode/

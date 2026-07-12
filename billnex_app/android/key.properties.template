@@ -1,0 +1,8 @@
+# Copy to android/key.properties (git-ignored) and fill in for release signing.
+# Generate a keystore:
+#   keytool -genkey -v -keystore ~/billnex-release.jks -keyalg RSA -keysize 2048 \
+#     -validity 10000 -alias billnex
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=billnex
+storeFile=/absolute/path/to/billnex-release.jks
