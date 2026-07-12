@@ -1,0 +1,78 @@
+openapi: 3.1.0
+info:
+  title: BillNex Sync & Data API
+  version: 0.1.0
+  description: >
+    Offline-first sync contract (PRD §13, §14). Auth is a Supabase JWT
+    (Authorization: Bearer <access_token>); tenant scoping is enforced by RLS,
+    so no business_id is trusted from the client beyond the JWT's membership.
+servers:
+  - url: https://<project-ref>.supabase.co/functions/v1
+security:
+  - bearerAuth: []
+paths:
+  /sync/push:
+    post:
+      summary: Push a batch of outbox events (idempotent).
+      description: >
+        Each event carries a client idem_key. Re-sends are dropped by primary
+        key, so retries are safe. Returns the server rev high-water mark.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [events]
+              properties:
+                events:
+                  type: array
+                  items: { $ref: '#/components/schemas/OutboxEvent' }
+      responses:
+        '200':
+          description: Accepted; returns current rev.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rev: { type: integer }
+                  accepted: { type: integer }
+                  duplicates: { type: integer }
+  /sync/pull:
+    get:
+      summary: Pull changes since a rev (for other devices/branches).
+      parameters:
+        - in: query
+          name: since
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: Ordered events after `since`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rev: { type: integer }
+                  events:
+                    type: array
+                    items: { $ref: '#/components/schemas/OutboxEvent' }
+  /reports/summary:
+    get:
+      summary: Server-side business summary (auth + role enforced).
+      responses:
+        '200': { description: KPI summary }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    OutboxEvent:
+      type: object
+      required: [idem_key, kind, ref]
+      properties:
+        idem_key: { type: string, description: client-unique; dedupes replays }
+        kind: { type: string, enum: [sale, collection, purchase, adjustment, payment] }
+        ref: { type: string, description: invoice/receipt/purchase no. }
+        payload: { type: object, additionalProperties: true }
+        rev: { type: integer, readOnly: true }
