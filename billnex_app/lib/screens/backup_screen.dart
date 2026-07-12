@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import '../state/app_state.dart';
 import '../services/backup_service.dart';
+import '../services/google_drive_backup.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 
-/// Backup & Restore — each merchant owns their data (device/PC or their own
-/// Google Drive via the share sheet). No central server.
-class BackupScreen extends StatelessWidget {
+/// Backup & Restore — each merchant owns their data: a local file (device / PC /
+/// Google Drive via the save dialog) OR one-tap to their own Google Drive.
+class BackupScreen extends StatefulWidget {
   final AppState state;
   const BackupScreen({required this.state, super.key});
+  @override
+  State<BackupScreen> createState() => _BackupScreenState();
+}
+
+class _BackupScreenState extends State<BackupScreen> {
+  final _drive = GoogleDriveBackup(clientId: kGoogleClientId.isEmpty ? null : kGoogleClientId);
+  bool _busy = false;
+  List<DriveBackupFile> _driveFiles = const [];
+
+  AppState get state => widget.state;
 
   String _ago(int? ms) {
     if (ms == null) return 'Never backed up';
@@ -36,18 +48,14 @@ class BackupScreen extends StatelessWidget {
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 820),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            const PageHeader('Backup & Restore', 'Your shop data stays yours. Save a backup to your device, PC, or your own Google Drive — and restore anytime.'),
-            // status card
+            const PageHeader('Backup & Restore', 'Your shop data stays yours. Save it to your device, PC, or your own Google Drive — and restore anytime.'),
+            // ── Local file ──
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(18),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Row(children: [
-                    Container(
-                      width: 44, height: 44,
-                      decoration: BoxDecoration(color: bx.pos.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-                      child: Icon(Icons.cloud_done_outlined, color: bx.pos),
-                    ),
+                    _icon(bx, Icons.cloud_done_outlined, bx.pos),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -58,9 +66,9 @@ class BackupScreen extends StatelessWidget {
                   ]),
                   const SizedBox(height: 16),
                   FilledButton.icon(
-                    onPressed: () => _save(context),
+                    onPressed: _busy ? null : () => _save(context),
                     icon: const Icon(Icons.save_alt, size: 18),
-                    label: const Text('Save backup'),
+                    label: const Text('Save backup to a file'),
                     style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
                   ),
                   Padding(
@@ -68,16 +76,18 @@ class BackupScreen extends StatelessWidget {
                     child: Text('Choose Google Drive, your PC, or Files in the save dialog.', style: TextStyle(fontSize: 12, color: bx.faint)),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => _restore(context),
+                    onPressed: _busy ? null : () => _restoreFile(context),
                     icon: Icon(Icons.restore, size: 18, color: bx.danger),
-                    label: Text('Restore from backup', style: TextStyle(color: bx.danger)),
+                    label: Text('Restore from a file', style: TextStyle(color: bx.danger)),
                     style: OutlinedButton.styleFrom(side: BorderSide(color: bx.danger.withValues(alpha: 0.4))),
                   ),
                 ]),
               ),
             ),
             const SizedBox(height: 16),
-            // what's in the backup
+            if (kDriveBackupEnabled) _driveCard(bx),
+            if (kDriveBackupEnabled) const SizedBox(height: 16),
+            // ── What's inside ──
             Card(
               child: Column(children: [
                 const Padding(padding: EdgeInsets.all(16), child: Align(alignment: Alignment.centerLeft, child: Text('In this backup', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)))),
@@ -93,7 +103,7 @@ class BackupScreen extends StatelessWidget {
               ]),
             ),
             const SizedBox(height: 14),
-            Text('Tip: keep a copy on Google Drive so you can move to a new phone or PC and restore in one tap. Restoring replaces the current data on this device.',
+            Text('Restoring replaces the current data on this device. Keep a copy on Google Drive to move to a new phone or PC in one tap.',
                 style: TextStyle(fontSize: 12.5, color: bx.faint, height: 1.5)),
           ]),
         ),
@@ -101,6 +111,64 @@ class BackupScreen extends StatelessWidget {
     );
   }
 
+  Widget _icon(BxColors bx, IconData i, Color c) => Container(
+        width: 44, height: 44,
+        decoration: BoxDecoration(color: c.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+        child: Icon(i, color: c),
+      );
+
+  Widget _driveCard(BxColors bx) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            _icon(bx, Icons.add_to_drive, bx.accent),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('Google Drive', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                Text(_drive.isSignedIn ? (_drive.email ?? 'Connected') : 'Connect your account for one-tap backup', style: TextStyle(fontSize: 12.5, color: bx.muted)),
+              ]),
+            ),
+            if (_busy) const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+          ]),
+          const SizedBox(height: 14),
+          if (!_drive.isSignedIn)
+            FilledButton.icon(
+              onPressed: _busy ? null : _connect,
+              icon: const Icon(Icons.login, size: 18),
+              label: const Text('Connect Google Drive'),
+              style: FilledButton.styleFrom(backgroundColor: bx.accent, foregroundColor: bx.onAccent, padding: const EdgeInsets.symmetric(vertical: 14)),
+            )
+          else ...[
+            Row(children: [
+              Expanded(child: FilledButton.icon(onPressed: _busy ? null : _driveBackup, icon: const Icon(Icons.backup, size: 18), label: const Text('Back up now'))),
+              const SizedBox(width: 10),
+              OutlinedButton(onPressed: _busy ? null : _driveSignOut, child: const Text('Disconnect')),
+            ]),
+            const SizedBox(height: 10),
+            if (_driveFiles.isEmpty)
+              Text('No Drive backups yet.', style: TextStyle(fontSize: 12.5, color: bx.faint))
+            else ...[
+              Text('Backups on your Drive', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: bx.faint)),
+              for (final f in _driveFiles)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  leading: Icon(Icons.description_outlined, color: bx.muted),
+                  title: Text(f.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  subtitle: f.modified != null ? Text('${f.modified!.toLocal()}'.split('.').first) : null,
+                  trailing: TextButton(onPressed: _busy ? null : () => _driveRestore(f), child: const Text('Restore')),
+                ),
+            ],
+          ],
+        ]),
+      ),
+    );
+  }
+
+  // ── local ──
   Future<void> _save(BuildContext context) async {
     final m = ScaffoldMessenger.of(context);
     try {
@@ -111,19 +179,9 @@ class BackupScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _restore(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Restore from backup?'),
-        content: const Text('This replaces ALL current data on this device with the backup file. This cannot be undone.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restore')),
-        ],
-      ),
-    );
-    if (confirmed != true || !context.mounted) return;
+  Future<void> _restoreFile(BuildContext context) async {
+    if (!await _confirmRestore(context)) return;
+    if (!context.mounted) return;
     final m = ScaffoldMessenger.of(context);
     try {
       final ok = await BackupService.restoreFromFile(state);
@@ -133,5 +191,69 @@ class BackupScreen extends StatelessWidget {
     } catch (e) {
       m.showSnackBar(SnackBar(content: Text('Restore failed: $e')));
     }
+  }
+
+  // ── drive ──
+  Future<void> _connect() async {
+    setState(() => _busy = true);
+    final m = ScaffoldMessenger.of(context);
+    try {
+      final ok = await _drive.signIn();
+      if (ok) _driveFiles = await _drive.list();
+      if (!ok) m.showSnackBar(const SnackBar(content: Text('Google sign-in cancelled')));
+    } catch (e) {
+      m.showSnackBar(SnackBar(content: Text('Sign-in failed: $e')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _driveBackup() async {
+    setState(() => _busy = true);
+    final m = ScaffoldMessenger.of(context);
+    try {
+      await _drive.backup(state);
+      _driveFiles = await _drive.list();
+      m.showSnackBar(const SnackBar(content: Text('Backed up to Google Drive ✓')));
+    } catch (e) {
+      m.showSnackBar(SnackBar(content: Text('Drive backup failed: $e')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _driveRestore(DriveBackupFile f) async {
+    if (!await _confirmRestore(context)) return;
+    if (!mounted) return;
+    setState(() => _busy = true);
+    final m = ScaffoldMessenger.of(context);
+    try {
+      await _drive.restore(f.id, state);
+      m.showSnackBar(const SnackBar(content: Text('Restored from Google Drive ✓')));
+    } catch (e) {
+      m.showSnackBar(SnackBar(content: Text('Drive restore failed: $e')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _driveSignOut() async {
+    await _drive.signOut();
+    setState(() => _driveFiles = const []);
+  }
+
+  Future<bool> _confirmRestore(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Restore from backup?'),
+        content: const Text('This replaces ALL current data on this device with the backup. This cannot be undone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restore')),
+        ],
+      ),
+    );
+    return ok == true;
   }
 }
