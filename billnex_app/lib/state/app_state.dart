@@ -92,7 +92,7 @@ class AppState extends ChangeNotifier {
   }
 
   void _enqueue(String kind, String ref, int nowMs) {
-    _outbox.add(OutboxEvent(idemKey: '$kind-$ref-$nowMs', kind: kind, ref: ref, epochMs: nowMs, synced: false));
+    _outbox.add(OutboxEvent(idemKey: '$kind-$ref-$nowMs', kind: kind, ref: ref, epochMs: nowMs));
     if (_online) _flushOutbox();
     _store.saveOutbox(_outbox);
   }
@@ -256,7 +256,6 @@ class AppState extends ChangeNotifier {
         price: p.price,
         cost: (p.price * 0.78).roundToDouble(),
         qty: qty,
-        reorderLevel: 10,
       );
       if (withBatch && i < 4) {
         item.batches.add(Batch('B${1000 + i}', nowMs + Duration(days: 30 + i * 40).inMilliseconds, qty));
@@ -572,7 +571,7 @@ class AppState extends ChangeNotifier {
     for (var i = 0; i < 3 && i < prods.length; i++) {
       _cart.clear();
       _cart.add(CartLine(prods[i], 2));
-      if (i + 1 < prods.length) _cart.add(CartLine(prods[i + 1], 1));
+      if (i + 1 < prods.length) _cart.add(CartLine(prods[i + 1]));
       postSale(paymentMode: modes[i], nowMs: nowMs - i * 3600000);
     }
     if (isOn('creditLedger')) {

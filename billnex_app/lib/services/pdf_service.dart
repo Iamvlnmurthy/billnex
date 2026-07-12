@@ -90,29 +90,29 @@ class PdfService {
       margin: const pw.EdgeInsets.all(32),
       build: (c) => [
         pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-          pw.Text(businessName, style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColor.fromInt(0xFF0055D1))),
+          pw.Text(businessName, style: const pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColor.fromInt(0xFF0055D1))),
           pw.Text('Business Report', style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700)),
         ]),
-        pw.Divider(color: PdfColor.fromInt(0xFF146CFF), thickness: 1.5),
+        pw.Divider(color: const PdfColor.fromInt(0xFF146CFF), thickness: 1.5),
         pw.SizedBox(height: 12),
-        pw.Text('Summary', style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+        pw.Text('Summary', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 6),
         pw.Wrap(spacing: 24, runSpacing: 8, children: summary.entries.map((e) => pw.Container(
           width: 150,
           child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
             pw.Text(e.key, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
-            pw.Text(e.value, style: pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold)),
+            pw.Text(e.value, style: const pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold)),
           ]),
         )).toList()),
         pw.SizedBox(height: 16),
-        pw.Text('Payment mix', style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+        pw.Text('Payment mix', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 6),
         pw.Table(border: pw.TableBorder.all(color: PdfColors.grey300), children: [
           for (final e in paymentMix.entries)
             pw.TableRow(children: [_cell(e.key), _cell(_rupee(e.value), right: true)]),
         ]),
         pw.SizedBox(height: 16),
-        pw.Text('Item-wise sales', style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+        pw.Text('Item-wise sales', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 6),
         pw.Table(border: pw.TableBorder.all(color: PdfColors.grey300), children: [
           pw.TableRow(decoration: const pw.BoxDecoration(color: PdfColors.grey200), children: [_cell('Item'), _cell('Qty', right: true), _cell('Value', right: true)]),
@@ -175,8 +175,8 @@ class PdfService {
         ),
       pw.SizedBox(height: 14),
       pw.Table(
-        border: pw.TableBorder(bottom: pw.BorderSide(color: PdfColors.grey300)),
-        columnWidths: {0: const pw.FlexColumnWidth(4), 1: const pw.FlexColumnWidth(1), 2: const pw.FlexColumnWidth(1.4)},
+        border: const pw.TableBorder(bottom: pw.BorderSide(color: PdfColors.grey300)),
+        columnWidths: {0: const pw.FlexColumnWidth(4), 1: const pw.FlexColumnWidth(), 2: const pw.FlexColumnWidth(1.4)},
         children: [
           pw.TableRow(
             decoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey400))),
@@ -235,8 +235,8 @@ class PdfService {
 
   // -------------------------------------------------------------- thermal
   static pw.Widget _thermalBody(Sale sale) {
-    return pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.center, children: [
-      pw.Text(sale.businessName, style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+    return pw.Column(children: [
+      pw.Text(sale.businessName, style: const pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
       pw.Text('GSTIN 36ABCDE1234F1Z5', style: const pw.TextStyle(fontSize: 7)),
       pw.Text('Ph 98480 00000', style: const pw.TextStyle(fontSize: 7)),
       _dash(),
@@ -251,8 +251,8 @@ class PdfService {
       _dash(),
       _thKv('GST', _rupee(sale.gst)),
       pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-        pw.Text('TOTAL', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-        pw.Text(_rupee(sale.total), style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+        pw.Text('TOTAL', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+        pw.Text(_rupee(sale.total), style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
       ]),
       _dash(),
       pw.SizedBox(height: 4),
@@ -263,17 +263,17 @@ class PdfService {
   }
 
   static pw.Widget _kotBody(Sale sale) {
-    return pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.center, children: [
-      pw.Text('KITCHEN — KOT', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+    return pw.Column(children: [
+      pw.Text('KITCHEN — KOT', style: const pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
       pw.Text('${sale.invoiceNo} · ${sale.dateLabel}', style: const pw.TextStyle(fontSize: 8)),
       pw.Container(height: 2, color: PdfColors.black, margin: const pw.EdgeInsets.symmetric(vertical: 6)),
       for (final l in sale.lines)
         pw.Row(children: [
-          pw.Text('${l.qty} x  ', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+          pw.Text('${l.qty} x  ', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
           pw.Expanded(child: pw.Text(l.name, style: const pw.TextStyle(fontSize: 11))),
         ]),
       pw.Container(height: 2, color: PdfColors.black, margin: const pw.EdgeInsets.symmetric(vertical: 6)),
-      pw.Text('** NO PRICE — KITCHEN COPY **', style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
+      pw.Text('** NO PRICE — KITCHEN COPY **', style: const pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
     ]);
   }
 

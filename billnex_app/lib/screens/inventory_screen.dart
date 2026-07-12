@@ -40,7 +40,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               PageHeader('Inventory & Stock',
                   '${state.stockItems.length} SKUs · ${state.lowStockCount} low · ${money(stockValue)} at cost.',
-                  trailing: Badge2('Live stock ledger')),
+                  trailing: const Badge2('Live stock ledger')),
               Row(children: [
                 Expanded(
                   child: Container(

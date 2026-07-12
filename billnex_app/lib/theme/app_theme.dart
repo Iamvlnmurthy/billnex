@@ -213,7 +213,7 @@ class AppTheme {
 
   static ThemeData light() {
     const ext = BxColors.light;
-    final scheme = ColorScheme.fromSeed(seedColor: Bx.primaryDeep, brightness: Brightness.light).copyWith(
+    final scheme = ColorScheme.fromSeed(seedColor: Bx.primaryDeep).copyWith(
       primary: Bx.primaryLight,
       onPrimary: Colors.white,
       surface: Colors.white,

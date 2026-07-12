@@ -105,7 +105,7 @@ class PurchasingScreen extends StatelessWidget {
   }
 
   Future<void> _newPurchase(BuildContext context) async {
-    Supplier? supplier = state.suppliers.isNotEmpty ? state.suppliers.first : await _addSupplier(context);
+    final Supplier? supplier = state.suppliers.isNotEmpty ? state.suppliers.first : await _addSupplier(context);
     if (supplier == null || !context.mounted) return;
     await showModalBottomSheet(
       context: context,

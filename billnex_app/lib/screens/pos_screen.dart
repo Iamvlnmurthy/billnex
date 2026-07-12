@@ -33,8 +33,8 @@ class PosScreen extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1180),
             child: Column(children: [
-              PageHeader('Billing', 'Search or scan · live receipt updates as you go.',
-                  trailing: const Badge2('5-item sale in <20s')),
+              const PageHeader('Billing', 'Search or scan · live receipt updates as you go.',
+                  trailing: Badge2('5-item sale in <20s')),
               if (wide)
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Expanded(child: catalog),
@@ -231,8 +231,8 @@ class _CartPanel extends StatelessWidget {
       ),
       const SizedBox(height: 14),
       // Live receipt
-      Row(children: [
-        const Expanded(child: Text('Live receipt', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800))),
+      const Row(children: [
+        Expanded(child: Text('Live receipt', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800))),
       ]),
       const SizedBox(height: 8),
       Wrap(spacing: 7, runSpacing: 7, children: [

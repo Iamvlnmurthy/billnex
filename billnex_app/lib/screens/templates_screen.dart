@@ -24,10 +24,10 @@ class TemplatesScreen extends StatelessWidget {
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1180),
           child: Column(children: [
-            PageHeader(
+            const PageHeader(
               'Print templates',
               '11 ready designs for regular A4 printers and thermal rolls. Set one default per business — WYSIWYG with the live receipt in Billing.',
-              trailing: const Badge2('A4 · 80mm · 58mm'),
+              trailing: Badge2('A4 · 80mm · 58mm'),
             ),
             LayoutBuilder(builder: (context, c) {
               final cols = c.maxWidth > 900

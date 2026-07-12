@@ -227,9 +227,9 @@ void main() {
   });
 
   test('Sale JSON round-trips', () {
-    final sale = Sale(
+    const sale = Sale(
       invoiceNo: '#INV-9', epochMs: 1720000000000, businessName: 'Test Shop',
-      templateId: 'classic', lines: const [SaleLine('A', 2, 50)],
+      templateId: 'classic', lines: [SaleLine('A', 2, 50)],
       subtotal: 100, gst: 5, total: 105, paymentMode: 'Cash',
     );
     final back = Sale.fromJson(sale.toJson());
