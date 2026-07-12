@@ -22,6 +22,9 @@ class Sale {
   final double gst;
   final double total;
   final String paymentMode;
+  final String? sellerGstin; // captured at post time so reprints stay correct
+  final String? sellerPhone;
+  final String? sellerAddress;
 
   const Sale({
     required this.invoiceNo,
@@ -33,6 +36,9 @@ class Sale {
     required this.gst,
     required this.total,
     required this.paymentMode,
+    this.sellerGstin,
+    this.sellerPhone,
+    this.sellerAddress,
   });
 
   String get dateLabel {
@@ -56,6 +62,9 @@ class Sale {
         'g': gst,
         'tot': total,
         'pm': paymentMode,
+        'sg': sellerGstin,
+        'sp': sellerPhone,
+        'sa': sellerAddress,
       };
 
   factory Sale.fromJson(Map<String, dynamic> j) => Sale(
@@ -68,5 +77,8 @@ class Sale {
         gst: (j['g'] as num).toDouble(),
         total: (j['tot'] as num).toDouble(),
         paymentMode: j['pm'] as String,
+        sellerGstin: j['sg'] as String?,
+        sellerPhone: j['sp'] as String?,
+        sellerAddress: j['sa'] as String?,
       );
 }

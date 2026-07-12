@@ -4,6 +4,7 @@ import '../models/stock.dart';
 import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
+import '../models/business_profile.dart';
 
 /// Persistence seam for the whole app.
 ///
@@ -17,6 +18,9 @@ import '../models/appointment.dart';
 abstract interface class Persistence {
   Future<String?> loadBiz();
   Future<void> saveBiz(String? key);
+
+  Future<BusinessProfile?> loadProfile();
+  Future<void> saveProfile(BusinessProfile? profile);
 
   Future<Map<String, bool>> loadFlags();
   Future<void> saveFlags(Map<String, bool> flags);

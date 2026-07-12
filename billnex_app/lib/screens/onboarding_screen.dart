@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/catalog.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
+import 'business_setup_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   final AppState state;
@@ -61,7 +62,8 @@ class OnboardingScreen extends StatelessWidget {
                   itemBuilder: (context, i) => _BizCard(
                     biz: kBusinessTypes[i],
                     delayMs: i * 45,
-                    onTap: () => state.applyPreset(kBusinessTypes[i].key),
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => BusinessSetupScreen(state: state, bizType: kBusinessTypes[i].key))),
                   ),
                 );
               }),

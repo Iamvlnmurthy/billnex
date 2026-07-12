@@ -58,7 +58,7 @@ class TemplatesScreen extends StatelessWidget {
 Sale _sampleSale(AppState state, String templateId) => Sale(
       invoiceNo: '#SAMPLE',
       epochMs: DateTime.now().millisecondsSinceEpoch,
-      businessName: state.business!.name,
+      businessName: state.shopName,
       templateId: templateId,
       lines: const [SaleLine('Product one', 2, 310), SaleLine('Service item', 1, 620)],
       subtotal: 1240,
@@ -99,7 +99,7 @@ class _TemplateCard extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 child: ReceiptView(
                   templateId: template.id,
-                  businessName: state.business!.name,
+                  businessName: state.shopName,
                   lines: demo,
                   subtotal: 1240,
                   gst: 62,

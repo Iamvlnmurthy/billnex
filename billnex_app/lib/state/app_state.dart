@@ -6,6 +6,7 @@ import '../models/stock.dart';
 import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
+import '../models/business_profile.dart';
 import '../services/store.dart';
 import '../services/persistence.dart';
 import '../services/sync_service.dart';
@@ -187,22 +188,45 @@ class AppState extends ChangeNotifier {
     _outbox.addAll(await _store.loadOutbox());
     _audit.addAll(await _store.loadAudit());
     _appts.addAll(await _store.loadAppointments());
+    _profile = await _store.loadProfile();
     final savedStock = await _store.loadStock();
     if (savedStock != null) {
       _stock.addEntries(savedStock.map((s) => MapEntry(s.sku, s)));
       _moves.addAll(await _store.loadMoves());
-    } else if (biz != null) {
-      _seedStock(biz, 1720000000000);
     }
+    // Real installs start with an EMPTY catalogue — no demo data. Demo items are
+    // only seeded via seedDemo() (?demo=1) for previews.
     _ready = true;
     notifyListeners();
   }
 
-  // ---- selected business / preset ----
+  // ---- selected business / preset + real profile ----
   String? _bizKey;
   String? get bizKey => _bizKey;
   BusinessType? get business => _bizKey == null ? null : businessByKey(_bizKey!);
   bool get onboarded => _bizKey != null;
+
+  BusinessProfile? _profile;
+  BusinessProfile? get profile => _profile;
+
+  /// The shop's own name for UI/invoices (falls back to the type name).
+  String get shopName => (_profile?.shopName.trim().isNotEmpty ?? false) ? _profile!.shopName : (business?.name ?? 'My Business');
+  String? get gstin => _profile?.gstin;
+
+  /// Complete first-run setup: apply the preset AND save the real profile.
+  void setupBusiness(BusinessProfile p) {
+    applyPreset(p.bizType);
+    _profile = p;
+    _store.saveProfile(p);
+    notifyListeners();
+  }
+
+  void updateProfile(BusinessProfile p) {
+    _profile = p;
+    _bizKey = p.bizType;
+    _store.saveProfile(p);
+    notifyListeners();
+  }
 
   // ---- feature flags ----
   final Map<String, bool> _flags = {};
@@ -253,12 +277,16 @@ class AppState extends ChangeNotifier {
     _template = defaultTemplateFor(bizKey);
     _posTemplate = defaultPosTemplateFor(bizKey);
     _cart.clear();
-    _seedStock(bizKey, 1720000000000);
+    // Start empty — the merchant adds their own products.
+    _stock.clear();
+    _moves.clear();
+    _store.saveStock(const []);
+    _store.saveMoves(const []);
     _persistSession();
     notifyListeners();
   }
 
-  /// Seed the stock ledger from the demo catalogue for a business.
+  /// Seed a demo catalogue (previews/demos only, via seedDemo).
   void _seedStock(String bizKey, int nowMs) {
     _stock.clear();
     _moves.clear();
@@ -293,6 +321,30 @@ class AppState extends ChangeNotifier {
     _store.saveMoves(_moves);
     notifyListeners();
     return item;
+  }
+
+  /// Edit a product's master fields (name/price/unit/cost/reorder). Quantity is
+  /// only changed via adjustments so the ledger stays truthful.
+  void editStockItem(String sku, {String? name, String? unit, double? price, double? cost, double? reorder, int nowMs = 0}) {
+    final item = _stock[sku];
+    if (item == null) return;
+    if (name != null && name.trim().isNotEmpty) item.name = name.trim();
+    if (unit != null && unit.trim().isNotEmpty) item.unit = unit.trim();
+    if (price != null) item.price = price;
+    if (cost != null) item.cost = cost;
+    if (reorder != null) item.reorderLevel = reorder;
+    _store.saveStock(_stock.values.toList());
+    _audit0('Product edited · ${item.name}', sku, nowMs);
+    notifyListeners();
+  }
+
+  /// Remove a product from the catalogue (its past sales/movements remain).
+  void deleteStockItem(String sku, {int nowMs = 0}) {
+    final item = _stock.remove(sku);
+    if (item == null) return;
+    _store.saveStock(_stock.values.toList());
+    _audit0('Product removed · ${item.name}', sku, nowMs);
+    notifyListeners();
   }
 
   /// Manual stock adjustment (BNX-0147) — audited via a movement.
@@ -382,13 +434,16 @@ class AppState extends ChangeNotifier {
     final sale = Sale(
       invoiceNo: invoiceNo,
       epochMs: nowMs,
-      businessName: business!.name,
+      businessName: shopName,
       templateId: _template,
       lines: _cart.map((l) => SaleLine(l.product.name, l.qty, l.product.price)).toList(),
       subtotal: subtotal,
       gst: gst,
       total: total,
       paymentMode: paymentMode,
+      sellerGstin: _profile?.gstin,
+      sellerPhone: _profile?.phone,
+      sellerAddress: _profile?.address,
     );
     _sales.add(sale);
     // Decrement stock from the ledger for each line (BNX-0137).
@@ -584,6 +639,8 @@ class AppState extends ChangeNotifier {
   /// Seed a few posted bills + credit customers (previews/demos only).
   void seedDemo(int nowMs) {
     if (_bizKey == null || _sales.isNotEmpty) return;
+    _seedStock(_bizKey!, nowMs); // demo catalogue (preset starts empty in real use)
+    _profile ??= BusinessProfile(bizType: _bizKey!, shopName: business!.name, phone: '98480 00000', gstin: '36ABCDE1234F1Z5', address: 'Main Road, Hyderabad');
     final prods = productsFor(_bizKey!);
     final modes = ['Cash', 'UPI', 'Cash'];
     for (var i = 0; i < 3 && i < prods.length; i++) {
@@ -642,6 +699,7 @@ class AppState extends ChangeNotifier {
         'exportedAt': nowMs,
         'business': _bizKey,
         'edition': business?.edition,
+        'profile': _profile?.toJson(),
         'flags': _flags,
         'template': _template,
         'posTemplate': _posTemplate,
@@ -679,6 +737,8 @@ class AppState extends ChangeNotifier {
       throw const FormatException('Not a BillNex backup file');
     }
     _bizKey = d['business'] as String?;
+    _profile = d['profile'] == null ? null : BusinessProfile.fromJson((d['profile'] as Map).cast<String, dynamic>());
+    _store.saveProfile(_profile);
     _flags
       ..clear()
       ..addEntries(kCapabilities.map((c) => MapEntry(c.key, (d['flags']?[c.key]) == true)));

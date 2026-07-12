@@ -10,6 +10,7 @@ import 'package:billnex/models/sale.dart';
 import 'package:billnex/models/supplier.dart';
 import 'package:billnex/models/system.dart';
 import 'package:billnex/models/appointment.dart';
+import 'package:billnex/models/business_profile.dart';
 import 'package:billnex/services/in_memory_persistence.dart';
 import 'package:billnex/services/auth_service.dart';
 import 'package:billnex/services/integrations.dart';
@@ -33,8 +34,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  testWidgets('Onboarding shows business types; picking one applies a preset',
-      (WidgetTester tester) async {
+  testWidgets('Onboarding renders the business-type picker', (WidgetTester tester) async {
     final state = AppState();
     await state.init();
     await tester.pumpWidget(BillNexApp(
@@ -44,19 +44,24 @@ void main() {
       store: Store(),
       auth: AuthService(),
     ));
-    await tester.pump();
+    await tester.pumpAndSettle(); // let the staggered card reveal timers finish
+    expect(find.text('Kirana / General Store'), findsOneWidget);
+    expect(find.textContaining('Pick your business'), findsOneWidget);
+  });
 
-    // Onboarding hero is present.
-    final card = find.text('Kirana / General Store');
-    expect(card, findsOneWidget);
-
-    // Tap a business type -> preset applied -> shell shows dashboard greeting.
-    await tester.ensureVisible(card);
-    await tester.pumpAndSettle();
-    await tester.tap(card);
-    await tester.pumpAndSettle();
-
-    expect(find.textContaining('Good evening'), findsOneWidget);
+  test('setupBusiness onboards with a real profile and empty catalogue', () {
+    final s = AppState(persistence: InMemoryPersistence());
+    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Rajesh Kirana Store', gstin: '36ABCDE1234F1Z5', phone: '9848000000'));
+    expect(s.onboarded, true);
+    expect(s.shopName, 'Rajesh Kirana Store');
+    expect(s.gstin, '36ABCDE1234F1Z5');
+    expect(s.stockItems, isEmpty); // no fake demo data
+    // a sale carries the seller's real GSTIN for correct reprints
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 10, nowMs: 1);
+    s.addProduct(s.stockItems.first.toProduct());
+    final sale = s.postSale(paymentMode: 'Cash', nowMs: 2);
+    expect(sale.businessName, 'Rajesh Kirana Store');
+    expect(sale.sellerGstin, '36ABCDE1234F1Z5');
   });
 
   test('applyPreset auto-enables exactly the business capabilities', () {
@@ -132,24 +137,23 @@ void main() {
     expect(s.overLimit(c, 600), true);
   });
 
-  test('stock seeds from preset and decrements on sale', () {
+  test('catalogue starts empty; added product decrements on sale', () {
     final s = AppState();
     s.applyPreset('kirana');
-    expect(s.stockItems, isNotEmpty);
-    final item = s.stockItems.first;
+    expect(s.stockItems, isEmpty); // real installs start with no products
+    final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
     final before = s.stockOf(item.sku);
     s.addProduct(item.toProduct());
     s.addProduct(item.toProduct()); // qty 2
     s.postSale(paymentMode: 'Cash', nowMs: 1720000000000);
     expect(s.stockOf(item.sku), before - 2);
-    // a sale movement was recorded
     expect(s.movementsFor(item.sku).any((m) => m.kind.name == 'sale'), true);
   });
 
   test('manual adjustment changes qty and low-stock count', () {
     final s = AppState();
     s.applyPreset('kirana');
-    final it = s.stockItems.firstWhere((i) => !i.low);
+    final it = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
     final q0 = s.stockOf(it.sku);
     s.adjustStock(sku: it.sku, delta: -(q0 - 2), reason: 'test', nowMs: 1);
     expect(s.stockOf(it.sku), 2);
@@ -169,7 +173,7 @@ void main() {
     final s = AppState();
     s.applyPreset('kirana');
     final sup = s.addSupplier(name: 'Metro', phone: '9', nowMs: 1);
-    final item = s.stockItems.first;
+    final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 5, nowMs: 1);
     final before = s.stockOf(item.sku);
     final pur = s.recordPurchase(
       supplier: sup,
@@ -254,7 +258,7 @@ void main() {
     await s1.init();
     s1.applyPreset('kirana');
     final cust = s1.addCustomer(name: 'Anita', mobile: '9', creditLimit: 5000, nowMs: 1);
-    final item = s1.stockItems.first;
+    final item = s1.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
     final stockBefore = s1.stockOf(item.sku);
     s1.addProduct(item.toProduct());
     s1.postSale(paymentMode: 'Credit', nowMs: 2, customer: cust);
@@ -292,6 +296,7 @@ void main() {
     await a.init();
     a.applyPreset('kirana');
     final cust = a.addCustomer(name: 'Ravi', mobile: '9', creditLimit: 5000, nowMs: 1);
+    a.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
     a.addProduct(a.stockItems.first.toProduct());
     a.postSale(paymentMode: 'Credit', nowMs: 2, customer: cust);
     final blob = a.exportData(nowMs: 3);

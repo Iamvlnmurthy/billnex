@@ -4,12 +4,14 @@ import '../models/stock.dart';
 import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
+import '../models/business_profile.dart';
 import 'persistence.dart';
 
 /// In-memory [Persistence] — no disk, no platform channels. Used by tests and
 /// as the reference implementation proving the storage seam is swappable.
 class InMemoryPersistence implements Persistence {
   String? _biz;
+  BusinessProfile? _profile;
   Map<String, bool> _flags = {};
   String? _template;
   String? _posTemplate;
@@ -31,6 +33,11 @@ class InMemoryPersistence implements Persistence {
   Future<String?> loadBiz() async => _biz;
   @override
   Future<void> saveBiz(String? key) async => _biz = key;
+
+  @override
+  Future<BusinessProfile?> loadProfile() async => _profile;
+  @override
+  Future<void> saveProfile(BusinessProfile? profile) async => _profile = profile;
 
   @override
   Future<Map<String, bool>> loadFlags() async => Map.of(_flags);

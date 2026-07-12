@@ -24,7 +24,7 @@ class ReportsScreen extends StatelessWidget {
             PageHeader('Reports & Analytics', 'Everything below is computed live from posted transactions.',
                 trailing: FilledButton.icon(
                   onPressed: () => PdfService.shareReport(
-                    businessName: state.business!.name,
+                    businessName: state.shopName,
                     summary: {
                       'Gross sales': money(state.salesGross),
                       'GST collected': money(state.gstCollected),

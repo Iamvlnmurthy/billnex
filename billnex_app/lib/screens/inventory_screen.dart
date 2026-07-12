@@ -178,7 +178,14 @@ class StockDetailScreen extends StatelessWidget {
         final now = DateTime.now().millisecondsSinceEpoch;
         final qtyColor = it.out ? bx.danger : (it.low ? bx.warn : bx.pos);
         return Scaffold(
-          appBar: AppBar(title: Text(it.name), backgroundColor: Theme.of(context).colorScheme.surface),
+          appBar: AppBar(
+            title: Text(it.name),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            actions: [
+              IconButton(tooltip: 'Edit product', onPressed: () => _editProduct(context, it), icon: const Icon(Icons.edit_outlined)),
+              IconButton(tooltip: 'Delete product', onPressed: () => _deleteProduct(context, it), icon: const Icon(Icons.delete_outline)),
+            ],
+          ),
           body: ListView(padding: const EdgeInsets.fromLTRB(16, 12, 16, 100), children: [
             Card(
               child: Padding(
@@ -259,6 +266,68 @@ class StockDetailScreen extends StatelessWidget {
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: positive ? bx.pos : bx.danger)),
       ]),
     );
+  }
+
+  Future<void> _editProduct(BuildContext context, StockItem it) async {
+    final name = TextEditingController(text: it.name);
+    final unit = TextEditingController(text: it.unit);
+    final price = TextEditingController(text: it.price.toStringAsFixed(it.price % 1 == 0 ? 0 : 2));
+    final cost = TextEditingController(text: it.cost.toStringAsFixed(it.cost % 1 == 0 ? 0 : 2));
+    final reorder = TextEditingController(text: it.reorderLevel.toStringAsFixed(0));
+    final ok = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const Text('Edit product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 12),
+          TextField(controller: name, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(child: TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
+            const SizedBox(width: 10),
+            Expanded(child: TextField(controller: reorder, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Reorder', border: OutlineInputBorder()))),
+          ]),
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(child: TextField(controller: price, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Sell price', border: OutlineInputBorder()))),
+            const SizedBox(width: 10),
+            Expanded(child: TextField(controller: cost, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cost', border: OutlineInputBorder()))),
+          ]),
+          const SizedBox(height: 16),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Save changes')),
+        ]),
+      ),
+    );
+    if (ok == true) {
+      state.editStockItem(it.sku,
+          name: name.text, unit: unit.text,
+          price: double.tryParse(price.text) ?? it.price,
+          cost: double.tryParse(cost.text) ?? it.cost,
+          reorder: double.tryParse(reorder.text) ?? it.reorderLevel,
+          nowMs: DateTime.now().millisecondsSinceEpoch);
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product updated ✓')));
+    }
+  }
+
+  Future<void> _deleteProduct(BuildContext context, StockItem it) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remove product?'),
+        content: Text('Remove "${it.name}" from your catalogue? Past sales keep their records.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(backgroundColor: context.bx.danger), child: const Text('Remove')),
+        ],
+      ),
+    );
+    if (ok == true) {
+      state.deleteStockItem(it.sku, nowMs: DateTime.now().millisecondsSinceEpoch);
+      if (context.mounted) Navigator.of(context).pop(); // leave the detail page
+    }
   }
 
   Future<void> _adjust(BuildContext context, StockItem it, bool add) async {

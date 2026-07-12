@@ -95,18 +95,31 @@ class _Catalog extends StatelessWidget {
         ),
       ]),
       const SizedBox(height: 14),
-      GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: items.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: cols,
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          mainAxisExtent: 118,
+      if (items.isEmpty)
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: bx.border)),
+          child: Column(children: [
+            Icon(Icons.add_business_outlined, size: 40, color: bx.faint),
+            const SizedBox(height: 12),
+            const Text('No products yet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 4),
+            Text('Add your shop\'s products in the Inventory tab, then bill them here.', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: bx.muted)),
+          ]),
+        )
+      else
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: items.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: cols,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            mainAxisExtent: 118,
+          ),
+          itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => state.addProduct(items[i].toProduct())),
         ),
-        itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => state.addProduct(items[i].toProduct())),
-      ),
     ]);
   }
 }
@@ -243,7 +256,10 @@ class _CartPanel extends StatelessWidget {
       Center(
         child: ReceiptView(
           templateId: state.posTemplate,
-          businessName: state.business!.name,
+          businessName: state.shopName,
+          gstin: state.profile?.gstin,
+          phone: state.profile?.phone,
+          address: state.profile?.address,
           lines: state.cart.isEmpty
               ? const [RcptLine('— add items —', 0, 0)]
               : state.cart.map((l) => RcptLine(l.product.name, l.qty, l.amount)).toList(),
@@ -260,7 +276,7 @@ class _CartPanel extends StatelessWidget {
     final kot = Sale(
       invoiceNo: '#KOT',
       epochMs: DateTime.now().millisecondsSinceEpoch,
-      businessName: state.business!.name,
+      businessName: state.shopName,
       templateId: 'kot',
       lines: state.cart.map((l) => SaleLine(l.product.name, l.qty, l.product.price)).toList(),
       subtotal: state.subtotal, gst: state.gst, total: state.total, paymentMode: 'KOT',

@@ -45,6 +45,12 @@ class PdfService {
     return 'Rs ${parts.join(',')},$last3';
   }
 
+  static String _sellerLine(Sale sale) => [
+        if ((sale.sellerGstin ?? '').trim().isNotEmpty) 'GSTIN ${sale.sellerGstin!.trim()}',
+        if ((sale.sellerAddress ?? '').trim().isNotEmpty) sale.sellerAddress!.trim(),
+        if ((sale.sellerPhone ?? '').trim().isNotEmpty) 'Ph ${sale.sellerPhone!.trim()}',
+      ].join(' · ');
+
   static Future<pw.Document> build(Sale sale) async {
     final tpl = templateById(sale.templateId);
     final doc = pw.Document(title: 'BillNex ${sale.invoiceNo}');
@@ -142,8 +148,9 @@ class PdfService {
       final left = pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
         pw.Text(sale.businessName,
             style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: modern ? PdfColors.white : accent)),
-        pw.Text('GSTIN 36ABCDE1234F1Z5 · Telangana',
-            style: pw.TextStyle(fontSize: 9, color: modern ? PdfColors.white : PdfColors.grey700)),
+        if (_sellerLine(sale).isNotEmpty)
+          pw.Text(_sellerLine(sale),
+              style: pw.TextStyle(fontSize: 9, color: modern ? PdfColors.white : PdfColors.grey700)),
       ]);
       final right = pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.end, children: [
         pw.Text(_title(tpl.id),
@@ -237,8 +244,8 @@ class PdfService {
   static pw.Widget _thermalBody(Sale sale) {
     return pw.Column(children: [
       pw.Text(sale.businessName, style: const pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-      pw.Text('GSTIN 36ABCDE1234F1Z5', style: const pw.TextStyle(fontSize: 7)),
-      pw.Text('Ph 98480 00000', style: const pw.TextStyle(fontSize: 7)),
+      if ((sale.sellerGstin ?? '').isNotEmpty) pw.Text('GSTIN ${sale.sellerGstin}', style: const pw.TextStyle(fontSize: 7)),
+      if ((sale.sellerPhone ?? '').isNotEmpty) pw.Text('Ph ${sale.sellerPhone}', style: const pw.TextStyle(fontSize: 7)),
       _dash(),
       pw.Text('${sale.invoiceNo}  ${sale.dateLabel}', style: const pw.TextStyle(fontSize: 7)),
       _dash(),

@@ -6,6 +6,7 @@ import '../models/stock.dart';
 import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
+import '../models/business_profile.dart';
 import 'persistence.dart';
 
 /// SharedPreferences-backed [Persistence] (JSON blobs) — the default engine.
@@ -35,6 +36,24 @@ class Store implements Persistence {
 
   SharedPreferences? _p;
   Future<SharedPreferences> get _prefs async => _p ??= await SharedPreferences.getInstance();
+
+  static const _kProfile = 'bx_profile';
+  @override
+  Future<BusinessProfile?> loadProfile() async {
+    final raw = (await _prefs).getString(_kProfile);
+    if (raw == null) return null;
+    return BusinessProfile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+  }
+
+  @override
+  Future<void> saveProfile(BusinessProfile? profile) async {
+    final p = await _prefs;
+    if (profile == null) {
+      await p.remove(_kProfile);
+    } else {
+      await p.setString(_kProfile, jsonEncode(profile.toJson()));
+    }
+  }
 
   @override
   Future<String?> loadBiz() async => (await _prefs).getString(_kBiz);

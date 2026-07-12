@@ -15,6 +15,8 @@ import 'purchasing_screen.dart';
 import 'reports_screen.dart';
 import 'appointments_screen.dart';
 import 'backup_screen.dart';
+import 'business_setup_screen.dart';
+import '../models/business_profile.dart';
 import 'templates_screen.dart';
 
 class HomeShell extends StatefulWidget {
@@ -217,7 +219,7 @@ class _TopBar extends StatelessWidget {
                   Container(width: 8, height: 8, decoration: BoxDecoration(color: bx.brand, shape: BoxShape.circle)),
                   const SizedBox(width: 8),
                   Flexible(
-                    child: Text('${state.business!.name} · ${state.business!.edition}',
+                    child: Text('${state.shopName} · ${state.business!.edition}',
                         overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
                   ),
                   const SizedBox(width: 4),
@@ -249,8 +251,12 @@ class _TopBar extends StatelessWidget {
               if (v == 'audit') _showAudit(context, state);
               if (v == 'pin' && auth != null) _managePin(context, auth!);
               if (v == 'backup') Navigator.of(context).push(MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state))));
+              if (v == 'profile' && state.bizKey != null) {
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => BusinessSetupScreen(state: state, bizType: state.bizKey!, existing: state.profile ?? BusinessProfile(bizType: state.bizKey!, shopName: state.shopName))));
+              }
             },
             itemBuilder: (ctx) => [
+              const PopupMenuItem(value: 'profile', child: ListTile(dense: true, leading: Icon(Icons.store_outlined), title: Text('Business details'))),
               const PopupMenuItem(value: 'backup', child: ListTile(dense: true, leading: Icon(Icons.backup_outlined), title: Text('Backup & Restore'))),
               const PopupMenuItem(value: 'audit', child: ListTile(dense: true, leading: Icon(Icons.history), title: Text('Audit log'))),
               if (auth != null) const PopupMenuItem(value: 'pin', child: ListTile(dense: true, leading: Icon(Icons.pin_outlined), title: Text('App-lock PIN'))),

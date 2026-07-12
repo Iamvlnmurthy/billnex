@@ -17,6 +17,9 @@ class RcptLine {
 class ReceiptView extends StatelessWidget {
   final String templateId;
   final String businessName;
+  final String? gstin;
+  final String? phone;
+  final String? address;
   final List<RcptLine> lines;
   final double subtotal;
   final double gst;
@@ -26,11 +29,20 @@ class ReceiptView extends StatelessWidget {
     super.key,
     required this.templateId,
     required this.businessName,
+    this.gstin,
+    this.phone,
+    this.address,
     required this.lines,
     required this.subtotal,
     required this.gst,
     required this.total,
   });
+
+  String get _subline => [
+        if ((gstin ?? '').trim().isNotEmpty) 'GSTIN ${gstin!.trim()}',
+        if ((phone ?? '').trim().isNotEmpty) 'Ph ${phone!.trim()}',
+        if ((gstin ?? '').trim().isEmpty && (phone ?? '').trim().isEmpty && (address ?? '').trim().isNotEmpty) address!.trim(),
+      ].join(' · ');
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +76,7 @@ class ReceiptView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Column(children: [
         Text(businessName, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14), textAlign: TextAlign.center),
-        const Text('GSTIN 36ABCDE1234F1Z5 · Ph 98480 00000', style: TextStyle(fontSize: 9.5), textAlign: TextAlign.center),
+        if (_subline.isNotEmpty) Text(_subline, style: const TextStyle(fontSize: 9.5), textAlign: TextAlign.center),
         const _Dashed(dash),
         ...lines.map((l) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 1),
@@ -188,7 +200,7 @@ class ReceiptView extends StatelessWidget {
       Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(businessName, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: nameColor)),
-          Text('GSTIN 36ABCDE1234F1Z5 · Telangana', style: TextStyle(fontSize: 9.5, color: subColor)),
+          if (_subline.isNotEmpty) Text(_subline, style: TextStyle(fontSize: 9.5, color: subColor)),
         ]),
       ),
       Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
