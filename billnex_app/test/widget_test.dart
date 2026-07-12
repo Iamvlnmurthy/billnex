@@ -10,6 +10,7 @@ import 'package:billnex/models/sale.dart';
 import 'package:billnex/models/supplier.dart';
 import 'package:billnex/models/system.dart';
 import 'package:billnex/models/appointment.dart';
+import 'package:billnex/services/in_memory_persistence.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -224,6 +225,32 @@ void main() {
     final k = AppState();
     k.applyPreset('kirana'); // no appointments
     expect(k.isOn('appointments'), false);
+  });
+
+  test('state persists across restart via the Persistence seam', () async {
+    final backend = InMemoryPersistence();
+
+    // Session 1: set up a shop, post sales, add a credit customer.
+    final s1 = AppState(persistence: backend);
+    await s1.init();
+    s1.applyPreset('kirana');
+    final cust = s1.addCustomer(name: 'Anita', mobile: '9', creditLimit: 5000, nowMs: 1);
+    final item = s1.stockItems.first;
+    final stockBefore = s1.stockOf(item.sku);
+    s1.addProduct(item.toProduct());
+    s1.postSale(paymentMode: 'Credit', nowMs: 2, customer: cust);
+    final bills = s1.billCount;
+    final due = s1.balanceOf(cust.id);
+
+    // Session 2: fresh AppState, same backend → state restored.
+    final s2 = AppState(persistence: backend);
+    await s2.init();
+    expect(s2.onboarded, true);
+    expect(s2.bizKey, 'kirana');
+    expect(s2.billCount, bills);
+    expect(s2.customers.length, 1);
+    expect(s2.balanceOf(cust.id), due);
+    expect(s2.stockOf(item.sku), stockBefore - 1); // stock decrement persisted
   });
 
   test('Sale JSON round-trips', () {

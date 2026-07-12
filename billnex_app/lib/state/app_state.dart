@@ -7,6 +7,7 @@ import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
 import '../services/store.dart';
+import '../services/persistence.dart';
 
 class CartLine {
   final Product product;
@@ -21,7 +22,10 @@ class CartLine {
 /// Uses [ChangeNotifier] (no extra state-mgmt dependency). Swap for Riverpod
 /// when wiring the backend without changing the widget contracts.
 class AppState extends ChangeNotifier {
-  final Store _store = Store();
+  /// Persistence engine — injectable (defaults to [Store]); a Drift/SQLite or
+  /// remote backend can be passed in without changing any business logic.
+  final Persistence _store;
+  AppState({Persistence? persistence}) : _store = persistence ?? Store();
 
   // ---- lifecycle ----
   bool _ready = false;
