@@ -29,6 +29,10 @@ class StockItem {
   double cost;
   double qty;
   double reorderLevel;
+  double gstRate; // % GST for this item (0/5/12/18/28)
+  String? barcode;
+  String? category;
+  String? hsn;
   final List<Batch> batches;
 
   StockItem({
@@ -39,6 +43,10 @@ class StockItem {
     this.cost = 0,
     this.qty = 0,
     this.reorderLevel = 10,
+    this.gstRate = 5,
+    this.barcode,
+    this.category,
+    this.hsn,
     List<Batch>? batches,
   }) : batches = batches ?? [];
 
@@ -55,6 +63,10 @@ class StockItem {
         'c': cost,
         'q': qty,
         'r': reorderLevel,
+        'g': gstRate,
+        'bc': barcode,
+        'cat': category,
+        'hsn': hsn,
         'b': batches.map((e) => e.toJson()).toList(),
       };
 
@@ -66,6 +78,10 @@ class StockItem {
         cost: (j['c'] as num?)?.toDouble() ?? 0,
         qty: (j['q'] as num).toDouble(),
         reorderLevel: (j['r'] as num?)?.toDouble() ?? 10,
+        gstRate: (j['g'] as num?)?.toDouble() ?? 5,
+        barcode: j['bc'] as String?,
+        category: j['cat'] as String?,
+        hsn: j['hsn'] as String?,
         batches: (j['b'] as List?)?.map((e) => Batch.fromJson(e as Map<String, dynamic>)).toList() ?? [],
       );
 }

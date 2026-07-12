@@ -15,6 +15,7 @@ import 'package:billnex/services/in_memory_persistence.dart';
 import 'package:billnex/services/auth_service.dart';
 import 'package:billnex/services/integrations.dart';
 import 'package:billnex/services/sync_service.dart';
+import 'package:billnex/services/billing.dart';
 
 /// Records pushes so we can assert the outbox was flushed to a backend.
 class _FakeSync implements SyncService {
@@ -33,6 +34,44 @@ class _FakeSync implements SyncService {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  group('billing engine', () {
+    test('tax-exclusive: GST added on top, CGST/SGST split', () {
+      final b = computeBill(lines: const [BillInput(price: 100, qty: 2, gstRate: 18)], taxInclusive: false);
+      expect(b.taxable, 200);
+      expect(b.tax, 36);
+      expect(b.cgst, 18);
+      expect(b.sgst, 18);
+      expect(b.total, 236);
+    });
+    test('tax-inclusive: price already includes GST', () {
+      final b = computeBill(lines: const [BillInput(price: 118, qty: 1, gstRate: 18)], taxInclusive: true);
+      expect(b.taxable, 100);
+      expect(b.tax, 18);
+      expect(b.total, 118);
+    });
+    test('mixed rates aggregate by rate', () {
+      final b = computeBill(lines: const [
+        BillInput(price: 100, qty: 1, gstRate: 5),
+        BillInput(price: 100, qty: 1, gstRate: 12),
+      ], taxInclusive: false);
+      expect(b.byRate[5]!.tax, 5);
+      expect(b.byRate[12]!.tax, 12);
+      expect(b.tax, 17);
+    });
+    test('discounts reduce taxable; total is rounded', () {
+      final b = computeBill(
+        lines: const [BillInput(price: 100, qty: 1, gstRate: 18, lineDiscount: 10)],
+        taxInclusive: false, billDiscount: 5);
+      expect(b.taxable, 85);
+      expect(b.discountTotal, 15);
+      expect(b.total, b.total.roundToDouble());
+      expect(b.roundOff.abs() <= 0.5, true);
+    });
+    test('empty bill is zero', () {
+      expect(computeBill(lines: const [], taxInclusive: true).total, 0);
+    });
+  });
 
   testWidgets('Onboarding renders the business-type picker', (WidgetTester tester) async {
     final state = AppState();
@@ -58,7 +97,7 @@ void main() {
     expect(s.stockItems, isEmpty); // no fake demo data
     // a sale carries the seller's real GSTIN for correct reprints
     s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 10, nowMs: 1);
-    s.addProduct(s.stockItems.first.toProduct());
+    s.addProduct(s.stockItems.first);
     final sale = s.postSale(paymentMode: 'Cash', nowMs: 2);
     expect(sale.businessName, 'Rajesh Kirana Store');
     expect(sale.sellerGstin, '36ABCDE1234F1Z5');
@@ -86,7 +125,7 @@ void main() {
   test('postSale creates an immutable numbered bill and clears the cart', () {
     final s = AppState();
     s.applyPreset('kirana');
-    final p = productsFor('kirana');
+    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1), s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)];
     s.addProduct(p[0]);
     s.addProduct(p[0]); // qty 2
     s.addProduct(p[1]);
@@ -110,7 +149,7 @@ void main() {
     final s = AppState();
     s.applyPreset('kirana'); // has creditLedger
     final cust = s.addCustomer(name: 'Anita Sharma', mobile: '9848000000', creditLimit: 5000);
-    final p = productsFor('kirana');
+    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1), s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)];
     s.addProduct(p[0]);
     s.addProduct(p[1]);
     final due = s.total;
@@ -143,8 +182,8 @@ void main() {
     expect(s.stockItems, isEmpty); // real installs start with no products
     final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
     final before = s.stockOf(item.sku);
-    s.addProduct(item.toProduct());
-    s.addProduct(item.toProduct()); // qty 2
+    s.addProduct(item);
+    s.addProduct(item); // qty 2
     s.postSale(paymentMode: 'Cash', nowMs: 1720000000000);
     expect(s.stockOf(item.sku), before - 2);
     expect(s.movementsFor(item.sku).any((m) => m.kind.name == 'sale'), true);
@@ -192,7 +231,7 @@ void main() {
   test('reports aggregate posted sales correctly', () {
     final s = AppState();
     s.applyPreset('kirana');
-    final p = productsFor('kirana');
+    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1), s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)];
     s.addProduct(p[0]);
     s.addProduct(p[0]);
     s.postSale(paymentMode: 'Cash', nowMs: 1);
@@ -224,7 +263,7 @@ void main() {
     final s = AppState();
     s.applyPreset('kirana');
     s.setOnline(false);
-    final p = productsFor('kirana');
+    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1), s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)];
     s.addProduct(p[0]);
     s.postSale(paymentMode: 'Cash', nowMs: 1);
     s.addProduct(p[1]);
@@ -260,7 +299,7 @@ void main() {
     final cust = s1.addCustomer(name: 'Anita', mobile: '9', creditLimit: 5000, nowMs: 1);
     final item = s1.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
     final stockBefore = s1.stockOf(item.sku);
-    s1.addProduct(item.toProduct());
+    s1.addProduct(item);
     s1.postSale(paymentMode: 'Credit', nowMs: 2, customer: cust);
     final bills = s1.billCount;
     final due = s1.balanceOf(cust.id);
@@ -281,7 +320,7 @@ void main() {
     final s = AppState(sync: fake);
     s.applyPreset('kirana');
     s.setOnline(false); // queue while offline
-    s.addProduct(productsFor('kirana').first);
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1); s.addProduct(s.stockItems.first);
     s.postSale(paymentMode: 'Cash', nowMs: 1);
     expect(s.queueCount, greaterThanOrEqualTo(1));
 
@@ -297,7 +336,7 @@ void main() {
     a.applyPreset('kirana');
     final cust = a.addCustomer(name: 'Ravi', mobile: '9', creditLimit: 5000, nowMs: 1);
     a.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
-    a.addProduct(a.stockItems.first.toProduct());
+    a.addProduct(a.stockItems.first);
     a.postSale(paymentMode: 'Credit', nowMs: 2, customer: cust);
     final blob = a.exportData(nowMs: 3);
 

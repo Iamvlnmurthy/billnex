@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>BillNex asset</title><g id="background"></g><g id="artwork" stroke-linecap="round" stroke-linejoin="round"><g opacity=".07"><path d="M166 104h180v274l-18-12-18 12-18-12-18 12-18-12-18 12-18-12-18 12-18-12-18 12V104z" fill="#FFFFFF"/>
+    <path d="M208 164h96M208 204h72" stroke="#111C2D" stroke-width="16"/>
+    <text x="208" y="284" font-family="Inter,Arial,sans-serif" font-size="72" font-weight="700" fill="#111C2D">₹</text>
+    <circle cx="312" cy="306" r="52" fill="#FFFFFF"/><path d="m286 306 18 18 34-38" fill="none" stroke="#FFFFFF" stroke-width="14"/></g></g></svg>

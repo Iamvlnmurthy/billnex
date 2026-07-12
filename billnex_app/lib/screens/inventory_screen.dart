@@ -120,32 +120,42 @@ class _InventoryScreenState extends State<InventoryScreen> {
     final price = TextEditingController();
     final qty = TextEditingController(text: '0');
     final reorder = TextEditingController(text: '10');
+    final barcode = TextEditingController();
+    double gst = 5;
     final ok = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (ctx) => Padding(
+      builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => Padding(
         padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('New product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 12),
-          TextField(controller: name, autofocus: true, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
-          const SizedBox(height: 10),
-          Row(children: [
-            Expanded(child: TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
-            const SizedBox(width: 10),
-            Expanded(child: TextField(controller: price, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Price', border: OutlineInputBorder()))),
+        child: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            const Text('New product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 12),
+            TextField(controller: name, autofocus: true, textCapitalization: TextCapitalization.words, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
+            const SizedBox(height: 10),
+            Row(children: [
+              Expanded(child: TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
+              const SizedBox(width: 10),
+              Expanded(child: TextField(controller: price, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Price', border: OutlineInputBorder()))),
+            ]),
+            const SizedBox(height: 10),
+            Row(children: [
+              Expanded(child: _GstDropdown(value: gst, onChanged: (v) => setSt(() => gst = v))),
+              const SizedBox(width: 10),
+              Expanded(child: TextField(controller: qty, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Opening qty', border: OutlineInputBorder()))),
+            ]),
+            const SizedBox(height: 10),
+            Row(children: [
+              Expanded(child: TextField(controller: reorder, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Reorder level', border: OutlineInputBorder()))),
+              const SizedBox(width: 10),
+              Expanded(child: TextField(controller: barcode, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Barcode', border: OutlineInputBorder()))),
+            ]),
+            const SizedBox(height: 16),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Add to catalogue')),
           ]),
-          const SizedBox(height: 10),
-          Row(children: [
-            Expanded(child: TextField(controller: qty, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Opening qty', border: OutlineInputBorder()))),
-            const SizedBox(width: 10),
-            Expanded(child: TextField(controller: reorder, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Reorder level', border: OutlineInputBorder()))),
-          ]),
-          const SizedBox(height: 16),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Add to catalogue')),
-        ]),
-      ),
+        ),
+      )),
     );
     if (ok == true && name.text.trim().isNotEmpty) {
       widget.state.addStockItem(
@@ -155,11 +165,27 @@ class _InventoryScreenState extends State<InventoryScreen> {
         cost: (double.tryParse(price.text) ?? 0) * 0.78,
         qty: double.tryParse(qty.text) ?? 0,
         reorder: double.tryParse(reorder.text) ?? 10,
+        gstRate: gst,
+        barcode: barcode.text.trim().isEmpty ? null : barcode.text.trim(),
         nowMs: DateTime.now().millisecondsSinceEpoch,
       );
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${name.text} added')));
     }
   }
+}
+
+/// GST-rate dropdown (0/5/12/18/28%).
+class _GstDropdown extends StatelessWidget {
+  final double value;
+  final ValueChanged<double> onChanged;
+  const _GstDropdown({required this.value, required this.onChanged});
+  @override
+  Widget build(BuildContext context) => DropdownButtonFormField<double>(
+        initialValue: value,
+        decoration: const InputDecoration(labelText: 'GST %', border: OutlineInputBorder()),
+        items: const <double>[0, 5, 12, 18, 28].map((r) => DropdownMenuItem<double>(value: r, child: Text('${r.toStringAsFixed(0)}%'))).toList(),
+        onChanged: (v) => onChanged(v ?? 5),
+      );
 }
 
 class StockDetailScreen extends StatelessWidget {
@@ -274,32 +300,42 @@ class StockDetailScreen extends StatelessWidget {
     final price = TextEditingController(text: it.price.toStringAsFixed(it.price % 1 == 0 ? 0 : 2));
     final cost = TextEditingController(text: it.cost.toStringAsFixed(it.cost % 1 == 0 ? 0 : 2));
     final reorder = TextEditingController(text: it.reorderLevel.toStringAsFixed(0));
+    final barcode = TextEditingController(text: it.barcode ?? '');
+    double gst = it.gstRate;
     final ok = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (ctx) => Padding(
+      builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => Padding(
         padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('Edit product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 12),
-          TextField(controller: name, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
-          const SizedBox(height: 10),
-          Row(children: [
-            Expanded(child: TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
-            const SizedBox(width: 10),
-            Expanded(child: TextField(controller: reorder, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Reorder', border: OutlineInputBorder()))),
+        child: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            const Text('Edit product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 12),
+            TextField(controller: name, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
+            const SizedBox(height: 10),
+            Row(children: [
+              Expanded(child: TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
+              const SizedBox(width: 10),
+              Expanded(child: TextField(controller: reorder, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Reorder', border: OutlineInputBorder()))),
+            ]),
+            const SizedBox(height: 10),
+            Row(children: [
+              Expanded(child: TextField(controller: price, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Sell price', border: OutlineInputBorder()))),
+              const SizedBox(width: 10),
+              Expanded(child: TextField(controller: cost, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cost', border: OutlineInputBorder()))),
+            ]),
+            const SizedBox(height: 10),
+            Row(children: [
+              Expanded(child: _GstDropdown(value: gst, onChanged: (v) => setSt(() => gst = v))),
+              const SizedBox(width: 10),
+              Expanded(child: TextField(controller: barcode, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Barcode', border: OutlineInputBorder()))),
+            ]),
+            const SizedBox(height: 16),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Save changes')),
           ]),
-          const SizedBox(height: 10),
-          Row(children: [
-            Expanded(child: TextField(controller: price, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Sell price', border: OutlineInputBorder()))),
-            const SizedBox(width: 10),
-            Expanded(child: TextField(controller: cost, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cost', border: OutlineInputBorder()))),
-          ]),
-          const SizedBox(height: 16),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Save changes')),
-        ]),
-      ),
+        ),
+      )),
     );
     if (ok == true) {
       state.editStockItem(it.sku,
@@ -307,6 +343,7 @@ class StockDetailScreen extends StatelessWidget {
           price: double.tryParse(price.text) ?? it.price,
           cost: double.tryParse(cost.text) ?? it.cost,
           reorder: double.tryParse(reorder.text) ?? it.reorderLevel,
+          gstRate: gst, barcode: barcode.text,
           nowMs: DateTime.now().millisecondsSinceEpoch);
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product updated ✓')));
     }

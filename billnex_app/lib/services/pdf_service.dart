@@ -207,8 +207,11 @@ class PdfService {
         child: pw.SizedBox(
           width: 180,
           child: pw.Column(children: [
-            _kv('Subtotal', _rupee(sale.subtotal)),
-            _kv('GST @5%', _rupee(sale.gst)),
+            _kv('Taxable', _rupee(sale.subtotal)),
+            if (sale.discount > 0) _kv('Discount', '- ${_rupee(sale.discount)}'),
+            _kv('CGST', _rupee(sale.cgst)),
+            _kv('SGST', _rupee(sale.sgst)),
+            if (sale.roundOff != 0) _kv('Round off', _rupee(sale.roundOff)),
             pw.Container(
               margin: const pw.EdgeInsets.only(top: 4),
               padding: const pw.EdgeInsets.only(top: 6),
@@ -256,7 +259,11 @@ class PdfService {
           pw.Text(_rupee(l.amount), style: const pw.TextStyle(fontSize: 8)),
         ]),
       _dash(),
-      _thKv('GST', _rupee(sale.gst)),
+      _thKv('Taxable', _rupee(sale.subtotal)),
+      if (sale.discount > 0) _thKv('Discount', '- ${_rupee(sale.discount)}'),
+      _thKv('CGST', _rupee(sale.cgst)),
+      _thKv('SGST', _rupee(sale.sgst)),
+      if (sale.roundOff != 0) _thKv('Round off', _rupee(sale.roundOff)),
       pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
         pw.Text('TOTAL', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
         pw.Text(_rupee(sale.total), style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),

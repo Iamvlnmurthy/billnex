@@ -10,12 +10,20 @@ import '../models/business_profile.dart';
 import '../services/store.dart';
 import '../services/persistence.dart';
 import '../services/sync_service.dart';
+import '../services/billing.dart';
 
 class CartLine {
-  final Product product;
+  final String sku;
+  final String name;
+  final String unit;
+  final double price;
+  final double gstRate;
   int qty;
-  CartLine(this.product, [this.qty = 1]);
-  double get amount => product.price * qty;
+  double lineDiscount; // ₹ off this line
+  CartLine({required this.sku, required this.name, required this.unit, required this.price, this.gstRate = 5, this.qty = 1, this.lineDiscount = 0});
+  double get amount => price * qty;
+  factory CartLine.of(StockItem it, [int qty = 1]) =>
+      CartLine(sku: it.sku, name: it.name, unit: it.unit, price: it.price, gstRate: it.gstRate, qty: qty);
 }
 
 /// Central app state — the "Foundation" spine: preset engine + feature flags +
@@ -260,9 +268,30 @@ class AppState extends ChangeNotifier {
   // ---- cart ----
   final List<CartLine> _cart = [];
   List<CartLine> get cart => List.unmodifiable(_cart);
-  double get subtotal => _cart.fold(0, (a, l) => a + l.amount);
-  double get gst => (subtotal * 0.05).roundToDouble();
-  double get total => subtotal + gst;
+  double _billDiscount = 0;
+  double get billDiscount => _billDiscount;
+  void setBillDiscount(double v) {
+    _billDiscount = v < 0 ? 0 : v;
+    notifyListeners();
+  }
+
+  void setLineDiscount(int i, double v) {
+    _cart[i].lineDiscount = v < 0 ? 0 : v;
+    notifyListeners();
+  }
+
+  bool get taxInclusive => _profile?.taxInclusive ?? true;
+
+  /// The correct, fully-computed bill (per-item GST, discounts, round-off).
+  BillTotals get bill => computeBill(
+        lines: _cart.map((l) => BillInput(price: l.price, qty: l.qty, gstRate: l.gstRate, lineDiscount: l.lineDiscount)).toList(),
+        taxInclusive: taxInclusive,
+        billDiscount: _billDiscount,
+      );
+
+  double get subtotal => bill.taxable;
+  double get gst => bill.tax;
+  double get total => bill.total;
   int get cartQty => _cart.fold(0, (a, l) => a + l.qty);
 
   // -----------------------------------------------------------------------
@@ -313,8 +342,8 @@ class AppState extends ChangeNotifier {
     _store.saveMoves(_moves);
   }
 
-  StockItem addStockItem({required String name, required String unit, required double price, double cost = 0, double qty = 0, double reorder = 10, int nowMs = 0}) {
-    final item = StockItem(sku: name.trim(), name: name.trim(), unit: unit, price: price, cost: cost, qty: qty, reorderLevel: reorder);
+  StockItem addStockItem({required String name, required String unit, required double price, double cost = 0, double qty = 0, double reorder = 10, double gstRate = 5, String? barcode, String? category, int nowMs = 0}) {
+    final item = StockItem(sku: name.trim(), name: name.trim(), unit: unit, price: price, cost: cost, qty: qty, reorderLevel: reorder, gstRate: gstRate, barcode: barcode, category: category);
     _stock[item.sku] = item;
     if (qty != 0) _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.opening, delta: qty, ref: 'OPENING'));
     _store.saveStock(_stock.values.toList());
@@ -325,7 +354,7 @@ class AppState extends ChangeNotifier {
 
   /// Edit a product's master fields (name/price/unit/cost/reorder). Quantity is
   /// only changed via adjustments so the ledger stays truthful.
-  void editStockItem(String sku, {String? name, String? unit, double? price, double? cost, double? reorder, int nowMs = 0}) {
+  void editStockItem(String sku, {String? name, String? unit, double? price, double? cost, double? reorder, double? gstRate, String? barcode, int nowMs = 0}) {
     final item = _stock[sku];
     if (item == null) return;
     if (name != null && name.trim().isNotEmpty) item.name = name.trim();
@@ -333,6 +362,8 @@ class AppState extends ChangeNotifier {
     if (price != null) item.price = price;
     if (cost != null) item.cost = cost;
     if (reorder != null) item.reorderLevel = reorder;
+    if (gstRate != null) item.gstRate = gstRate;
+    if (barcode != null) item.barcode = barcode.trim().isEmpty ? null : barcode.trim();
     _store.saveStock(_stock.values.toList());
     _audit0('Product edited · ${item.name}', sku, nowMs);
     notifyListeners();
@@ -399,14 +430,24 @@ class AppState extends ChangeNotifier {
   }
 
   // ---- cart ops ----
-  void addProduct(Product p) {
-    final existing = _cart.where((l) => l.product.name == p.name).firstOrNull;
+  void addProduct(StockItem item) {
+    final existing = _cart.where((l) => l.sku == item.sku).firstOrNull;
     if (existing != null) {
       existing.qty++;
     } else {
-      _cart.add(CartLine(p));
+      _cart.add(CartLine.of(item));
     }
     notifyListeners();
+  }
+
+  /// Add by scanned/typed barcode. Returns the item name, or null if unknown.
+  String? addByCode(String code) {
+    final c = code.trim();
+    if (c.isEmpty) return null;
+    final item = _stock.values.where((i) => i.barcode == c || i.sku.toLowerCase() == c.toLowerCase()).firstOrNull;
+    if (item == null) return null;
+    addProduct(item);
+    return item.name;
   }
 
   void inc(int i) {
@@ -422,6 +463,7 @@ class AppState extends ChangeNotifier {
 
   void clearCart() {
     _cart.clear();
+    _billDiscount = 0;
     notifyListeners();
   }
 
@@ -431,15 +473,19 @@ class AppState extends ChangeNotifier {
   Sale postSale({required String paymentMode, int nowMs = 0, Customer? customer}) {
     _seq += 1;
     final invoiceNo = '#INV-$_seq';
+    final b = bill;
     final sale = Sale(
       invoiceNo: invoiceNo,
       epochMs: nowMs,
       businessName: shopName,
       templateId: _template,
-      lines: _cart.map((l) => SaleLine(l.product.name, l.qty, l.product.price)).toList(),
-      subtotal: subtotal,
-      gst: gst,
-      total: total,
+      lines: _cart.map((l) => SaleLine(l.name, l.qty, l.price, gstRate: l.gstRate, discount: l.lineDiscount)).toList(),
+      subtotal: b.taxable,
+      gst: b.tax,
+      total: b.total,
+      discount: b.discountTotal,
+      roundOff: b.roundOff,
+      taxInclusive: taxInclusive,
       paymentMode: paymentMode,
       sellerGstin: _profile?.gstin,
       sellerPhone: _profile?.phone,
@@ -449,7 +495,7 @@ class AppState extends ChangeNotifier {
     // Decrement stock from the ledger for each line (BNX-0137).
     var stockTouched = false;
     for (final l in _cart) {
-      final item = _stock[l.product.name];
+      final item = _stock[l.sku];
       if (item != null) {
         item.qty -= l.qty;
         _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.sale, delta: -l.qty.toDouble(), ref: invoiceNo));
@@ -472,6 +518,7 @@ class AppState extends ChangeNotifier {
       _store.saveLedger(_ledger);
     }
     _cart.clear();
+    _billDiscount = 0;
     _selectedCustomer = null;
     _store.saveSeq(_seq);
     _store.saveSales(_sales);
@@ -645,8 +692,8 @@ class AppState extends ChangeNotifier {
     final modes = ['Cash', 'UPI', 'Cash'];
     for (var i = 0; i < 3 && i < prods.length; i++) {
       _cart.clear();
-      _cart.add(CartLine(prods[i], 2));
-      if (i + 1 < prods.length) _cart.add(CartLine(prods[i + 1]));
+      _cart.add(CartLine.of(_stock[prods[i].name]!, 2));
+      if (i + 1 < prods.length) _cart.add(CartLine.of(_stock[prods[i + 1].name]!));
       postSale(paymentMode: modes[i], nowMs: nowMs - i * 3600000);
     }
     if (isOn('creditLedger')) {
@@ -655,7 +702,7 @@ class AppState extends ChangeNotifier {
       for (var i = 0; i < 3 && i < prods.length; i++) {
         final cust = addCustomer(name: names[i], mobile: mobiles[i], creditLimit: 5000, consent: true, nowMs: nowMs + i);
         _cart.clear();
-        _cart.add(CartLine(prods[i], i + 1));
+        _cart.add(CartLine.of(_stock[prods[i].name]!, i + 1));
         postSale(paymentMode: 'Credit', nowMs: nowMs - i * 7200000, customer: cust);
         if (i == 2) collect(customer: cust, amount: prods[i].price, mode: 'UPI', nowMs: nowMs);
       }

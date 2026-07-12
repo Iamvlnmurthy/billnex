@@ -113,14 +113,51 @@ class _MobileCartBar extends StatelessWidget {
   }
 }
 
-class _Catalog extends StatelessWidget {
+class _Catalog extends StatefulWidget {
   final AppState state;
   final List<StockItem> items;
   const _Catalog({required this.state, required this.items});
+  @override
+  State<_Catalog> createState() => _CatalogState();
+}
+
+class _CatalogState extends State<_Catalog> {
+  final _search = TextEditingController();
+  String _q = '';
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  Future<void> _scan(BuildContext context) async {
+    final c = TextEditingController();
+    final code = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Enter / scan barcode'),
+        content: TextField(controller: c, autofocus: true, keyboardType: TextInputType.number, decoration: const InputDecoration(hintText: 'Barcode number', border: OutlineInputBorder())),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Add')),
+        ],
+      ),
+    );
+    if (code == null || code.trim().isEmpty) return;
+    final name = widget.state.addByCode(code);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(name != null ? '$name added ✓' : 'No product with barcode $code')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final all = widget.items;
+    final items = _q.isEmpty
+        ? all
+        : all.where((i) => i.name.toLowerCase().contains(_q.toLowerCase()) || (i.barcode?.contains(_q) ?? false)).toList();
     return Column(children: [
       Row(children: [
         Expanded(
@@ -131,21 +168,23 @@ class _Catalog extends StatelessWidget {
               border: Border.all(color: bx.border),
             ),
             child: TextField(
+              controller: _search,
+              onChanged: (v) => setState(() => _q = v),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 icon: Padding(padding: const EdgeInsets.only(left: 14), child: Icon(Icons.search, color: bx.muted)),
-                hintText: 'Search or scan…',
+                suffixIcon: _q.isEmpty ? null : IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setState(() { _q = ''; _search.clear(); })),
+                hintText: 'Search products…',
                 contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 6),
               ),
             ),
           ),
         ),
         const SizedBox(width: 8),
-        // Icon-only scan button so nothing clips on narrow screens.
         SizedBox(
           width: 52, height: 52,
           child: FilledButton(
-            onPressed: () {},
+            onPressed: () => _scan(context),
             style: FilledButton.styleFrom(
               backgroundColor: bx.accent,
               foregroundColor: bx.onAccent,
@@ -157,7 +196,7 @@ class _Catalog extends StatelessWidget {
         ),
       ]),
       const SizedBox(height: 14),
-      if (items.isEmpty)
+      if (all.isEmpty)
         Container(
           padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
           decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: bx.border)),
@@ -169,19 +208,20 @@ class _Catalog extends StatelessWidget {
             Text('Add your shop\'s products in the Inventory tab, then bill them here.', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: bx.muted)),
           ]),
         )
+      else if (items.isEmpty)
+        Padding(padding: const EdgeInsets.symmetric(vertical: 30), child: Center(child: Text('No products match "$_q"', style: TextStyle(color: bx.muted))))
       else
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: items.length,
-          // Max-extent grid auto-fits columns to the real width — never overflows.
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 220,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
             mainAxisExtent: 118,
           ),
-          itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => state.addProduct(items[i].toProduct())),
+          itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => widget.state.addProduct(items[i])),
         ),
     ]);
   }
@@ -266,8 +306,32 @@ class _CartPanel extends StatelessWidget {
             else
               ...state.cart.asMap().entries.map((e) => _CartRow(state: state, index: e.key, line: e.value)),
             const SizedBox(height: 6),
-            _totRow(bx, 'Subtotal', money(state.subtotal)),
-            _totRow(bx, 'GST @5%', money(state.gst)),
+            if (state.cart.isNotEmpty) ...[
+              _totRow(bx, 'Taxable', money(state.bill.taxable)),
+              if (state.bill.discountTotal > 0) _totRow(bx, 'Discount', '− ${money(state.bill.discountTotal)}'),
+              _totRow(bx, 'CGST', money(state.bill.cgst)),
+              _totRow(bx, 'SGST', money(state.bill.sgst)),
+              if (state.bill.roundOff != 0) _totRow(bx, 'Round off', money(state.bill.roundOff)),
+              // Bill discount entry
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(children: [
+                  Icon(Icons.local_offer_outlined, size: 15, color: bx.muted),
+                  const SizedBox(width: 6),
+                  Text('Bill discount', style: TextStyle(fontSize: 13, color: bx.muted)),
+                  const Spacer(),
+                  SizedBox(
+                    width: 90,
+                    child: TextField(
+                      textAlign: TextAlign.right,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(prefixText: '₹ ', isDense: true, border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6)),
+                      onChanged: (v) => state.setBillDiscount(double.tryParse(v) ?? 0),
+                    ),
+                  ),
+                ]),
+              ),
+            ],
             Container(
               margin: const EdgeInsets.only(top: 6),
               padding: const EdgeInsets.only(top: 12),
@@ -325,7 +389,7 @@ class _CartPanel extends StatelessWidget {
           address: state.profile?.address,
           lines: state.cart.isEmpty
               ? const [RcptLine('— add items —', 0, 0)]
-              : state.cart.map((l) => RcptLine(l.product.name, l.qty, l.amount)).toList(),
+              : state.cart.map((l) => RcptLine(l.name, l.qty, l.amount)).toList(),
           subtotal: state.subtotal,
           gst: state.gst,
           total: state.total,
@@ -341,7 +405,7 @@ class _CartPanel extends StatelessWidget {
       epochMs: DateTime.now().millisecondsSinceEpoch,
       businessName: state.shopName,
       templateId: 'kot',
-      lines: state.cart.map((l) => SaleLine(l.product.name, l.qty, l.product.price)).toList(),
+      lines: state.cart.map((l) => SaleLine(l.name, l.qty, l.price)).toList(),
       subtotal: state.subtotal, gst: state.gst, total: state.total, paymentMode: 'KOT',
     );
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('KOT sent to kitchen ✓')));
@@ -417,8 +481,8 @@ class _CartRow extends StatelessWidget {
       child: Row(children: [
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(line.product.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-            Text('${money(line.product.price)} · ${line.product.unit}', style: TextStyle(fontSize: 11, color: bx.muted)),
+            Text(line.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            Text('${money(line.price)} · ${line.unit}', style: TextStyle(fontSize: 11, color: bx.muted)),
           ]),
         ),
         _stepBtn(bx, Icons.remove, () => state.dec(index)),
