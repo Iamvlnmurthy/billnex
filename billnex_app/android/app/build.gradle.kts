@@ -18,7 +18,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.nexenlabs.billnex"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36 // required by google_sign_in / file_picker; overrides flutter default
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
