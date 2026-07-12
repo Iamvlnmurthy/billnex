@@ -11,6 +11,7 @@ import 'package:billnex/models/supplier.dart';
 import 'package:billnex/models/system.dart';
 import 'package:billnex/models/appointment.dart';
 import 'package:billnex/services/in_memory_persistence.dart';
+import 'package:billnex/services/auth_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,7 @@ void main() {
       state: state,
       themeMode: ValueNotifier(ThemeMode.light),
       store: Store(),
+      auth: AuthService(),
     ));
     await tester.pump();
 

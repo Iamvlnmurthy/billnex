@@ -3,9 +3,11 @@ import 'data/catalog.dart';
 import 'models/system.dart';
 import 'state/app_state.dart';
 import 'services/store.dart';
+import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_shell.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/lock_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,15 +36,27 @@ void main() async {
   if (q['offline'] == '1') state.setOnline(false);
   final initialTab = int.tryParse(q['tab'] ?? '') ?? 0;
 
-  runApp(BillNexApp(state: state, themeMode: themeMode, store: store, initialTab: initialTab));
+  final auth = AuthService();
+  // A keystore read must never brick launch — degrade to unlocked on failure.
+  var locked = false;
+  try {
+    locked = await auth.hasPin();
+  } catch (_) {
+    locked = false;
+  }
+  if (q['lock'] == '1') locked = true; // preview/demo hook
+
+  runApp(BillNexApp(state: state, themeMode: themeMode, store: store, auth: auth, startLocked: locked, initialTab: initialTab));
 }
 
 class BillNexApp extends StatefulWidget {
   final AppState state;
   final ValueNotifier<ThemeMode> themeMode;
   final Store store;
+  final AuthService auth;
+  final bool startLocked;
   final int initialTab;
-  const BillNexApp({required this.state, required this.themeMode, required this.store, this.initialTab = 0, super.key});
+  const BillNexApp({required this.state, required this.themeMode, required this.store, required this.auth, this.startLocked = false, this.initialTab = 0, super.key});
   @override
   State<BillNexApp> createState() => _BillNexAppState();
 }
@@ -50,6 +64,7 @@ class BillNexApp extends StatefulWidget {
 class _BillNexAppState extends State<BillNexApp> {
   late final AppState _state = widget.state;
   late final ValueNotifier<ThemeMode> _themeMode = widget.themeMode;
+  late bool _locked = widget.startLocked;
 
   @override
   void initState() {
@@ -84,22 +99,24 @@ class _BillNexAppState extends State<BillNexApp> {
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: mode,
-          home: AnimatedBuilder(
-            animation: _state,
-            builder: (context, _) {
-              if (!_state.onboarded) {
-                return Scaffold(
-                  body: SafeArea(
-                    child: Column(children: [
-                      _MiniTopBar(themeMode: _themeMode),
-                      Expanded(child: OnboardingScreen(state: _state)),
-                    ]),
-                  ),
-                );
-              }
-              return HomeShell(state: _state, themeMode: _themeMode, initialTab: widget.initialTab);
-            },
-          ),
+          home: _locked
+              ? LockScreen(auth: widget.auth, onUnlocked: () => setState(() => _locked = false))
+              : AnimatedBuilder(
+                  animation: _state,
+                  builder: (context, _) {
+                    if (!_state.onboarded) {
+                      return Scaffold(
+                        body: SafeArea(
+                          child: Column(children: [
+                            _MiniTopBar(themeMode: _themeMode),
+                            Expanded(child: OnboardingScreen(state: _state)),
+                          ]),
+                        ),
+                      );
+                    }
+                    return HomeShell(state: _state, themeMode: _themeMode, auth: widget.auth, initialTab: widget.initialTab);
+                  },
+                ),
         );
       },
     );

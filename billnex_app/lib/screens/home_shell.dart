@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../state/app_state.dart';
 import '../models/system.dart';
+import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'nav.dart';
 import 'dashboard_screen.dart';
@@ -17,8 +18,9 @@ import 'templates_screen.dart';
 class HomeShell extends StatefulWidget {
   final AppState state;
   final ValueNotifier<ThemeMode> themeMode;
+  final AuthService? auth;
   final int initialTab;
-  const HomeShell({required this.state, required this.themeMode, this.initialTab = 0, super.key});
+  const HomeShell({required this.state, required this.themeMode, this.auth, this.initialTab = 0, super.key});
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -87,7 +89,7 @@ class _HomeShellState extends State<HomeShell> {
 
       return Scaffold(
         body: Column(children: [
-          _TopBar(state: widget.state, themeMode: widget.themeMode),
+          _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth),
           _TrustBar(state: widget.state),
           Expanded(
             child: Row(children: [
@@ -155,7 +157,8 @@ class _HomeShellState extends State<HomeShell> {
 class _TopBar extends StatelessWidget {
   final AppState state;
   final ValueNotifier<ThemeMode> themeMode;
-  const _TopBar({required this.state, required this.themeMode});
+  final AuthService? auth;
+  const _TopBar({required this.state, required this.themeMode, this.auth});
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +214,18 @@ class _TopBar extends StatelessWidget {
               ]),
             ),
           ),
-          IconButton(tooltip: 'Audit log', onPressed: () => _showAudit(context, state), icon: const Icon(Icons.verified_user_outlined)),
+          PopupMenuButton<String>(
+            tooltip: 'Security & audit',
+            icon: const Icon(Icons.verified_user_outlined),
+            onSelected: (v) {
+              if (v == 'audit') _showAudit(context, state);
+              if (v == 'pin' && auth != null) _managePin(context, auth!);
+            },
+            itemBuilder: (ctx) => [
+              const PopupMenuItem(value: 'audit', child: ListTile(dense: true, leading: Icon(Icons.history), title: Text('Audit log'))),
+              if (auth != null) const PopupMenuItem(value: 'pin', child: ListTile(dense: true, leading: Icon(Icons.pin_outlined), title: Text('App-lock PIN'))),
+            ],
+          ),
           ValueListenableBuilder(
             valueListenable: themeMode,
             builder: (context, mode, _) {
@@ -223,6 +237,52 @@ class _TopBar extends StatelessWidget {
               );
             },
           ),
+        ]),
+      ),
+    );
+  }
+
+  Future<void> _managePin(BuildContext context, AuthService auth) async {
+    final hasPin = await auth.hasPin();
+    if (!context.mounted) return;
+    final controller = TextEditingController();
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(hasPin ? 'Change app-lock PIN' : 'Set app-lock PIN', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 4),
+          const Text('A 4-digit PIN locks BillNex on launch. Stored hashed in the device keystore.', style: TextStyle(fontSize: 12.5)),
+          const SizedBox(height: 14),
+          TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 4,
+            decoration: const InputDecoration(labelText: '4-digit PIN', border: OutlineInputBorder(), counterText: ''),
+          ),
+          const SizedBox(height: 12),
+          FilledButton(
+            onPressed: () async {
+              if (controller.text.length == 4) {
+                await auth.setPin(controller.text);
+                if (ctx.mounted) Navigator.pop(ctx);
+              }
+            },
+            style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+            child: Text(hasPin ? 'Update PIN' : 'Enable app-lock'),
+          ),
+          if (hasPin)
+            TextButton(
+              onPressed: () async {
+                await auth.clearPin();
+                if (ctx.mounted) Navigator.pop(ctx);
+              },
+              child: const Text('Remove PIN'),
+            ),
         ]),
       ),
     );
