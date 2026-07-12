@@ -16,7 +16,7 @@ class BackupScreen extends StatefulWidget {
 }
 
 class _BackupScreenState extends State<BackupScreen> {
-  final _drive = GoogleDriveBackup(clientId: kGoogleClientId.isEmpty ? null : kGoogleClientId);
+  final _drive = GoogleDriveBackup(clientId: kGoogleClientId, serverClientId: kGoogleServerClientId);
   bool _busy = false;
   List<DriveBackupFile> _driveFiles = const [];
 

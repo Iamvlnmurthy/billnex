@@ -20,7 +20,9 @@ class DriveBackupFile {
 /// Setup (one-time, operator): a Google Cloud OAuth client + Drive API enabled —
 /// see docs/GOOGLE_DRIVE.md. Pass the web/desktop clientId where required.
 class GoogleDriveBackup {
-  GoogleDriveBackup({this.clientId, this.serverClientId});
+  GoogleDriveBackup({String? clientId, String? serverClientId})
+      : clientId = (clientId?.isEmpty ?? true) ? null : clientId,
+        serverClientId = (serverClientId?.isEmpty ?? true) ? null : serverClientId;
   final String? clientId;
   final String? serverClientId;
 
