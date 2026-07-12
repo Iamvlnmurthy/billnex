@@ -66,6 +66,14 @@ class Sale {
     return '${d.day} ${months[d.month - 1]} ${d.year} · $hh:$mm $ap';
   }
 
+  /// Clock-only label for activity feeds, e.g. "10:45 AM".
+  String get timeLabel {
+    final d = DateTime.fromMillisecondsSinceEpoch(epochMs);
+    final hh = d.hour % 12 == 0 ? 12 : d.hour % 12;
+    final mm = d.minute.toString().padLeft(2, '0');
+    return '$hh:$mm ${d.hour < 12 ? 'AM' : 'PM'}';
+  }
+
   int get itemCount => lines.fold(0, (a, l) => a + l.qty);
 
   Map<String, dynamic> toJson() => {

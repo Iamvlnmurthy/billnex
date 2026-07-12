@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import '../data/catalog.dart';
+import '../models/sale.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../widgets/empty_state.dart';
+import 'backup_screen.dart';
 import 'nav.dart';
 
+/// Owner dashboard — laid out to the Stitch `owner_dashboard` reference:
+/// greeting → alert banners → Create New Bill CTA → Today's Summary
+/// (hero sales card + 4 stat cards) → quick actions → Recent Activity.
 class DashboardScreen extends StatelessWidget {
   final AppState state;
   final void Function(NavId) goTo;
@@ -12,65 +17,231 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bx = context.bx;
     final biz = state.business!;
+    final owner = (state.profile?.owner ?? '').trim();
+    final greetName = owner.isNotEmpty ? owner.split(' ').first : biz.name;
+
     return ListView(
-      padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 110),
       children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1180),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            PageHeader('Good evening 👋', "Here's your ${biz.name.toLowerCase()} at a glance."),
-            // stat row — reflects real posted sales this session
-            LayoutBuilder(builder: (context, c) {
-              final cols = c.maxWidth > 720 ? 4 : 2;
-              final live = state.billCount > 0;
-              return GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: cols,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                mainAxisExtent: 116,
-                children: [
-                  _Stat('Sales', money(state.todaySales), live ? 'this session' : 'post a bill', true, Icons.trending_up),
-                  _Stat('Bills', '${state.billCount}', live ? 'posted' : 'none yet', true, Icons.receipt_long_outlined),
-                  _Stat('Credit due', money(state.totalReceivable),
-                      state.overdueCount > 0 ? '${state.overdueCount} accounts' : 'no dues', state.totalReceivable == 0,
-                      Icons.account_balance_wallet_outlined,
-                      onTap: state.isOn('creditLedger') ? () => goTo(NavId.customers) : null),
-                  _Stat('Low stock', '${state.lowStockCount} items',
-                      state.lowStockCount > 0 ? 'reorder now' : 'all healthy', state.lowStockCount == 0,
-                      Icons.inventory_2_outlined, onTap: () => goTo(NavId.inventory)),
-                ],
-              );
-            }),
-            const SizedBox(height: 16),
-            LayoutBuilder(builder: (context, c) {
-              final wide = c.maxWidth > 820;
-              final coverage = _CoverageCard(state: state, goTo: goTo);
-              final preset = _PresetCard(state: state, goTo: goTo);
-              if (wide) {
-                return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Expanded(flex: 3, child: coverage),
-                  const SizedBox(width: 16),
-                  Expanded(flex: 2, child: preset),
-                ]);
-              }
-              return Column(children: [coverage, const SizedBox(height: 16), preset]);
-            }),
-          ]),
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1180),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              // ── Greeting ─────────────────────────────────────────────
+              Text('${_greeting()}, $greetName!',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: bx.muted)),
+              const SizedBox(height: 2),
+              Text('${state.shopName} Dashboard',
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
+              const SizedBox(height: 18),
+
+              // ── Alert banners (only when actionable) ─────────────────
+              if (state.lowStockCount > 0)
+                _AlertBanner(
+                  icon: Icons.warning_amber_rounded,
+                  color: bx.warn,
+                  bg: bx.warnBg,
+                  text: '${state.lowStockCount} ${state.lowStockCount == 1 ? 'product' : 'products'} low in stock',
+                  onTap: () => goTo(NavId.inventory),
+                ),
+              if (state.backupDue) ...[
+                if (state.lowStockCount > 0) const SizedBox(height: 10),
+                _AlertBanner(
+                  icon: Icons.cloud_off_rounded,
+                  color: bx.danger,
+                  bg: bx.dangerBg,
+                  text: 'Backup due — protect your data',
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state)))),
+                ),
+              ],
+              if (state.lowStockCount > 0 || state.backupDue) const SizedBox(height: 18),
+
+              // ── Primary CTA ──────────────────────────────────────────
+              SizedBox(
+                height: 56,
+                child: FilledButton.icon(
+                  onPressed: () => goTo(NavId.billing),
+                  icon: const Icon(Icons.add, size: 22),
+                  label: const Text('Create New Bill', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Today's Summary ──────────────────────────────────────
+              _SectionHead(
+                title: "Today's Summary",
+                action: 'Details',
+                onAction: () => goTo(NavId.reports),
+              ),
+              const SizedBox(height: 12),
+              _HeroSales(state: state),
+              const SizedBox(height: 12),
+              _SummaryGrid(state: state, goTo: goTo),
+              const SizedBox(height: 24),
+
+              // ── Quick actions ────────────────────────────────────────
+              _QuickActions(state: state, goTo: goTo),
+              const SizedBox(height: 24),
+
+              // ── Recent Activity ──────────────────────────────────────
+              _SectionHead(
+                title: 'Recent Activity',
+                action: state.billCount > 0 ? 'View all' : null,
+                onAction: () => goTo(NavId.sales),
+              ),
+              const SizedBox(height: 12),
+              _RecentActivity(state: state, goTo: goTo),
+            ]),
+          ),
         ),
       ],
     );
   }
+
+  String _greeting() {
+    final h = DateTime.now().hour;
+    if (h < 12) return 'Good morning';
+    if (h < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
 }
 
-class _Stat extends StatelessWidget {
-  final String k, v, d;
-  final bool up;
+// ───────────────────────────────────────────────────────────────────────
+class _SectionHead extends StatelessWidget {
+  final String title;
+  final String? action;
+  final VoidCallback? onAction;
+  const _SectionHead({required this.title, this.action, this.onAction});
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    return Row(children: [
+      Expanded(child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3))),
+      if (action != null)
+        InkWell(
+          onTap: onAction,
+          borderRadius: BorderRadius.circular(6),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Text(action!, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: bx.accent)),
+          ),
+        ),
+    ]);
+  }
+}
+
+class _AlertBanner extends StatelessWidget {
   final IconData icon;
+  final Color color, bg;
+  final String text;
+  final VoidCallback onTap;
+  const _AlertBanner({required this.icon, required this.color, required this.bg, required this.text, required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.28)),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        child: Row(children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 11),
+          Expanded(child: Text(text, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: color))),
+          Icon(Icons.chevron_right, size: 18, color: color.withValues(alpha: 0.7)),
+        ]),
+      ),
+    );
+  }
+}
+
+/// Hero card — today's total sales, mirrors the mockup's prominent panel.
+class _HeroSales extends StatelessWidget {
+  final AppState state;
+  const _HeroSales({required this.state});
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    final live = state.billCount > 0;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Row(children: [
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text("TODAY'S SALES",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.muted)),
+              const SizedBox(height: 8),
+              Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
+                Flexible(
+                  child: Text(money(state.todaySales),
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -1),
+                      overflow: TextOverflow.ellipsis),
+                ),
+                const SizedBox(width: 10),
+                Text(live ? '${state.billCount} bills' : 'no bills yet',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: live ? bx.pos : bx.faint)),
+              ]),
+            ]),
+          ),
+          Container(
+            width: 52, height: 52,
+            decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(14)),
+            child: Icon(Icons.payments_outlined, color: bx.accent, size: 26),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+/// Four stat cards: Total Bills, Cash, UPI, Credit Sales.
+class _SummaryGrid extends StatelessWidget {
+  final AppState state;
+  final void Function(NavId) goTo;
+  const _SummaryGrid({required this.state, required this.goTo});
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    final mix = state.paymentMix();
+    final cash = mix['Cash'] ?? 0;
+    final upi = (mix['UPI'] ?? 0) + (mix['Card'] ?? 0);
+    final credit = mix['Credit'] ?? 0;
+    return LayoutBuilder(builder: (context, c) {
+      final cols = c.maxWidth > 720 ? 4 : 2;
+      return GridView.count(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: cols,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        mainAxisExtent: 96,
+        children: [
+          _MiniStat('Total Bills', '${state.billCount}', color: bx.muted),
+          _MiniStat('Cash Received', money(cash), color: bx.muted),
+          _MiniStat('UPI / Card', money(upi), color: bx.muted),
+          _MiniStat('Credit Sales', money(credit),
+              color: credit > 0 ? bx.danger : bx.muted,
+              onTap: state.isOn('creditLedger') ? () => goTo(NavId.customers) : null),
+        ],
+      );
+    });
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  final String label, value;
+  final Color color;
   final VoidCallback? onTap;
-  const _Stat(this.k, this.v, this.d, this.up, this.icon, {this.onTap});
+  const _MiniStat(this.label, this.value, {required this.color, this.onTap});
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
@@ -79,18 +250,14 @@ class _Stat extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(Bx.radius),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
             Row(children: [
-              Icon(icon, size: 16, color: bx.muted),
-              const SizedBox(width: 7),
-              Flexible(child: Text(k, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: bx.muted), overflow: TextOverflow.ellipsis)),
-              if (onTap != null) Icon(Icons.chevron_right, size: 16, color: bx.faint),
+              Expanded(child: Text(label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: bx.muted), overflow: TextOverflow.ellipsis)),
+              if (onTap != null) Icon(Icons.chevron_right, size: 15, color: bx.faint),
             ]),
-            const SizedBox(height: 8),
-            Text(v, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
-            const SizedBox(height: 3),
-            Text(d, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: up ? bx.pos : bx.danger)),
+            const SizedBox(height: 6),
+            Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: color == bx.danger ? bx.danger : null)),
           ]),
         ),
       ),
@@ -98,73 +265,136 @@ class _Stat extends StatelessWidget {
   }
 }
 
-class _CoverageCard extends StatelessWidget {
+/// Quick-action tiles — Add Product, View Stock, Ledger, Day Closing.
+class _QuickActions extends StatelessWidget {
   final AppState state;
   final void Function(NavId) goTo;
-  const _CoverageCard({required this.state, required this.goTo});
+  const _QuickActions({required this.state, required this.goTo});
+  @override
+  Widget build(BuildContext context) {
+    final ledgerOn = state.isOn('creditLedger');
+    final actions = <({IconData icon, String label, VoidCallback onTap})>[
+      (icon: Icons.add_box_outlined, label: 'Add Product', onTap: () => goTo(NavId.inventory)),
+      (icon: Icons.inventory_2_outlined, label: 'View Stock', onTap: () => goTo(NavId.inventory)),
+      if (ledgerOn) (icon: Icons.groups_outlined, label: 'Ledger', onTap: () => goTo(NavId.customers)),
+      (icon: Icons.assessment_outlined, label: 'Day Closing', onTap: () => goTo(NavId.reports)),
+    ];
+    return Row(
+      children: [
+        for (var i = 0; i < actions.length; i++) ...[
+          if (i > 0) const SizedBox(width: 12),
+          Expanded(child: _QuickTile(actions[i].icon, actions[i].label, actions[i].onTap)),
+        ],
+      ],
+    );
+  }
+}
+
+class _QuickTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _QuickTile(this.icon, this.label, this.onTap);
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Bx.radius),
+      child: Column(children: [
+        Container(
+          height: 60,
+          decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(Bx.radius)),
+          alignment: Alignment.center,
+          child: Icon(icon, color: bx.accent, size: 24),
+        ),
+        const SizedBox(height: 7),
+        Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+      ]),
+    );
+  }
+}
+
+/// Recent Activity — last few posted bills with PAID / PENDING chips.
+class _RecentActivity extends StatelessWidget {
+  final AppState state;
+  final void Function(NavId) goTo;
+  const _RecentActivity({required this.state, required this.goTo});
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    final recent = state.sales.take(5).toList();
+    if (recent.isEmpty) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: EmptyState(
+            illustration: 'empty-no-sales',
+            illustrationSize: 96,
+            title: 'No bills yet today',
+            subtitle: 'Your posted bills will appear here. Tap “Create New Bill” to make your first sale.',
+          ),
+        ),
+      );
+    }
     return Card(
       child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(children: [
-            const Expanded(child: Text('Feature coverage by category', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800))),
-            TextButton(onPressed: () => goTo(NavId.features), child: const Text('Manage')),
-          ]),
-        ),
-        for (final cat in kCategories)
+        for (var i = 0; i < recent.length; i++)
           Container(
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: bx.border))),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(children: [
-              Icon(cat.icon, size: 20, color: bx.brand),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(cat.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                  Text('${state.enabledInCategory(cat.key)} of ${state.totalInCategory(cat.key)} enabled for this business',
-                      style: TextStyle(fontSize: 12, color: bx.muted)),
-                ]),
-              ),
-              Badge2('${state.enabledInCategory(cat.key)}/${state.totalInCategory(cat.key)}'),
-            ]),
+            decoration: BoxDecoration(border: i == 0 ? null : Border(top: BorderSide(color: bx.border))),
+            child: _ActivityRow(sale: recent[i]),
           ),
       ]),
     );
   }
 }
 
-class _PresetCard extends StatelessWidget {
-  final AppState state;
-  final void Function(NavId) goTo;
-  const _PresetCard({required this.state, required this.goTo});
+class _ActivityRow extends StatelessWidget {
+  final Sale sale;
+  const _ActivityRow({required this.sale});
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
-    final biz = state.business!;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('Preset applied', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 4),
-          Text('${biz.edition} · auto-tuned for ${biz.tag.toLowerCase()}', style: TextStyle(fontSize: 13, color: bx.muted)),
-          const SizedBox(height: 14),
-          Wrap(spacing: 7, runSpacing: 7, children: [
-            for (final c in biz.on.take(8))
-              Pill(capabilityByKey(c).name.split(' ').take(2).join(' '), color: bx.pos, icon: Icons.check),
-          ]),
-          const SizedBox(height: 18),
-          FilledButton.icon(
-            onPressed: () => goTo(NavId.billing),
-            icon: const Icon(Icons.point_of_sale_outlined, size: 18),
-            label: const Text('Start billing'),
-            style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
+    final pending = sale.paymentMode == 'Credit';
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      child: Row(children: [
+        Container(
+          width: 38, height: 38,
+          decoration: BoxDecoration(
+            color: (pending ? bx.warn : bx.pos).withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(11),
           ),
-        ]),
-      ),
+          child: Icon(pending ? Icons.schedule : Icons.receipt_long, size: 19, color: pending ? bx.warn : bx.pos),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Bill ${sale.invoiceNo}', style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 2),
+            Text('${sale.timeLabel} · ${money(sale.total)} · ${sale.paymentMode}',
+                style: TextStyle(fontSize: 12, color: bx.muted)),
+          ]),
+        ),
+        _StatusChip(pending: pending),
+      ]),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final bool pending;
+  const _StatusChip({required this.pending});
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    final c = pending ? bx.warn : bx.pos;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+      decoration: BoxDecoration(color: c.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(6)),
+      child: Text(pending ? 'PENDING' : 'PAID',
+          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.3, color: c)),
     );
   }
 }

@@ -83,6 +83,10 @@ void main() {
       store: Store(),
       auth: AuthService(),
     ));
+    await tester.pumpAndSettle();
+    // First run shows the Get Started splash; tap through to the picker.
+    expect(find.text('Get Started'), findsOneWidget);
+    await tester.tap(find.text('Get Started'));
     await tester.pumpAndSettle(); // let the staggered card reveal timers finish
     expect(find.text('Kirana / General Store'), findsOneWidget);
     expect(find.textContaining('Pick your business'), findsOneWidget);

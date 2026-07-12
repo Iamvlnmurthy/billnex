@@ -10,6 +10,7 @@ import 'services/error_reporter.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_shell.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/splash_screen.dart';
 import 'screens/lock_screen.dart';
 
 void main() {
@@ -80,6 +81,7 @@ class _BillNexAppState extends State<BillNexApp> {
   late final ValueNotifier<ThemeMode> _themeMode = widget.themeMode;
   late final ValueNotifier<Locale?> _locale = widget.locale;
   late bool _locked = widget.startLocked;
+  bool _splashSeen = false;
 
   @override
   void initState() {
@@ -128,6 +130,9 @@ class _BillNexAppState extends State<BillNexApp> {
               : AnimatedBuilder(
                   animation: _state,
                   builder: (context, _) {
+                    if (!_state.onboarded && !_splashSeen) {
+                      return SplashScreen(onGetStarted: () => setState(() => _splashSeen = true));
+                    }
                     if (!_state.onboarded) {
                       return Scaffold(
                         body: SafeArea(
