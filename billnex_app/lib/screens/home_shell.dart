@@ -193,8 +193,9 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final narrow = MediaQuery.of(context).size.width < 460;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+      padding: EdgeInsets.symmetric(horizontal: narrow ? 12 : 18, vertical: 11),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(bottom: BorderSide(color: bx.border)),
@@ -202,9 +203,9 @@ class _TopBar extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Row(children: [
-          _logo(context, bx),
-          const SizedBox(width: 14),
-          Flexible(
+          _logo(context, bx, compact: narrow),
+          SizedBox(width: narrow ? 8 : 14),
+          Expanded(
             child: InkWell(
               onTap: state.switchBusiness,
               borderRadius: BorderRadius.circular(999),
@@ -228,18 +229,20 @@ class _TopBar extends StatelessWidget {
               ),
             ),
           ),
-          const Spacer(),
+          const SizedBox(width: 6),
           PopupMenuButton<Role>(
             tooltip: 'Switch role',
             onSelected: state.setRole,
             itemBuilder: (ctx) => [for (final r in Role.values) PopupMenuItem(value: r, child: Row(children: [if (state.role == r) Icon(Icons.check, size: 16, color: bx.accent) else const SizedBox(width: 16), const SizedBox(width: 8), Text(r.label)]))],
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: narrow ? 8 : 10, vertical: 6),
               decoration: BoxDecoration(color: bx.surface2, borderRadius: BorderRadius.circular(999), border: Border.all(color: bx.border)),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.badge_outlined, size: 15, color: bx.muted),
-                const SizedBox(width: 6),
-                Text(state.role.label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                if (!narrow) ...[
+                  const SizedBox(width: 6),
+                  Text(state.role.label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                ],
                 Icon(Icons.expand_more, size: 15, color: bx.muted),
               ]),
             ),
@@ -360,7 +363,7 @@ class _TopBar extends StatelessWidget {
     );
   }
 
-  Widget _logo(BuildContext context, BxColors bx) => Row(mainAxisSize: MainAxisSize.min, children: [
+  Widget _logo(BuildContext context, BxColors bx, {bool compact = false}) => Row(mainAxisSize: MainAxisSize.min, children: [
         Container(
           width: 32, height: 32,
           decoration: BoxDecoration(
@@ -370,11 +373,13 @@ class _TopBar extends StatelessWidget {
           alignment: Alignment.center,
           child: const Icon(Icons.account_balance_wallet, color: Colors.white, size: 17),
         ),
-        const SizedBox(width: 9),
-        Text.rich(TextSpan(children: [
-          const TextSpan(text: 'Bill', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5)),
-          TextSpan(text: 'Nex', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: bx.accent, letterSpacing: -0.5)),
-        ])),
+        if (!compact) ...[
+          const SizedBox(width: 9),
+          Text.rich(TextSpan(children: [
+            const TextSpan(text: 'Bill', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5)),
+            TextSpan(text: 'Nex', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: bx.accent, letterSpacing: -0.5)),
+          ])),
+        ],
       ]);
 }
 

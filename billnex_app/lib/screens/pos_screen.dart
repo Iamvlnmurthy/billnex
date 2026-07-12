@@ -19,46 +19,104 @@ class PosScreen extends StatelessWidget {
     final items = state.stockItems;
     return LayoutBuilder(builder: (context, c) {
       final wide = c.maxWidth > 900;
-      final catalogCols = c.maxWidth > 1100
-          ? 3
-          : c.maxWidth > 560
-              ? 2
-              : 2;
-      final catalog = _Catalog(state: state, items: items, cols: catalogCols);
-      final cart = _CartPanel(state: state);
 
-      return ListView(
-        padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
-        children: [
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1180),
-            child: Column(children: [
-              const PageHeader('Billing', 'Search or scan · live receipt updates as you go.',
-                  trailing: Badge2('5-item sale in <20s')),
-              if (wide)
+      // Wide (tablet/desktop): products + cart side by side.
+      if (wide) {
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1180),
+              child: Column(children: [
+                const PageHeader('Billing', 'Search or scan · live receipt updates as you go.',
+                    trailing: Badge2('5-item sale in <20s')),
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Expanded(child: catalog),
+                  Expanded(child: _Catalog(state: state, items: items)),
                   const SizedBox(width: 16),
-                  SizedBox(width: 380, child: cart),
-                ])
-              else ...[
-                catalog,
-                const SizedBox(height: 16),
-                cart,
-              ],
-            ]),
+                  SizedBox(width: 380, child: _CartPanel(state: state)),
+                ]),
+              ]),
+            ),
+          ],
+        );
+      }
+
+      // Phone: products scroll; a sticky bottom bar shows the total and opens
+      // the cart. Core billing stays in view.
+      return Column(children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(14, 18, 14, 16),
+            children: [
+              const PageHeader('Billing', 'Search or scan to add items.'),
+              _Catalog(state: state, items: items),
+            ],
           ),
-        ],
-      );
+        ),
+        _MobileCartBar(state: state),
+      ]);
     });
+  }
+}
+
+/// Sticky bottom billing bar for phones: live qty + total, opens the cart sheet.
+class _MobileCartBar extends StatelessWidget {
+  final AppState state;
+  const _MobileCartBar({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    final empty = state.cart.isEmpty;
+    return Material(
+      elevation: 12,
+      color: Theme.of(context).colorScheme.surface,
+      child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+          child: Row(children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+              Text('${state.cartQty} item${state.cartQty == 1 ? '' : 's'}', style: TextStyle(fontSize: 12, color: bx.muted)),
+              Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+            ]),
+            const Spacer(),
+            FilledButton.icon(
+              onPressed: empty ? null : () => _openCart(context),
+              icon: const Icon(Icons.shopping_cart_checkout, size: 18),
+              label: const Text('View bill'),
+              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13)),
+            ),
+          ]),
+        ),
+    );
+  }
+
+  void _openCart(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.85,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        builder: (ctx, scroll) => AnimatedBuilder(
+          animation: state,
+          builder: (ctx, _) => ListView(
+            controller: scroll,
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
+            children: [_CartPanel(state: state)],
+          ),
+        ),
+      ),
+    );
   }
 }
 
 class _Catalog extends StatelessWidget {
   final AppState state;
   final List<StockItem> items;
-  final int cols;
-  const _Catalog({required this.state, required this.items, required this.cols});
+  const _Catalog({required this.state, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -76,21 +134,25 @@ class _Catalog extends StatelessWidget {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 icon: Padding(padding: const EdgeInsets.only(left: 14), child: Icon(Icons.search, color: bx.muted)),
-                hintText: 'Search item, scan barcode, or type code…',
+                hintText: 'Search or scan…',
                 contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 6),
               ),
             ),
           ),
         ),
-        const SizedBox(width: 10),
-        FilledButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.qr_code_scanner, size: 18),
-          label: const Text('Scan'),
-          style: FilledButton.styleFrom(
-            backgroundColor: bx.accent,
-            foregroundColor: bx.onAccent,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        const SizedBox(width: 8),
+        // Icon-only scan button so nothing clips on narrow screens.
+        SizedBox(
+          width: 52, height: 52,
+          child: FilledButton(
+            onPressed: () {},
+            style: FilledButton.styleFrom(
+              backgroundColor: bx.accent,
+              foregroundColor: bx.onAccent,
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Icon(Icons.qr_code_scanner, size: 22),
           ),
         ),
       ]),
@@ -112,8 +174,9 @@ class _Catalog extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: items.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: cols,
+          // Max-extent grid auto-fits columns to the real width — never overflows.
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 220,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
             mainAxisExtent: 118,
