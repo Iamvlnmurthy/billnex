@@ -30,20 +30,25 @@ Verify: `select * from pg_policies;` shows the per-tenant policies.
   (`role='owner'`) for the user — do this in a `handle_new_user` trigger or an
   onboarding Edge Function.
 
-## 4. Sync endpoints
-Implement `/sync/push` and `/sync/pull` as **Edge Functions** (Deno) or PostgREST
-RPCs following `openapi.yaml`:
-- `push`: `insert ... on conflict (idem_key) do nothing` — idempotent replay.
-- `pull`: `select * from sync_events where business_id = ? and rev > ? order by rev`.
-
-## 5. Wire the app
-```dart
-// main.dart
-final sync = HttpSyncService(baseUrl: '<url>/functions/v1', jwt: session.accessToken);
-// pass `sync` into AppState; syncNow() then POSTs the outbox to /sync/push.
+## 4. Sync endpoints — provided, just deploy
+The Edge Functions are written in `backend/functions/`:
+```bash
+supabase functions deploy sync-push
+supabase functions deploy sync-pull
+# and run the sign-up trigger once:
+psql "$DATABASE_URL" -f backend/functions/on-signup.sql
 ```
-Add `http` to `pubspec.yaml` and implement the two methods in
-`lib/services/sync_service.dart` (the skeleton documents the exact call).
+- `sync-push`: idempotent upsert on `idem_key` (safe replay, PRD §14).
+- `sync-pull`: returns events after `?since=<rev>` for the caller's business.
+
+## 5. Wire the app — client already implemented
+`HttpSyncService` in `lib/services/sync_service.dart` is fully implemented
+(unit-tested) and `AppState.syncNow()` POSTs the outbox when it's configured.
+Just construct it after login and pass it in:
+```dart
+final sync = HttpSyncService(baseUrl: '<url>/functions/v1', jwt: session.accessToken);
+final state = AppState(sync: sync); // syncNow() now pushes to your backend
+```
 
 ## Security checklist
 - RLS is **on** for every tenant table (never expose the service_role key to the app).

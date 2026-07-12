@@ -13,6 +13,21 @@ import 'package:billnex/models/appointment.dart';
 import 'package:billnex/services/in_memory_persistence.dart';
 import 'package:billnex/services/auth_service.dart';
 import 'package:billnex/services/integrations.dart';
+import 'package:billnex/services/sync_service.dart';
+
+/// Records pushes so we can assert the outbox was flushed to a backend.
+class _FakeSync implements SyncService {
+  int pushedCount = 0;
+  @override
+  bool get isConfigured => true;
+  @override
+  Future<SyncResult> push(List<OutboxEvent> events) async {
+    pushedCount += events.length;
+    return SyncResult(accepted: events.length);
+  }
+  @override
+  Future<List<OutboxEvent>> pull({int sinceRev = 0}) async => const [];
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -255,6 +270,20 @@ void main() {
     expect(s2.customers.length, 1);
     expect(s2.balanceOf(cust.id), due);
     expect(s2.stockOf(item.sku), stockBefore - 1); // stock decrement persisted
+  });
+
+  test('syncNow pushes unsynced events to a configured backend', () async {
+    final fake = _FakeSync();
+    final s = AppState(sync: fake);
+    s.applyPreset('kirana');
+    s.setOnline(false); // queue while offline
+    s.addProduct(productsFor('kirana').first);
+    s.postSale(paymentMode: 'Cash', nowMs: 1);
+    expect(s.queueCount, greaterThanOrEqualTo(1));
+
+    await s.syncNow(); // configured backend → pushes
+    expect(fake.pushedCount, greaterThanOrEqualTo(1));
+    expect(s.queueCount, 0); // marked synced after successful push
   });
 
   test('UPI intent builds a valid pay deep link', () {

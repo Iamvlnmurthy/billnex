@@ -8,6 +8,7 @@ import '../models/system.dart';
 import '../models/appointment.dart';
 import '../services/store.dart';
 import '../services/persistence.dart';
+import '../services/sync_service.dart';
 
 class CartLine {
   final Product product;
@@ -25,7 +26,10 @@ class AppState extends ChangeNotifier {
   /// Persistence engine — injectable (defaults to [Store]); a Drift/SQLite or
   /// remote backend can be passed in without changing any business logic.
   final Persistence _store;
-  AppState({Persistence? persistence}) : _store = persistence ?? Store();
+  final SyncService _sync;
+  AppState({Persistence? persistence, SyncService? sync})
+      : _store = persistence ?? Store(),
+        _sync = sync ?? const NoopSyncService();
 
   // ---- lifecycle ----
   bool _ready = false;
@@ -101,8 +105,18 @@ class AppState extends ChangeNotifier {
     _store.saveOutbox(_outbox);
   }
 
-  /// Flush the queue idempotently — replays are dropped by idem key.
-  void syncNow() {
+  /// Flush the queue. With a configured [SyncService] the unsynced events are
+  /// POSTed to the backend (idempotent — replays dropped by idem key) and marked
+  /// synced only on success; otherwise they are marked synced locally.
+  Future<void> syncNow() async {
+    final pending = _outbox.where((e) => !e.synced).toList();
+    if (_sync.isConfigured && pending.isNotEmpty) {
+      try {
+        await _sync.push(pending);
+      } catch (_) {
+        return; // stay queued; a later sync retries safely (idempotent)
+      }
+    }
     _flushOutbox();
     notifyListeners();
   }

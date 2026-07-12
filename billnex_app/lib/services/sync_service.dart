@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../models/system.dart';
 
 /// Result of pushing the outbox to a backend.
@@ -39,31 +41,51 @@ class NoopSyncService implements SyncService {
   Future<List<OutboxEvent>> pull({int sinceRev = 0}) async => const [];
 }
 
-/// Skeleton for the real backend (P5 deploy step). Wire against
-/// `backend/openapi.yaml` using package:http and a Supabase JWT:
-///
-/// ```dart
-/// final r = await http.post(
-///   Uri.parse('$baseUrl/sync/push'),
-///   headers: {'Authorization': 'Bearer $jwt', 'Content-Type': 'application/json'},
-///   body: jsonEncode({'events': events.map((e) => e.toJson()).toList()}),
-/// );
-/// ```
-/// Left unimplemented so the repo has no half-wired network dependency; the
-/// contract and Postgres schema/RLS ship in `backend/`.
+/// Real backend client (P5). Talks to the Supabase Edge Functions in
+/// `backend/functions/` per `backend/openapi.yaml`, authenticated with a
+/// Supabase JWT. Pass an instance to [AppState] and `syncNow()` POSTs the outbox.
 class HttpSyncService implements SyncService {
-  HttpSyncService({required this.baseUrl, required this.jwt});
-  final String baseUrl;
+  HttpSyncService({required this.baseUrl, required this.jwt, http.Client? client})
+      : _client = client ?? http.Client();
+  final String baseUrl; // e.g. https://<ref>.supabase.co/functions/v1
   final String jwt;
+  final http.Client _client;
+
+  Map<String, String> get _headers => {
+        'Authorization': 'Bearer $jwt',
+        'Content-Type': 'application/json',
+      };
 
   @override
   bool get isConfigured => baseUrl.isNotEmpty && jwt.isNotEmpty;
 
   @override
-  Future<SyncResult> push(List<OutboxEvent> events) =>
-      throw UnimplementedError('Wire against backend/openapi.yaml with package:http');
+  Future<SyncResult> push(List<OutboxEvent> events) async {
+    final res = await _client.post(
+      Uri.parse('$baseUrl/sync/push'),
+      headers: _headers,
+      body: jsonEncode({'events': events.map((e) => e.toJson()).toList()}),
+    );
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      throw Exception('sync/push failed: ${res.statusCode} ${res.body}');
+    }
+    final body = jsonDecode(res.body) as Map<String, dynamic>;
+    return SyncResult(
+      accepted: (body['accepted'] as num?)?.toInt() ?? events.length,
+      duplicates: (body['duplicates'] as num?)?.toInt() ?? 0,
+      rev: (body['rev'] as num?)?.toInt() ?? 0,
+    );
+  }
 
   @override
-  Future<List<OutboxEvent>> pull({int sinceRev = 0}) =>
-      throw UnimplementedError('Wire against backend/openapi.yaml with package:http');
+  Future<List<OutboxEvent>> pull({int sinceRev = 0}) async {
+    final res = await _client.get(Uri.parse('$baseUrl/sync/pull?since=$sinceRev'), headers: _headers);
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      throw Exception('sync/pull failed: ${res.statusCode} ${res.body}');
+    }
+    final body = jsonDecode(res.body) as Map<String, dynamic>;
+    return ((body['events'] as List?) ?? [])
+        .map((e) => OutboxEvent.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 }
