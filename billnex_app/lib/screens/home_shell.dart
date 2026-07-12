@@ -413,7 +413,20 @@ class _TrustBar extends StatelessWidget {
             TextButton(onPressed: state.syncNow, style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero), child: const Text('Sync now', style: TextStyle(fontSize: 12.5))),
           ],
           const SizedBox(width: 16),
-          seg('Backup', state.lastBackupMs == null ? 'none' : 'saved'),
+          InkWell(
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state)))),
+            borderRadius: BorderRadius.circular(6),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                if (state.backupDue) ...[Icon(Icons.warning_amber_rounded, size: 13, color: bx.warn), const SizedBox(width: 4)],
+                Text('Backup ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
+                Text(state.backupDue ? 'due' : (state.lastBackupMs == null ? 'none' : 'saved'),
+                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: state.backupDue ? bx.warn : null)),
+              ]),
+            ),
+          ),
           const SizedBox(width: 16),
           seg('Active features', '${state.activeCount}'),
         ]),

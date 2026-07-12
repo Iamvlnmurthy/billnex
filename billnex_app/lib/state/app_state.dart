@@ -667,6 +667,11 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// True when there is posted data not covered by the last backup — drives the
+  /// gentle "back up your data" reminder (data-safety, no server).
+  bool get backupDue =>
+      billCount > 0 && (_lastBackupMs == null || _sales.any((s) => s.epochMs > _lastBackupMs!));
+
   /// Replace all in-memory + persisted data with a backup snapshot (restore).
   /// Throws [FormatException] if the payload isn't a BillNex backup.
   Future<void> importData(Map<String, dynamic> d) async {
