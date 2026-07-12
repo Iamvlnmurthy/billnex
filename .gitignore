@@ -20,3 +20,6 @@ Thumbs.db
 
 # Scratch
 *.log
+
+# Built APKs
+*.apk
