@@ -9,6 +9,7 @@ import '../models/customer.dart';
 import '../models/stock.dart';
 import '../models/sale.dart';
 import '../widgets/customer_picker.dart';
+import '../widgets/empty_state.dart';
 
 class PosScreen extends StatelessWidget {
   final AppState state;
@@ -197,16 +198,10 @@ class _CatalogState extends State<_Catalog> {
       ]),
       const SizedBox(height: 14),
       if (all.isEmpty)
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: bx.border)),
-          child: Column(children: [
-            Icon(Icons.add_business_outlined, size: 40, color: bx.faint),
-            const SizedBox(height: 12),
-            const Text('No products yet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 4),
-            Text('Add your shop\'s products in the Inventory tab, then bill them here.', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: bx.muted)),
-          ]),
+        const EmptyState(
+          illustration: 'empty-no-products',
+          title: 'No products yet',
+          subtitle: "Add your shop's products in the Inventory tab, then bill them here.",
         )
       else if (items.isEmpty)
         Padding(padding: const EdgeInsets.symmetric(vertical: 30), child: Center(child: Text('No products match "$_q"', style: TextStyle(color: bx.muted))))

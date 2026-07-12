@@ -3,6 +3,7 @@ import '../models/stock.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../widgets/empty_state.dart';
 import 'customers_screen.dart' show StatusChip;
 
 class InventoryScreen extends StatefulWidget {
@@ -67,7 +68,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
               ]),
               const SizedBox(height: 14),
               if (items.isEmpty)
-                Card(child: Padding(padding: const EdgeInsets.symmetric(vertical: 40), child: Center(child: Text('No items', style: TextStyle(color: bx.muted)))))
+                Card(child: EmptyState(
+                  illustration: 'empty-no-products',
+                  title: state.stockItems.isEmpty ? 'No products yet' : 'No matches',
+                  subtitle: state.stockItems.isEmpty ? 'Tap "Add product" to build your catalogue.' : 'Try a different search.',
+                ))
               else
                 Card(child: Column(children: [for (int i = 0; i < items.length; i++) _row(context, items[i], i == 0)])),
             ]),

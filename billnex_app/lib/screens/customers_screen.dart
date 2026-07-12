@@ -3,6 +3,7 @@ import '../models/customer.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../widgets/empty_state.dart';
 import '../widgets/customer_picker.dart';
 
 class CustomersScreen extends StatelessWidget {
@@ -61,16 +62,11 @@ class CustomersScreen extends StatelessWidget {
         child: Text(s.toUpperCase(), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint)),
       );
 
-  Widget _empty(BxColors bx) => Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 48),
-          child: Column(children: [
-            Icon(Icons.groups_outlined, size: 40, color: bx.faint),
-            const SizedBox(height: 12),
-            Text('No customers yet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: bx.muted)),
-            const SizedBox(height: 4),
-            Text('Add one here, or attach a customer on a credit sale.', style: TextStyle(fontSize: 13, color: bx.faint)),
-          ]),
+  Widget _empty(BxColors bx) => const Card(
+        child: EmptyState(
+          illustration: 'empty-no-customers',
+          title: 'No customers yet',
+          subtitle: 'Add one here, or attach a customer on a credit sale.',
         ),
       );
 

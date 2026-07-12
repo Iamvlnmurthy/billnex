@@ -4,6 +4,7 @@ import '../services/pdf_service.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../widgets/empty_state.dart';
 import 'customers_screen.dart' show StatusChip;
 
 class SalesScreen extends StatelessWidget {
@@ -12,7 +13,6 @@ class SalesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bx = context.bx;
     final sales = state.sales;
     return ListView(
       padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
@@ -23,16 +23,11 @@ class SalesScreen extends StatelessWidget {
             PageHeader('Sales', '${state.billCount} bills · ${money(state.todaySales)} total · every bill is immutable and reprintable.',
                 trailing: const Badge2('Audited reprint')),
             if (sales.isEmpty)
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 48),
-                  child: Column(children: [
-                    Icon(Icons.receipt_long_outlined, size: 40, color: bx.faint),
-                    const SizedBox(height: 12),
-                    Text('No bills yet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: bx.muted)),
-                    const SizedBox(height: 4),
-                    Text('Post a sale from Billing — it appears here.', style: TextStyle(fontSize: 13, color: bx.faint)),
-                  ]),
+              const Card(
+                child: EmptyState(
+                  illustration: 'empty-no-sales',
+                  title: 'No bills yet',
+                  subtitle: 'Post a sale from Billing — it appears here.',
                 ),
               )
             else

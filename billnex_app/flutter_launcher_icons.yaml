@@ -1,17 +1,16 @@
 flutter_launcher_icons:
-  image_path: "assets/icon/icon.png"
+  image_path: "assets/icon/launcher.png"
   android: true
   ios: false
-  # Android adaptive icon (API 26+)
-  adaptive_icon_background: "#0F59E6"
-  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
-  # Web + Windows favicons/icons
+  # Android adaptive icon (API 26+) — Codex-generated layers
+  adaptive_icon_foreground: "assets/icon/adaptive_foreground.png"
+  adaptive_icon_background: "assets/icon/adaptive_background.png"
   web:
     generate: true
-    image_path: "assets/icon/icon.png"
+    image_path: "assets/icon/launcher.png"
     background_color: "#0F59E6"
     theme_color: "#0055D1"
   windows:
     generate: true
-    image_path: "assets/icon/icon.png"
+    image_path: "assets/icon/launcher.png"
     icon_size: 256
