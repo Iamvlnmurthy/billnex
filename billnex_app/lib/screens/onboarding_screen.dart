@@ -31,7 +31,12 @@ class OnboardingScreen extends StatelessWidget {
                   const TextSpan(text: ' the rest.'),
                 ]),
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 40, height: 1.05, fontWeight: FontWeight.w800, letterSpacing: -1.2),
+                style: TextStyle(
+                  fontSize: MediaQuery.of(context).size.width < 480 ? 32 : 40,
+                  height: 1.08,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.6,
+                ),
               ),
               const SizedBox(height: 14),
               ConstrainedBox(

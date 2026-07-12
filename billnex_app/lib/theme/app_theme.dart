@@ -173,7 +173,7 @@ class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surfaceContainerLowest,
       extensions: [ext],
-      fontFamily: 'Roboto', // Inter is the spec font; Roboto is the safe bundled fallback.
+      fontFamily: 'Inter', // the design-system typeface (bundled in assets/fonts)
       cardTheme: CardThemeData(
         elevation: 0,
         color: scheme.surface,
