@@ -12,6 +12,7 @@ import 'package:billnex/models/system.dart';
 import 'package:billnex/models/appointment.dart';
 import 'package:billnex/services/in_memory_persistence.dart';
 import 'package:billnex/services/auth_service.dart';
+import 'package:billnex/services/integrations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -254,6 +255,35 @@ void main() {
     expect(s2.customers.length, 1);
     expect(s2.balanceOf(cust.id), due);
     expect(s2.stockOf(item.sku), stockBefore - 1); // stock decrement persisted
+  });
+
+  test('UPI intent builds a valid pay deep link', () {
+    final uri = Uri.parse(UpiService.buildIntent(
+      payeeVpa: 'billnex@upi', payeeName: 'Kirana Store', amount: 1302.5, txnRef: 'INV-2048', note: 'Bill'));
+    expect(uri.scheme, 'upi');
+    expect(uri.queryParameters['pa'], 'billnex@upi');
+    expect(uri.queryParameters['am'], '1302.50');
+    expect(uri.queryParameters['cu'], 'INR');
+    expect(uri.queryParameters['tr'], 'INV-2048');
+  });
+
+  test('WhatsApp link strips non-digits and encodes text', () {
+    final link = WhatsAppService.invoiceLink(phone: '+91 98480 00000', message: 'Total ₹105');
+    expect(link.startsWith('https://wa.me/919848000000?text='), true);
+    expect(link.contains('%E2%82%B9'), true); // ₹ encoded
+  });
+
+  test('e-invoice payload has correct GST split and doc no', () {
+    const sale = Sale(
+      invoiceNo: '#INV-9', epochMs: 1720000000000, businessName: 'Shop',
+      templateId: 'classic', lines: [SaleLine('A', 2, 50)],
+      subtotal: 100, gst: 6, total: 106, paymentMode: 'Cash');
+    final p = EInvoiceService.buildPayload(sale: sale, sellerGstin: '36ABCDE1234F1Z5', sellerLegalName: 'Shop', sellerStateCode: '36');
+    expect(p['DocDtls']['No'], 'INV-9');
+    expect(p['ValDtls']['CgstVal'], 3.0);
+    expect(p['ValDtls']['SgstVal'], 3.0);
+    expect(p['ValDtls']['TotInvVal'], 106);
+    expect((p['ItemList'] as List).length, 1);
   });
 
   test('Sale JSON round-trips', () {
