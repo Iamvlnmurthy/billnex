@@ -628,4 +628,90 @@ class AppState extends ChangeNotifier {
     _store.saveTemplate(_template);
     _store.savePosTemplate(_posTemplate);
   }
+
+  // -----------------------------------------------------------------------
+  // Backup & restore — a single portable snapshot of ALL merchant data.
+  // Written to the device/PC or the merchant's own Google Drive (no server).
+  // -----------------------------------------------------------------------
+  static const backupVersion = 1;
+
+  /// Complete snapshot of every entity + settings for this business.
+  Map<String, dynamic> exportData({int nowMs = 0}) => {
+        'app': 'BillNex',
+        'backupVersion': backupVersion,
+        'exportedAt': nowMs,
+        'business': _bizKey,
+        'edition': business?.edition,
+        'flags': _flags,
+        'template': _template,
+        'posTemplate': _posTemplate,
+        'seq': _seq,
+        'rcptSeq': _rcptSeq,
+        'purSeq': _purSeq,
+        'sales': _sales.map((e) => e.toJson()).toList(),
+        'customers': _customers.map((e) => e.toJson()).toList(),
+        'ledger': _ledger.map((e) => e.toJson()).toList(),
+        'stock': _stock.values.map((e) => e.toJson()).toList(),
+        'moves': _moves.map((e) => e.toJson()).toList(),
+        'suppliers': _suppliers.map((e) => e.toJson()).toList(),
+        'purchases': _purchases.map((e) => e.toJson()).toList(),
+        'payables': _payables.map((e) => e.toJson()).toList(),
+        'appointments': _appts.map((e) => e.toJson()).toList(),
+        'audit': _audit.map((e) => e.toJson()).toList(),
+      };
+
+  int? _lastBackupMs;
+  int? get lastBackupMs => _lastBackupMs;
+  void markBackedUp(int nowMs) {
+    _lastBackupMs = nowMs;
+    notifyListeners();
+  }
+
+  /// Replace all in-memory + persisted data with a backup snapshot (restore).
+  /// Throws [FormatException] if the payload isn't a BillNex backup.
+  Future<void> importData(Map<String, dynamic> d) async {
+    if (d['app'] != 'BillNex' || d['backupVersion'] == null) {
+      throw const FormatException('Not a BillNex backup file');
+    }
+    _bizKey = d['business'] as String?;
+    _flags
+      ..clear()
+      ..addEntries(kCapabilities.map((c) => MapEntry(c.key, (d['flags']?[c.key]) == true)));
+    _template = (d['template'] as String?) ?? 'classic';
+    _posTemplate = (d['posTemplate'] as String?) ?? 'thermal80';
+    _seq = (d['seq'] as num?)?.toInt() ?? _seq;
+    _rcptSeq = (d['rcptSeq'] as num?)?.toInt() ?? _rcptSeq;
+    _purSeq = (d['purSeq'] as num?)?.toInt() ?? _purSeq;
+
+    List<Map<String, dynamic>> rows(String k) =>
+        ((d[k] as List?) ?? const []).cast<Map<String, dynamic>>();
+
+    _sales..clear()..addAll(rows('sales').map(Sale.fromJson));
+    _customers..clear()..addAll(rows('customers').map(Customer.fromJson));
+    _ledger..clear()..addAll(rows('ledger').map(LedgerEntry.fromJson));
+    _stock..clear()..addEntries(rows('stock').map(StockItem.fromJson).map((s) => MapEntry(s.sku, s)));
+    _moves..clear()..addAll(rows('moves').map(StockMovement.fromJson));
+    _suppliers..clear()..addAll(rows('suppliers').map(Supplier.fromJson));
+    _purchases..clear()..addAll(rows('purchases').map(Purchase.fromJson));
+    _payables..clear()..addAll(rows('payables').map(PayableEntry.fromJson));
+    _appts..clear()..addAll(rows('appointments').map(Appointment.fromJson));
+    _audit..clear()..addAll(rows('audit').map(AuditEvent.fromJson));
+
+    // Persist the restored state.
+    _persistSession();
+    await _store.saveSeq(_seq);
+    await _store.saveRcptSeq(_rcptSeq);
+    await _store.savePurSeq(_purSeq);
+    await _store.saveSales(_sales);
+    await _store.saveCustomers(_customers);
+    await _store.saveLedger(_ledger);
+    await _store.saveStock(_stock.values.toList());
+    await _store.saveMoves(_moves);
+    await _store.saveSuppliers(_suppliers);
+    await _store.savePurchases(_purchases);
+    await _store.savePayables(_payables);
+    await _store.saveAppointments(_appts);
+    await _store.saveAudit(_audit);
+    notifyListeners();
+  }
 }

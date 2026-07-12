@@ -16,6 +16,10 @@
 - **Purchasing & Suppliers** — supplier master, purchase entry → stock-in → payables, supplier payment, duplicate-invoice guard.
 - **Reports & Analytics** — live KPIs, payment-mix, top items, receivables/payables, PDF export.
 - **Roles + Offline + Audit** — role-gated navigation (Owner/Manager/Cashier/Accountant), offline outbox with idempotent sync, immutable audit log.
+- **Backup & Restore** — each shop owns its data: export a single portable JSON
+  snapshot to its device/PC or its **own Google Drive** (via the save dialog),
+  and restore on a new phone/PC in one tap. No central server required.
+- **Security** — PIN app-lock (device keystore), Telugu/Hindi/English i18n.
 - **Vertical packs** — Appointments (salon/clinic), Kitchen KOT (restaurant) — the flag-gated pattern the remaining packs plug into.
 
 ## Design

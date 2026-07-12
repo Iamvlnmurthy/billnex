@@ -286,6 +286,33 @@ void main() {
     expect(s.queueCount, 0); // marked synced after successful push
   });
 
+  test('backup export/import restores all data on a fresh device', () async {
+    // Shop A builds up data.
+    final a = AppState(persistence: InMemoryPersistence());
+    await a.init();
+    a.applyPreset('kirana');
+    final cust = a.addCustomer(name: 'Ravi', mobile: '9', creditLimit: 5000, nowMs: 1);
+    a.addProduct(a.stockItems.first.toProduct());
+    a.postSale(paymentMode: 'Credit', nowMs: 2, customer: cust);
+    final blob = a.exportData(nowMs: 3);
+
+    // A new install on another device restores from the file.
+    final b = AppState(persistence: InMemoryPersistence());
+    await b.init();
+    await b.importData(blob);
+    expect(b.bizKey, 'kirana');
+    expect(b.billCount, a.billCount);
+    expect(b.customers.length, 1);
+    expect(b.balanceOf(cust.id), a.balanceOf(cust.id));
+    expect(b.stockItems.length, a.stockItems.length);
+  });
+
+  test('importData rejects a non-BillNex file', () async {
+    final s = AppState(persistence: InMemoryPersistence());
+    await s.init();
+    expect(() => s.importData({'app': 'SomethingElse'}), throwsFormatException);
+  });
+
   test('UPI intent builds a valid pay deep link', () {
     final uri = Uri.parse(UpiService.buildIntent(
       payeeVpa: 'billnex@upi', payeeName: 'Kirana Store', amount: 1302.5, txnRef: 'INV-2048', note: 'Bill'));

@@ -14,6 +14,7 @@ import 'inventory_screen.dart';
 import 'purchasing_screen.dart';
 import 'reports_screen.dart';
 import 'appointments_screen.dart';
+import 'backup_screen.dart';
 import 'templates_screen.dart';
 
 class HomeShell extends StatefulWidget {
@@ -247,8 +248,10 @@ class _TopBar extends StatelessWidget {
             onSelected: (v) {
               if (v == 'audit') _showAudit(context, state);
               if (v == 'pin' && auth != null) _managePin(context, auth!);
+              if (v == 'backup') Navigator.of(context).push(MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state))));
             },
             itemBuilder: (ctx) => [
+              const PopupMenuItem(value: 'backup', child: ListTile(dense: true, leading: Icon(Icons.backup_outlined), title: Text('Backup & Restore'))),
               const PopupMenuItem(value: 'audit', child: ListTile(dense: true, leading: Icon(Icons.history), title: Text('Audit log'))),
               if (auth != null) const PopupMenuItem(value: 'pin', child: ListTile(dense: true, leading: Icon(Icons.pin_outlined), title: Text('App-lock PIN'))),
             ],
@@ -410,7 +413,7 @@ class _TrustBar extends StatelessWidget {
             TextButton(onPressed: state.syncNow, style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero), child: const Text('Sync now', style: TextStyle(fontSize: 12.5))),
           ],
           const SizedBox(width: 16),
-          seg('Backup', '2 min ago'),
+          seg('Backup', state.lastBackupMs == null ? 'none' : 'saved'),
           const SizedBox(width: 16),
           seg('Active features', '${state.activeCount}'),
         ]),

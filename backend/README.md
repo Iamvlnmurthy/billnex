@@ -1,8 +1,14 @@
-# BillNex Backend (P5) — deploy runbook
+# BillNex Backend (OPTIONAL) — deploy runbook
 
-The app runs fully offline today. This makes it multi-device, multi-branch, and
-cloud-backed. Everything here is deployable by **you** with a Supabase project;
-no code in the app changes — you swap `NoopSyncService` for `HttpSyncService`.
+> **Distribution model:** BillNex is sold to individual shops that **own their
+> data** and back it up to their device/PC or their **own Google Drive**
+> (in-app Backup & Restore). No central server is required to run or sell the app.
+>
+> This backend is **optional** — only for a merchant who wants live **multi-device
+> / multi-branch** sync of one business. Most single-shop customers never need it.
+
+Everything here is deployable by **you** with a Supabase project; no code in the
+app changes — you swap `NoopSyncService` for `HttpSyncService`.
 
 ## Contents
 | File | What it is |
