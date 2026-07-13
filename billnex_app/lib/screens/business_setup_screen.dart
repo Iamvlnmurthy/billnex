@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/catalog.dart';
+import '../data/catalog_i18n.dart';
 import '../l10n/app_localizations.dart';
 import '../models/business_profile.dart';
 import '../state/app_state.dart';
@@ -85,7 +86,7 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
                       for (final b in kBusinessTypes)
                         DropdownMenuItem(
                           value: b.key,
-                          child: Text('${b.name}  ·  ${b.edition}', overflow: TextOverflow.ellipsis),
+                          child: Text('${businessTypeName(l, b.key)}  ·  ${businessTypeEdition(l, b.key)}', overflow: TextOverflow.ellipsis),
                         ),
                     ],
                     onChanged: (v) => setState(() => _type = v ?? _type),

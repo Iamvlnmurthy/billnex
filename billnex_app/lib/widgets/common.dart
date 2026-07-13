@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../data/catalog.dart';
+import '../data/catalog_i18n.dart';
+import '../l10n/app_localizations.dart';
 
 /// Indian-grouped currency, e.g. ₹1,12,400.
 String money(num n) {
@@ -64,7 +66,7 @@ class Pill extends StatelessWidget {
       Priority.should => const Color(0xFF2563EB),
       Priority.could => bx.faint,
     };
-    return Pill(p.label, color: c);
+    return Pill(priorityLabel(L.of(ctx), p), color: c);
   }
 
   @override

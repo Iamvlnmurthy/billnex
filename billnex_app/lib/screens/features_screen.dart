@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/catalog.dart';
+import '../data/catalog_i18n.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
@@ -65,7 +66,7 @@ class _CategoryCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(cat.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                      Text(categoryName(l, cat.key), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                       Text(l.featuresEnabledCount(on, caps.length), style: TextStyle(fontSize: 12, color: bx.muted)),
                     ],
                   ),
@@ -109,14 +110,14 @@ class _FeatureRow extends StatelessWidget {
                   runSpacing: 4,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Text(cap.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    Text(capabilityName(l, cap.key), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                     Pill.priority(cap.priority, context),
                     if (cap.pro) Pill(l.proBadge, color: bx.accent),
                     if (preset) Pill(l.presetBadge, color: bx.pos, icon: Icons.check),
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(cap.desc, style: TextStyle(fontSize: 12, color: bx.muted)),
+                Text(capabilityDesc(l, cap.key), style: TextStyle(fontSize: 12, color: bx.muted)),
               ],
             ),
           ),

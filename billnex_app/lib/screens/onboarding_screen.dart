@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/catalog.dart';
+import '../data/catalog_i18n.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
@@ -32,6 +33,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final short = MediaQuery.of(context).size.height < 680; // hide art on small screens
 
     return SafeArea(
@@ -108,7 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           for (final b in kBusinessTypes)
                             DropdownMenuItem(
                               value: b.key,
-                              child: Text('${b.name}  ·  ${b.edition}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
+                              child: Text('${businessTypeName(l, b.key)}  ·  ${businessTypeEdition(l, b.key)}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
                             ),
                         ],
                         onChanged: (v) => setState(() => _key = v),
@@ -127,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               Icon(Icons.check_circle, size: 16, color: bx.pos),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: Text(_biz!.tag, style: BxText.supporting.copyWith(color: bx.muted)),
+                                child: Text(businessTypeTag(l, _biz!.key), style: BxText.supporting.copyWith(color: bx.muted)),
                               ),
                             ],
                           ),

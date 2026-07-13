@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../data/catalog.dart';
+import '../data/catalog_i18n.dart';
 import '../state/app_state.dart';
 import '../models/sale.dart';
 import '../services/pdf_service.dart';
@@ -110,9 +111,9 @@ class _TemplateCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(template.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                      Text(templateName(l, template.id), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                       Text(
-                        template.desc,
+                        templateDesc(l, template.id),
                         style: TextStyle(fontSize: 11.5, color: bx.muted),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

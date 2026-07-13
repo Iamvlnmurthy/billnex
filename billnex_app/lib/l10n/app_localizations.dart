@@ -2588,6 +2588,702 @@ abstract class L {
   /// In en, this message translates to:
   /// **'You can change any of this later in Settings. Your catalogue starts empty — add your own products next.'**
   String get setupLaterNote;
+
+  /// No description provided for @catBilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing & Counter'**
+  String get catBilling;
+
+  /// No description provided for @catTax.
+  ///
+  /// In en, this message translates to:
+  /// **'GST, Tax & Compliance'**
+  String get catTax;
+
+  /// No description provided for @catInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory & Stock'**
+  String get catInventory;
+
+  /// No description provided for @catCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers & Credit'**
+  String get catCustomers;
+
+  /// No description provided for @catOps.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations & Growth'**
+  String get catOps;
+
+  /// No description provided for @capFastposName.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast POS & counter billing'**
+  String get capFastposName;
+
+  /// No description provided for @capFastposDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'One-screen scan, cart, pay, print'**
+  String get capFastposDesc;
+
+  /// No description provided for @capBarcodeScanName.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode / camera scan'**
+  String get capBarcodeScanName;
+
+  /// No description provided for @capBarcodeScanDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanner + Android camera fallback'**
+  String get capBarcodeScanDesc;
+
+  /// No description provided for @capWeightScaleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight / scale billing'**
+  String get capWeightScaleName;
+
+  /// No description provided for @capWeightScaleDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Decimal kg/g/litre + PLU'**
+  String get capWeightScaleDesc;
+
+  /// No description provided for @capMultiUnitName.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi-unit & loose sale'**
+  String get capMultiUnitName;
+
+  /// No description provided for @capMultiUnitDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy pack, sell piece / cut-length'**
+  String get capMultiUnitDesc;
+
+  /// No description provided for @capQuotationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Quotation & estimate'**
+  String get capQuotationName;
+
+  /// No description provided for @capQuotationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Send, expire, convert to sale'**
+  String get capQuotationDesc;
+
+  /// No description provided for @capKotName.
+  ///
+  /// In en, this message translates to:
+  /// **'KOT / table & kitchen'**
+  String get capKotName;
+
+  /// No description provided for @capKotDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor plan, KOT, kitchen routing'**
+  String get capKotDesc;
+
+  /// No description provided for @capGstInvoiceName.
+  ///
+  /// In en, this message translates to:
+  /// **'GST tax invoice'**
+  String get capGstInvoiceName;
+
+  /// No description provided for @capGstInvoiceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'CGST/SGST/IGST, HSN, unique numbering'**
+  String get capGstInvoiceDesc;
+
+  /// No description provided for @capBillOfSupplyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill of supply / composition'**
+  String get capBillOfSupplyName;
+
+  /// No description provided for @capBillOfSupplyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-tax series for exempt sellers'**
+  String get capBillOfSupplyDesc;
+
+  /// No description provided for @capConsentName.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer consent & privacy'**
+  String get capConsentName;
+
+  /// No description provided for @capConsentDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Opt-in/out, purpose, timestamp'**
+  String get capConsentDesc;
+
+  /// No description provided for @capEInvoiceName.
+  ///
+  /// In en, this message translates to:
+  /// **'E-invoice (IRN) & e-way bill'**
+  String get capEInvoiceName;
+
+  /// No description provided for @capEInvoiceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'IRP payload, signed QR'**
+  String get capEInvoiceDesc;
+
+  /// No description provided for @capBatchExpiryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch & expiry tracking'**
+  String get capBatchExpiryName;
+
+  /// No description provided for @capBatchExpiryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'FEFO, near-expiry action list'**
+  String get capBatchExpiryDesc;
+
+  /// No description provided for @capSerialImeiName.
+  ///
+  /// In en, this message translates to:
+  /// **'Serial / IMEI control'**
+  String get capSerialImeiName;
+
+  /// No description provided for @capSerialImeiDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Unique unit at sale/return/service'**
+  String get capSerialImeiDesc;
+
+  /// No description provided for @capVariantMatrixName.
+  ///
+  /// In en, this message translates to:
+  /// **'Variant matrix'**
+  String get capVariantMatrixName;
+
+  /// No description provided for @capVariantMatrixDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Size-colour-style child SKUs'**
+  String get capVariantMatrixDesc;
+
+  /// No description provided for @capLabelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Label / tag printing'**
+  String get capLabelName;
+
+  /// No description provided for @capLabelDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode, shelf, garment, MRP labels'**
+  String get capLabelDesc;
+
+  /// No description provided for @capProductionName.
+  ///
+  /// In en, this message translates to:
+  /// **'BOM / production'**
+  String get capProductionName;
+
+  /// No description provided for @capProductionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe, work order, material issue'**
+  String get capProductionDesc;
+
+  /// No description provided for @capCreditLedgerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit / khata ledger'**
+  String get capCreditLedgerName;
+
+  /// No description provided for @capCreditLedgerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Due dates, limits, collection, ageing'**
+  String get capCreditLedgerDesc;
+
+  /// No description provided for @capLoyaltyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Loyalty & promotions'**
+  String get capLoyaltyName;
+
+  /// No description provided for @capLoyaltyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Points, coupons, combos'**
+  String get capLoyaltyDesc;
+
+  /// No description provided for @capMembershipName.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership & packages'**
+  String get capMembershipName;
+
+  /// No description provided for @capMembershipDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans, sessions, renewals'**
+  String get capMembershipDesc;
+
+  /// No description provided for @capAppointmentsName.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointments & calendar'**
+  String get capAppointmentsName;
+
+  /// No description provided for @capAppointmentsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff, chair/room, no-show policy'**
+  String get capAppointmentsDesc;
+
+  /// No description provided for @capJobCardName.
+  ///
+  /// In en, this message translates to:
+  /// **'Job card / service workflow'**
+  String get capJobCardName;
+
+  /// No description provided for @capJobCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Intake, estimate, status, delivery'**
+  String get capJobCardDesc;
+
+  /// No description provided for @capRentalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Rental assets & deposits'**
+  String get capRentalName;
+
+  /// No description provided for @capRentalDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking, availability, late fee'**
+  String get capRentalDesc;
+
+  /// No description provided for @capDeliveryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders & delivery'**
+  String get capDeliveryName;
+
+  /// No description provided for @capDeliveryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Status, proof, COD settlement'**
+  String get capDeliveryDesc;
+
+  /// No description provided for @capWholesaleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Wholesale / route sales'**
+  String get capWholesaleName;
+
+  /// No description provided for @capWholesaleDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Price levels, salesman route, schemes'**
+  String get capWholesaleDesc;
+
+  /// No description provided for @capMultiStoreName.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi-store & transfers'**
+  String get capMultiStoreName;
+
+  /// No description provided for @capMultiStoreDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch stock, consolidated dashboard'**
+  String get capMultiStoreDesc;
+
+  /// No description provided for @capRecurringName.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring / subscription billing'**
+  String get capRecurringName;
+
+  /// No description provided for @capRecurringDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Instalments, AMC, auto-invoice'**
+  String get capRecurringDesc;
+
+  /// No description provided for @bizKiranaName.
+  ///
+  /// In en, this message translates to:
+  /// **'Kirana / General Store'**
+  String get bizKiranaName;
+
+  /// No description provided for @bizKiranaEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Retail Standard'**
+  String get bizKiranaEdition;
+
+  /// No description provided for @bizKiranaTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast counter B2C + khata credit'**
+  String get bizKiranaTag;
+
+  /// No description provided for @bizSupermarketName.
+  ///
+  /// In en, this message translates to:
+  /// **'Supermarket / Mini-Mart'**
+  String get bizSupermarketName;
+
+  /// No description provided for @bizSupermarketEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Retail Pro'**
+  String get bizSupermarketEdition;
+
+  /// No description provided for @bizSupermarketTag.
+  ///
+  /// In en, this message translates to:
+  /// **'High-volume multi-counter POS'**
+  String get bizSupermarketTag;
+
+  /// No description provided for @bizPharmacyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Pharmacy / Medical'**
+  String get bizPharmacyName;
+
+  /// No description provided for @bizPharmacyEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical Pro'**
+  String get bizPharmacyEdition;
+
+  /// No description provided for @bizPharmacyTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch, expiry, MRP, rack'**
+  String get bizPharmacyTag;
+
+  /// No description provided for @bizRestaurantName.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant / QSR'**
+  String get bizRestaurantName;
+
+  /// No description provided for @bizRestaurantEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical Pro'**
+  String get bizRestaurantEdition;
+
+  /// No description provided for @bizRestaurantTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Table, KOT, kitchen, delivery'**
+  String get bizRestaurantTag;
+
+  /// No description provided for @bizBakeryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Cafe / Bakery / Sweets'**
+  String get bizBakeryName;
+
+  /// No description provided for @bizBakeryEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical Standard'**
+  String get bizBakeryEdition;
+
+  /// No description provided for @bizBakeryTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighted + production batches'**
+  String get bizBakeryTag;
+
+  /// No description provided for @bizHardwareName.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware / Electrical'**
+  String get bizHardwareName;
+
+  /// No description provided for @bizHardwareEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Retail Pro'**
+  String get bizHardwareEdition;
+
+  /// No description provided for @bizHardwareTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter + quotation + credit'**
+  String get bizHardwareTag;
+
+  /// No description provided for @bizFashionName.
+  ///
+  /// In en, this message translates to:
+  /// **'Apparel / Footwear'**
+  String get bizFashionName;
+
+  /// No description provided for @bizFashionEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical Standard'**
+  String get bizFashionEdition;
+
+  /// No description provided for @bizFashionTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Variant retail + exchanges'**
+  String get bizFashionTag;
+
+  /// No description provided for @bizJewelleryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Jewellery Store'**
+  String get bizJewelleryName;
+
+  /// No description provided for @bizJewelleryEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical Enterprise'**
+  String get bizJewelleryEdition;
+
+  /// No description provided for @bizJewelleryTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight, purity, making-charge'**
+  String get bizJewelleryTag;
+
+  /// No description provided for @bizElectronicsName.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile / Electronics'**
+  String get bizElectronicsName;
+
+  /// No description provided for @bizElectronicsEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical Pro'**
+  String get bizElectronicsEdition;
+
+  /// No description provided for @bizElectronicsTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Serial/IMEI + warranty'**
+  String get bizElectronicsTag;
+
+  /// No description provided for @bizSalonName.
+  ///
+  /// In en, this message translates to:
+  /// **'Salon / Spa / Beauty'**
+  String get bizSalonName;
+
+  /// No description provided for @bizSalonEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical Standard'**
+  String get bizSalonEdition;
+
+  /// No description provided for @bizSalonTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointments + service billing'**
+  String get bizSalonTag;
+
+  /// No description provided for @bizWholesaleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Wholesale / Distribution'**
+  String get bizWholesaleName;
+
+  /// No description provided for @bizWholesaleEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Business Pro'**
+  String get bizWholesaleEdition;
+
+  /// No description provided for @bizWholesaleTag.
+  ///
+  /// In en, this message translates to:
+  /// **'B2B, route sales, credit'**
+  String get bizWholesaleTag;
+
+  /// No description provided for @bizClinicName.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic / Diagnostic'**
+  String get bizClinicName;
+
+  /// No description provided for @bizClinicEdition.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical Pro'**
+  String get bizClinicEdition;
+
+  /// No description provided for @bizClinicTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient, service, package billing'**
+  String get bizClinicTag;
+
+  /// No description provided for @tplClassicName.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic GST'**
+  String get tplClassicName;
+
+  /// No description provided for @tplClassicDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Formal tax invoice, full HSN table'**
+  String get tplClassicDesc;
+
+  /// No description provided for @tplMinimalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get tplMinimalName;
+
+  /// No description provided for @tplMinimalDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean, whitespace-led, brand header'**
+  String get tplMinimalDesc;
+
+  /// No description provided for @tplModernName.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern Color'**
+  String get tplModernName;
+
+  /// No description provided for @tplModernDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent band + card totals'**
+  String get tplModernDesc;
+
+  /// No description provided for @tplBilingualName.
+  ///
+  /// In en, this message translates to:
+  /// **'Bilingual हिं/తె'**
+  String get tplBilingualName;
+
+  /// No description provided for @tplBilingualDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Dual-language labels for local trade'**
+  String get tplBilingualDesc;
+
+  /// No description provided for @tplWholesaleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Wholesale B2B'**
+  String get tplWholesaleName;
+
+  /// No description provided for @tplWholesaleDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Case/piece, scheme & credit terms'**
+  String get tplWholesaleDesc;
+
+  /// No description provided for @tplServiceName.
+  ///
+  /// In en, this message translates to:
+  /// **'Service / Job Card'**
+  String get tplServiceName;
+
+  /// No description provided for @tplServiceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Labour + parts, technician, warranty'**
+  String get tplServiceDesc;
+
+  /// No description provided for @tplQuotationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Quotation'**
+  String get tplQuotationName;
+
+  /// No description provided for @tplQuotationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Validity, terms, no stock impact'**
+  String get tplQuotationDesc;
+
+  /// No description provided for @tplThermal80Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Thermal 80mm'**
+  String get tplThermal80Name;
+
+  /// No description provided for @tplThermal80Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Wide receipt + cutter + QR'**
+  String get tplThermal80Desc;
+
+  /// No description provided for @tplThermal58Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Thermal 58mm'**
+  String get tplThermal58Name;
+
+  /// No description provided for @tplThermal58Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact kirana receipt'**
+  String get tplThermal58Desc;
+
+  /// No description provided for @tplKotName.
+  ///
+  /// In en, this message translates to:
+  /// **'Kitchen KOT'**
+  String get tplKotName;
+
+  /// No description provided for @tplKotDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Items only, no price, station route'**
+  String get tplKotDesc;
+
+  /// No description provided for @tplDeliveryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Challan'**
+  String get tplDeliveryName;
+
+  /// No description provided for @tplDeliveryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch note, link invoice later'**
+  String get tplDeliveryDesc;
+
+  /// No description provided for @prioMust.
+  ///
+  /// In en, this message translates to:
+  /// **'Must'**
+  String get prioMust;
+
+  /// No description provided for @prioShould.
+  ///
+  /// In en, this message translates to:
+  /// **'Should'**
+  String get prioShould;
+
+  /// No description provided for @prioCould.
+  ///
+  /// In en, this message translates to:
+  /// **'Could'**
+  String get prioCould;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

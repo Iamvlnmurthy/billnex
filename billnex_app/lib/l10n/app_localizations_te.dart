@@ -1381,4 +1381,352 @@ class LTe extends L {
 
   @override
   String get setupLaterNote => 'మీరు వీటన్నింటినీ తర్వాత సెట్టింగ్స్‌లో మార్చవచ్చు. మీ జాబితా ఖాళీగా మొదలవుతుంది — తర్వాత మీ వస్తువులను జోడించండి.';
+
+  @override
+  String get catBilling => 'బిల్లింగ్ & కౌంటర్';
+
+  @override
+  String get catTax => 'GST, పన్ను & సమ్మతి';
+
+  @override
+  String get catInventory => 'ఇన్వెంటరీ & స్టాక్';
+
+  @override
+  String get catCustomers => 'కస్టమర్లు & అరువు';
+
+  @override
+  String get catOps => 'నిర్వహణ & వృద్ధి';
+
+  @override
+  String get capFastposName => 'వేగవంతమైన POS & కౌంటర్ బిల్లింగ్';
+
+  @override
+  String get capFastposDesc => 'ఒకే స్క్రీన్‌లో స్కాన్, కార్ట్, చెల్లింపు, ప్రింట్';
+
+  @override
+  String get capBarcodeScanName => 'బార్‌కోడ్ / కెమెరా స్కాన్';
+
+  @override
+  String get capBarcodeScanDesc => 'స్కానర్ + Android కెమెరా ప్రత్యామ్నాయం';
+
+  @override
+  String get capWeightScaleName => 'బరువు / తూకం బిల్లింగ్';
+
+  @override
+  String get capWeightScaleDesc => 'దశాంశ kg/g/లీటర్ + PLU';
+
+  @override
+  String get capMultiUnitName => 'మల్టీ-యూనిట్ & విడి అమ్మకం';
+
+  @override
+  String get capMultiUnitDesc => 'ప్యాక్ కొని, ముక్క / కట్-లెంగ్త్‌గా అమ్మండి';
+
+  @override
+  String get capQuotationName => 'కొటేషన్ & అంచనా';
+
+  @override
+  String get capQuotationDesc => 'పంపండి, గడువు, అమ్మకంగా మార్చండి';
+
+  @override
+  String get capKotName => 'KOT / టేబుల్ & కిచెన్';
+
+  @override
+  String get capKotDesc => 'ఫ్లోర్ ప్లాన్, KOT, కిచెన్ రూటింగ్';
+
+  @override
+  String get capGstInvoiceName => 'GST పన్ను ఇన్‌వాయిస్';
+
+  @override
+  String get capGstInvoiceDesc => 'CGST/SGST/IGST, HSN, ప్రత్యేక నంబరింగ్';
+
+  @override
+  String get capBillOfSupplyName => 'బిల్ ఆఫ్ సప్లై / కంపోజిషన్';
+
+  @override
+  String get capBillOfSupplyDesc => 'మినహాయింపు అమ్మకందారులకు పన్ను-రహిత శ్రేణి';
+
+  @override
+  String get capConsentName => 'కస్టమర్ సమ్మతి & గోప్యత';
+
+  @override
+  String get capConsentDesc => 'ఆప్ట్-ఇన్/ఔట్, ఉద్దేశ్యం, టైమ్‌స్టాంప్';
+
+  @override
+  String get capEInvoiceName => 'ఇ-ఇన్‌వాయిస్ (IRN) & ఇ-వే బిల్';
+
+  @override
+  String get capEInvoiceDesc => 'IRP పేలోడ్, సంతకం చేసిన QR';
+
+  @override
+  String get capBatchExpiryName => 'బ్యాచ్ & గడువు ట్రాకింగ్';
+
+  @override
+  String get capBatchExpiryDesc => 'FEFO, గడువు-సమీప చర్యల జాబితా';
+
+  @override
+  String get capSerialImeiName => 'సీరియల్ / IMEI నియంత్రణ';
+
+  @override
+  String get capSerialImeiDesc => 'అమ్మకం/రిటర్న్/సర్వీస్ వద్ద ప్రత్యేక యూనిట్';
+
+  @override
+  String get capVariantMatrixName => 'వేరియంట్ మ్యాట్రిక్స్';
+
+  @override
+  String get capVariantMatrixDesc => 'సైజు-రంగు-స్టైల్ చైల్డ్ SKUలు';
+
+  @override
+  String get capLabelName => 'లేబుల్ / ట్యాగ్ ప్రింటింగ్';
+
+  @override
+  String get capLabelDesc => 'బార్‌కోడ్, షెల్ఫ్, దుస్తులు, MRP లేబుళ్లు';
+
+  @override
+  String get capProductionName => 'BOM / ఉత్పత్తి';
+
+  @override
+  String get capProductionDesc => 'రెసిపీ, వర్క్ ఆర్డర్, మెటీరియల్ ఇష్యూ';
+
+  @override
+  String get capCreditLedgerName => 'అరువు / ఖాతా లెడ్జర్';
+
+  @override
+  String get capCreditLedgerDesc => 'గడువు తేదీలు, పరిమితులు, వసూలు, బకాయి కాలం';
+
+  @override
+  String get capLoyaltyName => 'లాయల్టీ & ప్రమోషన్లు';
+
+  @override
+  String get capLoyaltyDesc => 'పాయింట్లు, కూపన్లు, కాంబోలు';
+
+  @override
+  String get capMembershipName => 'సభ్యత్వం & ప్యాకేజీలు';
+
+  @override
+  String get capMembershipDesc => 'ప్లాన్లు, సెషన్లు, పునరుద్ధరణలు';
+
+  @override
+  String get capAppointmentsName => 'అపాయింట్‌మెంట్లు & క్యాలెండర్';
+
+  @override
+  String get capAppointmentsDesc => 'సిబ్బంది, చైర్/రూమ్, నో-షో విధానం';
+
+  @override
+  String get capJobCardName => 'జాబ్ కార్డ్ / సర్వీస్ వర్క్‌ఫ్లో';
+
+  @override
+  String get capJobCardDesc => 'ఇన్‌టేక్, అంచనా, స్థితి, డెలివరీ';
+
+  @override
+  String get capRentalName => 'అద్దె ఆస్తులు & డిపాజిట్లు';
+
+  @override
+  String get capRentalDesc => 'బుకింగ్, లభ్యత, ఆలస్య రుసుము';
+
+  @override
+  String get capDeliveryName => 'ఆర్డర్లు & డెలివరీ';
+
+  @override
+  String get capDeliveryDesc => 'స్థితి, రుజువు, COD సెటిల్‌మెంట్';
+
+  @override
+  String get capWholesaleName => 'టోకు / రూట్ అమ్మకాలు';
+
+  @override
+  String get capWholesaleDesc => 'ధర స్థాయిలు, సేల్స్‌మ్యాన్ రూట్, స్కీంలు';
+
+  @override
+  String get capMultiStoreName => 'మల్టీ-స్టోర్ & బదిలీలు';
+
+  @override
+  String get capMultiStoreDesc => 'బ్రాంచ్ స్టాక్, సమగ్ర డాష్‌బోర్డ్';
+
+  @override
+  String get capRecurringName => 'పునరావృత / సబ్‌స్క్రిప్షన్ బిల్లింగ్';
+
+  @override
+  String get capRecurringDesc => 'వాయిదాలు, AMC, ఆటో-ఇన్‌వాయిస్';
+
+  @override
+  String get bizKiranaName => 'కిరాణా / జనరల్ స్టోర్';
+
+  @override
+  String get bizKiranaEdition => 'రిటైల్ స్టాండర్డ్';
+
+  @override
+  String get bizKiranaTag => 'వేగవంతమైన కౌంటర్ B2C + ఖాతా అరువు';
+
+  @override
+  String get bizSupermarketName => 'సూపర్‌మార్కెట్ / మినీ-మార్ట్';
+
+  @override
+  String get bizSupermarketEdition => 'రిటైల్ ప్రో';
+
+  @override
+  String get bizSupermarketTag => 'అధిక-వాల్యూమ్ మల్టీ-కౌంటర్ POS';
+
+  @override
+  String get bizPharmacyName => 'ఫార్మసీ / మెడికల్';
+
+  @override
+  String get bizPharmacyEdition => 'వర్టికల్ ప్రో';
+
+  @override
+  String get bizPharmacyTag => 'బ్యాచ్, గడువు, MRP, ర్యాక్';
+
+  @override
+  String get bizRestaurantName => 'రెస్టారెంట్ / QSR';
+
+  @override
+  String get bizRestaurantEdition => 'వర్టికల్ ప్రో';
+
+  @override
+  String get bizRestaurantTag => 'టేబుల్, KOT, కిచెన్, డెలివరీ';
+
+  @override
+  String get bizBakeryName => 'కేఫ్ / బేకరీ / స్వీట్స్';
+
+  @override
+  String get bizBakeryEdition => 'వర్టికల్ స్టాండర్డ్';
+
+  @override
+  String get bizBakeryTag => 'తూకం + ఉత్పత్తి బ్యాచ్‌లు';
+
+  @override
+  String get bizHardwareName => 'హార్డ్‌వేర్ / ఎలక్ట్రికల్';
+
+  @override
+  String get bizHardwareEdition => 'రిటైల్ ప్రో';
+
+  @override
+  String get bizHardwareTag => 'కౌంటర్ + కొటేషన్ + అరువు';
+
+  @override
+  String get bizFashionName => 'దుస్తులు / ఫుట్‌వేర్';
+
+  @override
+  String get bizFashionEdition => 'వర్టికల్ స్టాండర్డ్';
+
+  @override
+  String get bizFashionTag => 'వేరియంట్ రిటైల్ + మార్పిడులు';
+
+  @override
+  String get bizJewelleryName => 'జ్యువెలరీ స్టోర్';
+
+  @override
+  String get bizJewelleryEdition => 'వర్టికల్ ఎంటర్‌ప్రైజ్';
+
+  @override
+  String get bizJewelleryTag => 'బరువు, స్వచ్ఛత, మేకింగ్ ఛార్జ్';
+
+  @override
+  String get bizElectronicsName => 'మొబైల్ / ఎలక్ట్రానిక్స్';
+
+  @override
+  String get bizElectronicsEdition => 'వర్టికల్ ప్రో';
+
+  @override
+  String get bizElectronicsTag => 'సీరియల్/IMEI + వారంటీ';
+
+  @override
+  String get bizSalonName => 'సెలూన్ / స్పా / బ్యూటీ';
+
+  @override
+  String get bizSalonEdition => 'వర్టికల్ స్టాండర్డ్';
+
+  @override
+  String get bizSalonTag => 'అపాయింట్‌మెంట్లు + సర్వీస్ బిల్లింగ్';
+
+  @override
+  String get bizWholesaleName => 'టోకు / పంపిణీ';
+
+  @override
+  String get bizWholesaleEdition => 'బిజినెస్ ప్రో';
+
+  @override
+  String get bizWholesaleTag => 'B2B, రూట్ అమ్మకాలు, అరువు';
+
+  @override
+  String get bizClinicName => 'క్లినిక్ / డయాగ్నోస్టిక్';
+
+  @override
+  String get bizClinicEdition => 'వర్టికల్ ప్రో';
+
+  @override
+  String get bizClinicTag => 'రోగి, సేవ, ప్యాకేజీ బిల్లింగ్';
+
+  @override
+  String get tplClassicName => 'క్లాసిక్ GST';
+
+  @override
+  String get tplClassicDesc => 'అధికారిక పన్ను ఇన్‌వాయిస్, పూర్తి HSN పట్టిక';
+
+  @override
+  String get tplMinimalName => 'మినిమల్';
+
+  @override
+  String get tplMinimalDesc => 'శుభ్రమైన, ఖాళీ-ప్రధాన, బ్రాండ్ హెడర్';
+
+  @override
+  String get tplModernName => 'మోడర్న్ కలర్';
+
+  @override
+  String get tplModernDesc => 'యాక్సెంట్ బ్యాండ్ + కార్డ్ మొత్తాలు';
+
+  @override
+  String get tplBilingualName => 'ద్విభాషా హిం/తె';
+
+  @override
+  String get tplBilingualDesc => 'స్థానిక వ్యాపారానికి రెండు-భాషల లేబుళ్లు';
+
+  @override
+  String get tplWholesaleName => 'టోకు B2B';
+
+  @override
+  String get tplWholesaleDesc => 'కేస్/ముక్క, స్కీం & అరువు నిబంధనలు';
+
+  @override
+  String get tplServiceName => 'సర్వీస్ / జాబ్ కార్డ్';
+
+  @override
+  String get tplServiceDesc => 'శ్రమ + భాగాలు, టెక్నీషియన్, వారంటీ';
+
+  @override
+  String get tplQuotationName => 'కొటేషన్';
+
+  @override
+  String get tplQuotationDesc => 'చెల్లుబాటు, నిబంధనలు, స్టాక్‌పై ప్రభావం లేదు';
+
+  @override
+  String get tplThermal80Name => 'థర్మల్ 80mm';
+
+  @override
+  String get tplThermal80Desc => 'వెడల్పు రసీదు + కట్టర్ + QR';
+
+  @override
+  String get tplThermal58Name => 'థర్మల్ 58mm';
+
+  @override
+  String get tplThermal58Desc => 'కాంపాక్ట్ కిరాణా రసీదు';
+
+  @override
+  String get tplKotName => 'కిచెన్ KOT';
+
+  @override
+  String get tplKotDesc => 'వస్తువులు మాత్రమే, ధర లేదు, స్టేషన్ రూట్';
+
+  @override
+  String get tplDeliveryName => 'డెలివరీ చలాన్';
+
+  @override
+  String get tplDeliveryDesc => 'డిస్పాచ్ నోట్, తర్వాత ఇన్‌వాయిస్ లింక్ చేయండి';
+
+  @override
+  String get prioMust => 'తప్పనిసరి';
+
+  @override
+  String get prioShould => 'అవసరం';
+
+  @override
+  String get prioCould => 'ఐచ్ఛికం';
 }

@@ -1381,4 +1381,352 @@ class LEn extends L {
 
   @override
   String get setupLaterNote => 'You can change any of this later in Settings. Your catalogue starts empty — add your own products next.';
+
+  @override
+  String get catBilling => 'Billing & Counter';
+
+  @override
+  String get catTax => 'GST, Tax & Compliance';
+
+  @override
+  String get catInventory => 'Inventory & Stock';
+
+  @override
+  String get catCustomers => 'Customers & Credit';
+
+  @override
+  String get catOps => 'Operations & Growth';
+
+  @override
+  String get capFastposName => 'Fast POS & counter billing';
+
+  @override
+  String get capFastposDesc => 'One-screen scan, cart, pay, print';
+
+  @override
+  String get capBarcodeScanName => 'Barcode / camera scan';
+
+  @override
+  String get capBarcodeScanDesc => 'Scanner + Android camera fallback';
+
+  @override
+  String get capWeightScaleName => 'Weight / scale billing';
+
+  @override
+  String get capWeightScaleDesc => 'Decimal kg/g/litre + PLU';
+
+  @override
+  String get capMultiUnitName => 'Multi-unit & loose sale';
+
+  @override
+  String get capMultiUnitDesc => 'Buy pack, sell piece / cut-length';
+
+  @override
+  String get capQuotationName => 'Quotation & estimate';
+
+  @override
+  String get capQuotationDesc => 'Send, expire, convert to sale';
+
+  @override
+  String get capKotName => 'KOT / table & kitchen';
+
+  @override
+  String get capKotDesc => 'Floor plan, KOT, kitchen routing';
+
+  @override
+  String get capGstInvoiceName => 'GST tax invoice';
+
+  @override
+  String get capGstInvoiceDesc => 'CGST/SGST/IGST, HSN, unique numbering';
+
+  @override
+  String get capBillOfSupplyName => 'Bill of supply / composition';
+
+  @override
+  String get capBillOfSupplyDesc => 'Non-tax series for exempt sellers';
+
+  @override
+  String get capConsentName => 'Customer consent & privacy';
+
+  @override
+  String get capConsentDesc => 'Opt-in/out, purpose, timestamp';
+
+  @override
+  String get capEInvoiceName => 'E-invoice (IRN) & e-way bill';
+
+  @override
+  String get capEInvoiceDesc => 'IRP payload, signed QR';
+
+  @override
+  String get capBatchExpiryName => 'Batch & expiry tracking';
+
+  @override
+  String get capBatchExpiryDesc => 'FEFO, near-expiry action list';
+
+  @override
+  String get capSerialImeiName => 'Serial / IMEI control';
+
+  @override
+  String get capSerialImeiDesc => 'Unique unit at sale/return/service';
+
+  @override
+  String get capVariantMatrixName => 'Variant matrix';
+
+  @override
+  String get capVariantMatrixDesc => 'Size-colour-style child SKUs';
+
+  @override
+  String get capLabelName => 'Label / tag printing';
+
+  @override
+  String get capLabelDesc => 'Barcode, shelf, garment, MRP labels';
+
+  @override
+  String get capProductionName => 'BOM / production';
+
+  @override
+  String get capProductionDesc => 'Recipe, work order, material issue';
+
+  @override
+  String get capCreditLedgerName => 'Credit / khata ledger';
+
+  @override
+  String get capCreditLedgerDesc => 'Due dates, limits, collection, ageing';
+
+  @override
+  String get capLoyaltyName => 'Loyalty & promotions';
+
+  @override
+  String get capLoyaltyDesc => 'Points, coupons, combos';
+
+  @override
+  String get capMembershipName => 'Membership & packages';
+
+  @override
+  String get capMembershipDesc => 'Plans, sessions, renewals';
+
+  @override
+  String get capAppointmentsName => 'Appointments & calendar';
+
+  @override
+  String get capAppointmentsDesc => 'Staff, chair/room, no-show policy';
+
+  @override
+  String get capJobCardName => 'Job card / service workflow';
+
+  @override
+  String get capJobCardDesc => 'Intake, estimate, status, delivery';
+
+  @override
+  String get capRentalName => 'Rental assets & deposits';
+
+  @override
+  String get capRentalDesc => 'Booking, availability, late fee';
+
+  @override
+  String get capDeliveryName => 'Orders & delivery';
+
+  @override
+  String get capDeliveryDesc => 'Status, proof, COD settlement';
+
+  @override
+  String get capWholesaleName => 'Wholesale / route sales';
+
+  @override
+  String get capWholesaleDesc => 'Price levels, salesman route, schemes';
+
+  @override
+  String get capMultiStoreName => 'Multi-store & transfers';
+
+  @override
+  String get capMultiStoreDesc => 'Branch stock, consolidated dashboard';
+
+  @override
+  String get capRecurringName => 'Recurring / subscription billing';
+
+  @override
+  String get capRecurringDesc => 'Instalments, AMC, auto-invoice';
+
+  @override
+  String get bizKiranaName => 'Kirana / General Store';
+
+  @override
+  String get bizKiranaEdition => 'Retail Standard';
+
+  @override
+  String get bizKiranaTag => 'Fast counter B2C + khata credit';
+
+  @override
+  String get bizSupermarketName => 'Supermarket / Mini-Mart';
+
+  @override
+  String get bizSupermarketEdition => 'Retail Pro';
+
+  @override
+  String get bizSupermarketTag => 'High-volume multi-counter POS';
+
+  @override
+  String get bizPharmacyName => 'Pharmacy / Medical';
+
+  @override
+  String get bizPharmacyEdition => 'Vertical Pro';
+
+  @override
+  String get bizPharmacyTag => 'Batch, expiry, MRP, rack';
+
+  @override
+  String get bizRestaurantName => 'Restaurant / QSR';
+
+  @override
+  String get bizRestaurantEdition => 'Vertical Pro';
+
+  @override
+  String get bizRestaurantTag => 'Table, KOT, kitchen, delivery';
+
+  @override
+  String get bizBakeryName => 'Cafe / Bakery / Sweets';
+
+  @override
+  String get bizBakeryEdition => 'Vertical Standard';
+
+  @override
+  String get bizBakeryTag => 'Weighted + production batches';
+
+  @override
+  String get bizHardwareName => 'Hardware / Electrical';
+
+  @override
+  String get bizHardwareEdition => 'Retail Pro';
+
+  @override
+  String get bizHardwareTag => 'Counter + quotation + credit';
+
+  @override
+  String get bizFashionName => 'Apparel / Footwear';
+
+  @override
+  String get bizFashionEdition => 'Vertical Standard';
+
+  @override
+  String get bizFashionTag => 'Variant retail + exchanges';
+
+  @override
+  String get bizJewelleryName => 'Jewellery Store';
+
+  @override
+  String get bizJewelleryEdition => 'Vertical Enterprise';
+
+  @override
+  String get bizJewelleryTag => 'Weight, purity, making-charge';
+
+  @override
+  String get bizElectronicsName => 'Mobile / Electronics';
+
+  @override
+  String get bizElectronicsEdition => 'Vertical Pro';
+
+  @override
+  String get bizElectronicsTag => 'Serial/IMEI + warranty';
+
+  @override
+  String get bizSalonName => 'Salon / Spa / Beauty';
+
+  @override
+  String get bizSalonEdition => 'Vertical Standard';
+
+  @override
+  String get bizSalonTag => 'Appointments + service billing';
+
+  @override
+  String get bizWholesaleName => 'Wholesale / Distribution';
+
+  @override
+  String get bizWholesaleEdition => 'Business Pro';
+
+  @override
+  String get bizWholesaleTag => 'B2B, route sales, credit';
+
+  @override
+  String get bizClinicName => 'Clinic / Diagnostic';
+
+  @override
+  String get bizClinicEdition => 'Vertical Pro';
+
+  @override
+  String get bizClinicTag => 'Patient, service, package billing';
+
+  @override
+  String get tplClassicName => 'Classic GST';
+
+  @override
+  String get tplClassicDesc => 'Formal tax invoice, full HSN table';
+
+  @override
+  String get tplMinimalName => 'Minimal';
+
+  @override
+  String get tplMinimalDesc => 'Clean, whitespace-led, brand header';
+
+  @override
+  String get tplModernName => 'Modern Color';
+
+  @override
+  String get tplModernDesc => 'Accent band + card totals';
+
+  @override
+  String get tplBilingualName => 'Bilingual हिं/తె';
+
+  @override
+  String get tplBilingualDesc => 'Dual-language labels for local trade';
+
+  @override
+  String get tplWholesaleName => 'Wholesale B2B';
+
+  @override
+  String get tplWholesaleDesc => 'Case/piece, scheme & credit terms';
+
+  @override
+  String get tplServiceName => 'Service / Job Card';
+
+  @override
+  String get tplServiceDesc => 'Labour + parts, technician, warranty';
+
+  @override
+  String get tplQuotationName => 'Quotation';
+
+  @override
+  String get tplQuotationDesc => 'Validity, terms, no stock impact';
+
+  @override
+  String get tplThermal80Name => 'Thermal 80mm';
+
+  @override
+  String get tplThermal80Desc => 'Wide receipt + cutter + QR';
+
+  @override
+  String get tplThermal58Name => 'Thermal 58mm';
+
+  @override
+  String get tplThermal58Desc => 'Compact kirana receipt';
+
+  @override
+  String get tplKotName => 'Kitchen KOT';
+
+  @override
+  String get tplKotDesc => 'Items only, no price, station route';
+
+  @override
+  String get tplDeliveryName => 'Delivery Challan';
+
+  @override
+  String get tplDeliveryDesc => 'Dispatch note, link invoice later';
+
+  @override
+  String get prioMust => 'Must';
+
+  @override
+  String get prioShould => 'Should';
+
+  @override
+  String get prioCould => 'Could';
 }

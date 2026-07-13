@@ -1381,4 +1381,352 @@ class LHi extends L {
 
   @override
   String get setupLaterNote => 'आप यह सब बाद में सेटिंग्स में बदल सकते हैं। आपकी सूची खाली शुरू होती है — आगे अपनी वस्तुएं जोड़ें।';
+
+  @override
+  String get catBilling => 'बिलिंग और काउंटर';
+
+  @override
+  String get catTax => 'GST, कर और अनुपालन';
+
+  @override
+  String get catInventory => 'इन्वेंट्री और स्टॉक';
+
+  @override
+  String get catCustomers => 'ग्राहक और उधार';
+
+  @override
+  String get catOps => 'संचालन और विकास';
+
+  @override
+  String get capFastposName => 'तेज़ POS और काउंटर बिलिंग';
+
+  @override
+  String get capFastposDesc => 'एक स्क्रीन पर स्कैन, कार्ट, भुगतान, प्रिंट';
+
+  @override
+  String get capBarcodeScanName => 'बारकोड / कैमरा स्कैन';
+
+  @override
+  String get capBarcodeScanDesc => 'स्कैनर + एंड्रॉइड कैमरा विकल्प';
+
+  @override
+  String get capWeightScaleName => 'वज़न / तराज़ू बिलिंग';
+
+  @override
+  String get capWeightScaleDesc => 'दशमलव kg/g/लीटर + PLU';
+
+  @override
+  String get capMultiUnitName => 'मल्टी-यूनिट और खुली बिक्री';
+
+  @override
+  String get capMultiUnitDesc => 'पैक खरीदें, पीस / कटाई में बेचें';
+
+  @override
+  String get capQuotationName => 'कोटेशन और अनुमान';
+
+  @override
+  String get capQuotationDesc => 'भेजें, समाप्ति, बिक्री में बदलें';
+
+  @override
+  String get capKotName => 'KOT / टेबल और रसोई';
+
+  @override
+  String get capKotDesc => 'फ्लोर प्लान, KOT, रसोई रूटिंग';
+
+  @override
+  String get capGstInvoiceName => 'GST कर चालान';
+
+  @override
+  String get capGstInvoiceDesc => 'CGST/SGST/IGST, HSN, अद्वितीय नंबरिंग';
+
+  @override
+  String get capBillOfSupplyName => 'बिल ऑफ सप्लाई / कंपोज़िशन';
+
+  @override
+  String get capBillOfSupplyDesc => 'छूट वाले विक्रेताओं के लिए कर-रहित श्रृंखला';
+
+  @override
+  String get capConsentName => 'ग्राहक सहमति और गोपनीयता';
+
+  @override
+  String get capConsentDesc => 'ऑप्ट-इन/आउट, उद्देश्य, टाइमस्टैम्प';
+
+  @override
+  String get capEInvoiceName => 'ई-चालान (IRN) और ई-वे बिल';
+
+  @override
+  String get capEInvoiceDesc => 'IRP पेलोड, हस्ताक्षरित QR';
+
+  @override
+  String get capBatchExpiryName => 'बैच और एक्सपायरी ट्रैकिंग';
+
+  @override
+  String get capBatchExpiryDesc => 'FEFO, जल्द-एक्सपायरी कार्य सूची';
+
+  @override
+  String get capSerialImeiName => 'सीरियल / IMEI नियंत्रण';
+
+  @override
+  String get capSerialImeiDesc => 'बिक्री/वापसी/सर्विस पर अद्वितीय यूनिट';
+
+  @override
+  String get capVariantMatrixName => 'वैरिएंट मैट्रिक्स';
+
+  @override
+  String get capVariantMatrixDesc => 'साइज़-रंग-स्टाइल चाइल्ड SKU';
+
+  @override
+  String get capLabelName => 'लेबल / टैग प्रिंटिंग';
+
+  @override
+  String get capLabelDesc => 'बारकोड, शेल्फ, कपड़ा, MRP लेबल';
+
+  @override
+  String get capProductionName => 'BOM / उत्पादन';
+
+  @override
+  String get capProductionDesc => 'रेसिपी, वर्क ऑर्डर, सामग्री जारी';
+
+  @override
+  String get capCreditLedgerName => 'उधार / खाता बही';
+
+  @override
+  String get capCreditLedgerDesc => 'देय तिथि, सीमा, वसूली, बकाया अवधि';
+
+  @override
+  String get capLoyaltyName => 'लॉयल्टी और प्रमोशन';
+
+  @override
+  String get capLoyaltyDesc => 'पॉइंट, कूपन, कॉम्बो';
+
+  @override
+  String get capMembershipName => 'सदस्यता और पैकेज';
+
+  @override
+  String get capMembershipDesc => 'प्लान, सेशन, नवीनीकरण';
+
+  @override
+  String get capAppointmentsName => 'अपॉइंटमेंट और कैलेंडर';
+
+  @override
+  String get capAppointmentsDesc => 'स्टाफ, चेयर/रूम, नो-शो नीति';
+
+  @override
+  String get capJobCardName => 'जॉब कार्ड / सर्विस वर्कफ़्लो';
+
+  @override
+  String get capJobCardDesc => 'इनटेक, अनुमान, स्थिति, डिलीवरी';
+
+  @override
+  String get capRentalName => 'किराया संपत्ति और जमा';
+
+  @override
+  String get capRentalDesc => 'बुकिंग, उपलब्धता, विलंब शुल्क';
+
+  @override
+  String get capDeliveryName => 'ऑर्डर और डिलीवरी';
+
+  @override
+  String get capDeliveryDesc => 'स्थिति, प्रमाण, COD निपटान';
+
+  @override
+  String get capWholesaleName => 'थोक / रूट बिक्री';
+
+  @override
+  String get capWholesaleDesc => 'मूल्य स्तर, सेल्समैन रूट, स्कीम';
+
+  @override
+  String get capMultiStoreName => 'मल्टी-स्टोर और ट्रांसफर';
+
+  @override
+  String get capMultiStoreDesc => 'ब्रांच स्टॉक, समेकित डैशबोर्ड';
+
+  @override
+  String get capRecurringName => 'आवर्ती / सब्सक्रिप्शन बिलिंग';
+
+  @override
+  String get capRecurringDesc => 'किस्तें, AMC, ऑटो-चालान';
+
+  @override
+  String get bizKiranaName => 'किराना / जनरल स्टोर';
+
+  @override
+  String get bizKiranaEdition => 'रिटेल स्टैंडर्ड';
+
+  @override
+  String get bizKiranaTag => 'तेज़ काउंटर B2C + खाता उधार';
+
+  @override
+  String get bizSupermarketName => 'सुपरमार्केट / मिनी-मार्ट';
+
+  @override
+  String get bizSupermarketEdition => 'रिटेल प्रो';
+
+  @override
+  String get bizSupermarketTag => 'अधिक-वॉल्यूम मल्टी-काउंटर POS';
+
+  @override
+  String get bizPharmacyName => 'फार्मेसी / मेडिकल';
+
+  @override
+  String get bizPharmacyEdition => 'वर्टिकल प्रो';
+
+  @override
+  String get bizPharmacyTag => 'बैच, एक्सपायरी, MRP, रैक';
+
+  @override
+  String get bizRestaurantName => 'रेस्टोरेंट / QSR';
+
+  @override
+  String get bizRestaurantEdition => 'वर्टिकल प्रो';
+
+  @override
+  String get bizRestaurantTag => 'टेबल, KOT, रसोई, डिलीवरी';
+
+  @override
+  String get bizBakeryName => 'कैफे / बेकरी / मिठाई';
+
+  @override
+  String get bizBakeryEdition => 'वर्टिकल स्टैंडर्ड';
+
+  @override
+  String get bizBakeryTag => 'वज़नी + उत्पादन बैच';
+
+  @override
+  String get bizHardwareName => 'हार्डवेयर / इलेक्ट्रिकल';
+
+  @override
+  String get bizHardwareEdition => 'रिटेल प्रो';
+
+  @override
+  String get bizHardwareTag => 'काउंटर + कोटेशन + उधार';
+
+  @override
+  String get bizFashionName => 'परिधान / फुटवियर';
+
+  @override
+  String get bizFashionEdition => 'वर्टिकल स्टैंडर्ड';
+
+  @override
+  String get bizFashionTag => 'वैरिएंट रिटेल + एक्सचेंज';
+
+  @override
+  String get bizJewelleryName => 'ज्वेलरी स्टोर';
+
+  @override
+  String get bizJewelleryEdition => 'वर्टिकल एंटरप्राइज़';
+
+  @override
+  String get bizJewelleryTag => 'वज़न, शुद्धता, मेकिंग चार्ज';
+
+  @override
+  String get bizElectronicsName => 'मोबाइल / इलेक्ट्रॉनिक्स';
+
+  @override
+  String get bizElectronicsEdition => 'वर्टिकल प्रो';
+
+  @override
+  String get bizElectronicsTag => 'सीरियल/IMEI + वारंटी';
+
+  @override
+  String get bizSalonName => 'सैलून / स्पा / ब्यूटी';
+
+  @override
+  String get bizSalonEdition => 'वर्टिकल स्टैंडर्ड';
+
+  @override
+  String get bizSalonTag => 'अपॉइंटमेंट + सर्विस बिलिंग';
+
+  @override
+  String get bizWholesaleName => 'थोक / वितरण';
+
+  @override
+  String get bizWholesaleEdition => 'बिज़नेस प्रो';
+
+  @override
+  String get bizWholesaleTag => 'B2B, रूट बिक्री, उधार';
+
+  @override
+  String get bizClinicName => 'क्लिनिक / डायग्नोस्टिक';
+
+  @override
+  String get bizClinicEdition => 'वर्टिकल प्रो';
+
+  @override
+  String get bizClinicTag => 'मरीज़, सेवा, पैकेज बिलिंग';
+
+  @override
+  String get tplClassicName => 'क्लासिक GST';
+
+  @override
+  String get tplClassicDesc => 'औपचारिक कर चालान, पूरी HSN तालिका';
+
+  @override
+  String get tplMinimalName => 'मिनिमल';
+
+  @override
+  String get tplMinimalDesc => 'साफ़, स्पेस-केंद्रित, ब्रांड हेडर';
+
+  @override
+  String get tplModernName => 'मॉडर्न कलर';
+
+  @override
+  String get tplModernDesc => 'एक्सेंट बैंड + कार्ड कुल';
+
+  @override
+  String get tplBilingualName => 'द्विभाषी हिं/తె';
+
+  @override
+  String get tplBilingualDesc => 'स्थानीय व्यापार के लिए दो-भाषी लेबल';
+
+  @override
+  String get tplWholesaleName => 'थोक B2B';
+
+  @override
+  String get tplWholesaleDesc => 'केस/पीस, स्कीम और उधार शर्तें';
+
+  @override
+  String get tplServiceName => 'सर्विस / जॉब कार्ड';
+
+  @override
+  String get tplServiceDesc => 'श्रम + पुर्ज़े, तकनीशियन, वारंटी';
+
+  @override
+  String get tplQuotationName => 'कोटेशन';
+
+  @override
+  String get tplQuotationDesc => 'वैधता, शर्तें, स्टॉक पर असर नहीं';
+
+  @override
+  String get tplThermal80Name => 'थर्मल 80mm';
+
+  @override
+  String get tplThermal80Desc => 'चौड़ी रसीद + कटर + QR';
+
+  @override
+  String get tplThermal58Name => 'थर्मल 58mm';
+
+  @override
+  String get tplThermal58Desc => 'कॉम्पैक्ट किराना रसीद';
+
+  @override
+  String get tplKotName => 'किचन KOT';
+
+  @override
+  String get tplKotDesc => 'केवल वस्तुएं, बिना दाम, स्टेशन रूट';
+
+  @override
+  String get tplDeliveryName => 'डिलीवरी चालान';
+
+  @override
+  String get tplDeliveryDesc => 'डिस्पैच नोट, बाद में चालान जोड़ें';
+
+  @override
+  String get prioMust => 'अनिवार्य';
+
+  @override
+  String get prioShould => 'ज़रूरी';
+
+  @override
+  String get prioCould => 'वैकल्पिक';
 }
