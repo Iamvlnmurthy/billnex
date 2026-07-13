@@ -3524,6 +3524,168 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Import failed: {err}'**
   String csvImportFailed(String err);
+
+  /// No description provided for @wizardStepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String wizardStepOf(int current, int total);
+
+  /// No description provided for @wizardSkipSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip setup'**
+  String get wizardSkipSetup;
+
+  /// No description provided for @wizardSkipStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip this step'**
+  String get wizardSkipStep;
+
+  /// No description provided for @wizardWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to BillNex'**
+  String get wizardWelcomeTitle;
+
+  /// No description provided for @wizardWelcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s set up your shop in a minute. Every step is optional — you can skip and change anything later.'**
+  String get wizardWelcomeSubtitle;
+
+  /// No description provided for @wizardContinueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get wizardContinueWithGoogle;
+
+  /// No description provided for @wizardContinueWithoutAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue without account'**
+  String get wizardContinueWithoutAccount;
+
+  /// No description provided for @wizardGoogleUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in isn\'t configured — continuing without an account'**
+  String get wizardGoogleUnavailable;
+
+  /// No description provided for @wizardSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {email}'**
+  String wizardSignedInAs(String email);
+
+  /// No description provided for @wizardBusinessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your business'**
+  String get wizardBusinessTitle;
+
+  /// No description provided for @wizardBusinessSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us your shop name and trade — we pre-configure the right features. Both are optional.'**
+  String get wizardBusinessSubtitle;
+
+  /// No description provided for @wizardSkipUseStandardStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip — use a standard store'**
+  String get wizardSkipUseStandardStore;
+
+  /// No description provided for @wizardGstTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GST & pricing'**
+  String get wizardGstTitle;
+
+  /// No description provided for @wizardGstSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your GSTIN for tax invoices and choose how prices are quoted. You can set this later.'**
+  String get wizardGstSubtitle;
+
+  /// No description provided for @wizardInventoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your products'**
+  String get wizardInventoryTitle;
+
+  /// No description provided for @wizardInventorySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a ready-made catalogue, import your own, or skip and add products later.'**
+  String get wizardInventorySubtitle;
+
+  /// No description provided for @wizardLoadSample.
+  ///
+  /// In en, this message translates to:
+  /// **'Load sample catalogue'**
+  String get wizardLoadSample;
+
+  /// No description provided for @wizardLoadSampleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready-made items for your business type'**
+  String get wizardLoadSampleHint;
+
+  /// No description provided for @wizardImportCsvHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a .csv file of your products'**
+  String get wizardImportCsvHint;
+
+  /// No description provided for @wizardItemsInCatalogue.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items in your catalogue'**
+  String wizardItemsInCatalogue(int count);
+
+  /// No description provided for @wizardSampleAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {count} products to your catalogue'**
+  String wizardSampleAdded(int count);
+
+  /// No description provided for @wizardSkipForNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get wizardSkipForNow;
+
+  /// No description provided for @wizardDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all set'**
+  String get wizardDoneTitle;
+
+  /// No description provided for @wizardDoneSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop is ready. You can fine-tune everything from Settings anytime.'**
+  String get wizardDoneSubtitle;
+
+  /// No description provided for @wizardEnterApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter BillNex'**
+  String get wizardEnterApp;
+
+  /// No description provided for @wizardStandardStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard store'**
+  String get wizardStandardStore;
+
+  /// No description provided for @wizardNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get wizardNotSet;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

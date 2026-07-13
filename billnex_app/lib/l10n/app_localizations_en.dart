@@ -1859,4 +1859,93 @@ class LEn extends L {
   String csvImportFailed(String err) {
     return 'Import failed: $err';
   }
+
+  @override
+  String wizardStepOf(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get wizardSkipSetup => 'Skip setup';
+
+  @override
+  String get wizardSkipStep => 'Skip this step';
+
+  @override
+  String get wizardWelcomeTitle => 'Welcome to BillNex';
+
+  @override
+  String get wizardWelcomeSubtitle => 'Let\'s set up your shop in a minute. Every step is optional — you can skip and change anything later.';
+
+  @override
+  String get wizardContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get wizardContinueWithoutAccount => 'Continue without account';
+
+  @override
+  String get wizardGoogleUnavailable => 'Google sign-in isn\'t configured — continuing without an account';
+
+  @override
+  String wizardSignedInAs(String email) {
+    return 'Signed in as $email';
+  }
+
+  @override
+  String get wizardBusinessTitle => 'Your business';
+
+  @override
+  String get wizardBusinessSubtitle => 'Tell us your shop name and trade — we pre-configure the right features. Both are optional.';
+
+  @override
+  String get wizardSkipUseStandardStore => 'Skip — use a standard store';
+
+  @override
+  String get wizardGstTitle => 'GST & pricing';
+
+  @override
+  String get wizardGstSubtitle => 'Add your GSTIN for tax invoices and choose how prices are quoted. You can set this later.';
+
+  @override
+  String get wizardInventoryTitle => 'Add your products';
+
+  @override
+  String get wizardInventorySubtitle => 'Start with a ready-made catalogue, import your own, or skip and add products later.';
+
+  @override
+  String get wizardLoadSample => 'Load sample catalogue';
+
+  @override
+  String get wizardLoadSampleHint => 'Ready-made items for your business type';
+
+  @override
+  String get wizardImportCsvHint => 'Pick a .csv file of your products';
+
+  @override
+  String wizardItemsInCatalogue(int count) {
+    return '$count items in your catalogue';
+  }
+
+  @override
+  String wizardSampleAdded(int count) {
+    return 'Added $count products to your catalogue';
+  }
+
+  @override
+  String get wizardSkipForNow => 'Skip for now';
+
+  @override
+  String get wizardDoneTitle => 'You\'re all set';
+
+  @override
+  String get wizardDoneSubtitle => 'Your shop is ready. You can fine-tune everything from Settings anytime.';
+
+  @override
+  String get wizardEnterApp => 'Enter BillNex';
+
+  @override
+  String get wizardStandardStore => 'Standard store';
+
+  @override
+  String get wizardNotSet => 'Not set';
 }

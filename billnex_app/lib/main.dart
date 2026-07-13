@@ -9,7 +9,7 @@ import 'services/auth_service.dart';
 import 'services/error_reporter.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_shell.dart';
-import 'screens/onboarding_screen.dart';
+import 'screens/setup_wizard_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/lock_screen.dart';
 
@@ -145,15 +145,11 @@ class _BillNexAppState extends State<BillNexApp> with WidgetsBindingObserver {
                         return SplashScreen(onGetStarted: () => setState(() => _splashSeen = true));
                       }
                       if (!_state.onboarded) {
-                        return Scaffold(
-                          body: SafeArea(
-                            child: Column(
-                              children: [
-                                _MiniTopBar(themeMode: _themeMode),
-                                Expanded(child: OnboardingScreen(state: _state)),
-                              ],
-                            ),
-                          ),
+                        return SetupWizardScreen(
+                          state: _state,
+                          onDone: () {
+                            if (mounted) setState(() {});
+                          },
                         );
                       }
                       return HomeShell(state: _state, themeMode: _themeMode, locale: _locale, auth: widget.auth, initialTab: widget.initialTab);
@@ -162,59 +158,6 @@ class _BillNexAppState extends State<BillNexApp> with WidgetsBindingObserver {
           ),
         );
       },
-    );
-  }
-}
-
-class _MiniTopBar extends StatelessWidget {
-  final ValueNotifier<ThemeMode> themeMode;
-  const _MiniTopBar({required this.themeMode});
-  @override
-  Widget build(BuildContext context) {
-    final bx = context.bx;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 12, 12, 0),
-      child: Row(
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [bx.brand, bx.brand2], begin: Alignment.topLeft, end: Alignment.bottomRight),
-              borderRadius: BorderRadius.circular(9),
-            ),
-            alignment: Alignment.center,
-            child: const Text(
-              'B',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
-            ),
-          ),
-          const SizedBox(width: 9),
-          Text.rich(
-            TextSpan(
-              children: [
-                const TextSpan(
-                  text: 'Bill',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5),
-                ),
-                TextSpan(
-                  text: 'Nex',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: bx.accent, letterSpacing: -0.5),
-                ),
-              ],
-            ),
-          ),
-          const Spacer(),
-          IconButton(
-            tooltip: 'Toggle theme',
-            onPressed: () {
-              final dark = Theme.of(context).brightness == Brightness.dark;
-              themeMode.value = dark ? ThemeMode.light : ThemeMode.dark;
-            },
-            icon: Icon(Theme.of(context).brightness == Brightness.dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
-          ),
-        ],
-      ),
     );
   }
 }

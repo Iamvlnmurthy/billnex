@@ -1859,4 +1859,93 @@ class LHi extends L {
   String csvImportFailed(String err) {
     return 'इम्पोर्ट विफल: $err';
   }
+
+  @override
+  String wizardStepOf(int current, int total) {
+    return 'चरण $current / $total';
+  }
+
+  @override
+  String get wizardSkipSetup => 'सेटअप छोड़ें';
+
+  @override
+  String get wizardSkipStep => 'यह चरण छोड़ें';
+
+  @override
+  String get wizardWelcomeTitle => 'BillNex में आपका स्वागत है';
+
+  @override
+  String get wizardWelcomeSubtitle => 'आइए एक मिनट में आपकी दुकान सेट करें। हर चरण वैकल्पिक है — आप बाद में कुछ भी बदल सकते हैं।';
+
+  @override
+  String get wizardContinueWithGoogle => 'Google के साथ जारी रखें';
+
+  @override
+  String get wizardContinueWithoutAccount => 'बिना खाते के जारी रखें';
+
+  @override
+  String get wizardGoogleUnavailable => 'Google साइन-इन कॉन्फ़िगर नहीं है — बिना खाते के जारी रख रहे हैं';
+
+  @override
+  String wizardSignedInAs(String email) {
+    return '$email के रूप में साइन इन';
+  }
+
+  @override
+  String get wizardBusinessTitle => 'आपका व्यवसाय';
+
+  @override
+  String get wizardBusinessSubtitle => 'अपनी दुकान का नाम और व्यापार बताएं — हम सही सुविधाएँ पहले से सेट कर देंगे। दोनों वैकल्पिक हैं।';
+
+  @override
+  String get wizardSkipUseStandardStore => 'छोड़ें — मानक स्टोर उपयोग करें';
+
+  @override
+  String get wizardGstTitle => 'GST और मूल्य';
+
+  @override
+  String get wizardGstSubtitle => 'टैक्स इनवॉइस के लिए अपना GSTIN जोड़ें और चुनें कि कीमतें कैसे बताई जाएँ। यह बाद में भी सेट कर सकते हैं।';
+
+  @override
+  String get wizardInventoryTitle => 'अपने उत्पाद जोड़ें';
+
+  @override
+  String get wizardInventorySubtitle => 'तैयार कैटलॉग से शुरू करें, अपना इम्पोर्ट करें, या छोड़कर बाद में उत्पाद जोड़ें।';
+
+  @override
+  String get wizardLoadSample => 'नमूना कैटलॉग लोड करें';
+
+  @override
+  String get wizardLoadSampleHint => 'आपके व्यवसाय प्रकार के लिए तैयार आइटम';
+
+  @override
+  String get wizardImportCsvHint => 'अपने उत्पादों की .csv फ़ाइल चुनें';
+
+  @override
+  String wizardItemsInCatalogue(int count) {
+    return 'आपके कैटलॉग में $count आइटम';
+  }
+
+  @override
+  String wizardSampleAdded(int count) {
+    return 'आपके कैटलॉग में $count उत्पाद जोड़े गए';
+  }
+
+  @override
+  String get wizardSkipForNow => 'अभी के लिए छोड़ें';
+
+  @override
+  String get wizardDoneTitle => 'सब तैयार है';
+
+  @override
+  String get wizardDoneSubtitle => 'आपकी दुकान तैयार है। आप कभी भी सेटिंग्स से सब कुछ ठीक कर सकते हैं।';
+
+  @override
+  String get wizardEnterApp => 'BillNex खोलें';
+
+  @override
+  String get wizardStandardStore => 'मानक स्टोर';
+
+  @override
+  String get wizardNotSet => 'सेट नहीं';
 }

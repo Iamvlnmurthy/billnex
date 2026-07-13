@@ -69,16 +69,20 @@ void main() {
     });
   });
 
-  testWidgets('Onboarding renders the business-type picker', (WidgetTester tester) async {
+  testWidgets('First-run setup wizard reaches the business-type picker', (WidgetTester tester) async {
     final state = AppState();
     await state.init();
     await tester.pumpWidget(BillNexApp(state: state, themeMode: ValueNotifier(ThemeMode.light), locale: ValueNotifier(null), store: Store(), auth: AuthService()));
     await tester.pumpAndSettle();
-    // First run shows the Get Started splash; tap through to the picker.
+    // First run shows the Get Started splash; tap through into the wizard.
     expect(find.text('Get Started'), findsOneWidget);
     await tester.tap(find.text('Get Started'));
     await tester.pumpAndSettle();
-    // Compact onboarding: a business-type dropdown + Continue button.
+    // Wizard opens on the welcome/account step (Google is optional).
+    expect(find.text('Continue without account'), findsOneWidget);
+    await tester.tap(find.text('Continue without account'));
+    await tester.pumpAndSettle();
+    // Business step: a trade dropdown (hint) + Continue button.
     expect(find.text('Choose your trade'), findsOneWidget);
     expect(find.text('Continue'), findsOneWidget);
   });
