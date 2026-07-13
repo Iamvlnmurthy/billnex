@@ -82,9 +82,9 @@ class AppState extends ChangeNotifier {
       case Role.manager:
         return navId != 'features'; // no plan/entitlement config
       case Role.cashier:
-        return {'dash', 'quickbill', 'billing', 'sales', 'customers'}.contains(navId);
+        return {'dash', 'quickbill', 'billing', 'sales', 'customers', 'menu'}.contains(navId);
       case Role.accountant:
-        return {'dash', 'sales', 'customers', 'purchasing', 'reports'}.contains(navId);
+        return {'dash', 'sales', 'customers', 'purchasing', 'reports', 'menu'}.contains(navId);
     }
   }
 

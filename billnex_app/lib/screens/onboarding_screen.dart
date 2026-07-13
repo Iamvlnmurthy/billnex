@@ -5,26 +5,61 @@ import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
 import 'business_setup_screen.dart';
 
-class OnboardingScreen extends StatelessWidget {
+/// First-run business picker — compact, fits one viewport, with a business-type
+/// dropdown (no scrolling to hunt through a grid).
+class OnboardingScreen extends StatefulWidget {
   final AppState state;
   const OnboardingScreen({required this.state, super.key});
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  String? _key;
+
+  BusinessType? get _biz => _key == null ? null : kBusinessTypes.firstWhere((b) => b.key == _key);
+
+  void _continue() {
+    if (_key == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BusinessSetupScreen(state: widget.state, bizType: _key!),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
-    return SingleChildScrollView(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1080),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 36, 20, 60),
+    final short = MediaQuery.of(context).size.height < 680; // hide art on small screens
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(22, 12, 22, 20),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 460),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Hero
-                const BxIllustration('illus-onboarding-business', size: 132),
-                const SizedBox(height: 10),
-                _kicker(bx),
-                const SizedBox(height: 16),
+                if (!short) ...[const Center(child: BxIllustration('illus-onboarding-business', size: 108)), const SizedBox(height: 14)],
+                // kicker
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: bx.brand.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(999)),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.bolt, size: 14, color: bx.brand),
+                        const SizedBox(width: 6),
+                        Text('Guided setup · 60 seconds', style: BxText.meta.copyWith(fontSize: 12, color: bx.brand)),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
                 Text.rich(
                   TextSpan(
                     children: [
@@ -37,45 +72,71 @@ class OnboardingScreen extends StatelessWidget {
                     ],
                   ),
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: MediaQuery.of(context).size.width < 480 ? 32 : 40, height: 1.08, fontWeight: FontWeight.w800, letterSpacing: -0.6),
+                  style: const TextStyle(fontSize: 26, height: 1.15, fontWeight: FontWeight.w800, letterSpacing: -0.6),
                 ),
-                const SizedBox(height: 14),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
-                  child: Text(
-                    "Choose a business type and BillNex auto-enables exactly the features that trade needs — GST, credit, batch/expiry, KOT, appointments — nothing you don't. Fine-tune any category later.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: bx.muted, height: 1.5),
+                const SizedBox(height: 8),
+                Text(
+                  'Auto-enables exactly the features that trade needs — GST, credit, batch, KOT — nothing you don\'t.',
+                  textAlign: TextAlign.center,
+                  style: BxText.supporting.copyWith(color: bx.muted, height: 1.45),
+                ),
+                const SizedBox(height: 20),
+                // ── business-type dropdown ──
+                DropdownButtonFormField<String>(
+                  initialValue: _key,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    labelText: 'Business type',
+                    prefixIcon: _biz == null
+                        ? const Icon(Icons.storefront_outlined)
+                        : Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: BizIcon(bizKey: _biz!.key, fallback: _biz!.icon, size: 22),
+                          ),
+                    border: const OutlineInputBorder(),
+                  ),
+                  hint: const Text('Choose your trade'),
+                  items: [
+                    for (final b in kBusinessTypes)
+                      DropdownMenuItem(
+                        value: b.key,
+                        child: Text('${b.name}  ·  ${b.edition}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
+                      ),
+                  ],
+                  onChanged: (v) => setState(() => _key = v),
+                ),
+                if (_biz != null) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: bx.surface2,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: bx.border),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, size: 16, color: bx.pos),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(_biz!.tag, style: BxText.supporting.copyWith(color: bx.muted)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 52,
+                  child: FilledButton.icon(
+                    onPressed: _key == null ? null : _continue,
+                    icon: const Icon(Icons.arrow_forward, size: 20),
+                    label: const Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                   ),
                 ),
-                const SizedBox(height: 22),
+                const SizedBox(height: 16),
                 _steps(bx),
-                const SizedBox(height: 26),
-                // Grid
-                LayoutBuilder(
-                  builder: (context, c) {
-                    final cols = c.maxWidth > 900
-                        ? 4
-                        : c.maxWidth > 600
-                        ? 2
-                        : 1;
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: kBusinessTypes.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: cols, mainAxisSpacing: 14, crossAxisSpacing: 14, mainAxisExtent: 224),
-                      itemBuilder: (context, i) => _BizCard(
-                        biz: kBusinessTypes[i],
-                        delayMs: i * 45,
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => BusinessSetupScreen(state: state, bizType: kBusinessTypes[i].key),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
               ],
             ),
           ),
@@ -84,29 +145,13 @@ class OnboardingScreen extends StatelessWidget {
     );
   }
 
-  Widget _kicker(BxColors bx) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-    decoration: BoxDecoration(color: bx.brand.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(999)),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.bolt, size: 15, color: bx.brand),
-        const SizedBox(width: 6),
-        Text(
-          'Guided setup · 60 seconds',
-          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: bx.brand),
-        ),
-      ],
-    ),
-  );
-
   Widget _steps(BxColors bx) {
     Widget step(String n, String label, bool on) => Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 22,
-          height: 22,
+          width: 20,
+          height: 20,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: on ? bx.brand : bx.surface2,
@@ -115,120 +160,16 @@ class OnboardingScreen extends StatelessWidget {
           ),
           child: Text(
             n,
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: on ? Colors.white : bx.faint),
+            style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: on ? Colors.white : bx.faint),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         Text(
           label,
-          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: on ? null : bx.faint),
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: on ? null : bx.faint),
         ),
       ],
     );
-    return Wrap(
-      spacing: 16,
-      runSpacing: 8,
-      alignment: WrapAlignment.center,
-      children: [step('1', 'Business type', true), step('2', 'Features auto-allotted', false), step('3', 'Templates & go live', false)],
-    );
+    return Wrap(spacing: 14, runSpacing: 8, alignment: WrapAlignment.center, children: [step('1', 'Business type', true), step('2', 'Auto-allotted', false), step('3', 'Go live', false)]);
   }
-}
-
-class _BizCard extends StatefulWidget {
-  final BusinessType biz;
-  final int delayMs;
-  final VoidCallback onTap;
-  const _BizCard({required this.biz, required this.delayMs, required this.onTap});
-  @override
-  State<_BizCard> createState() => _BizCardState();
-}
-
-class _BizCardState extends State<_BizCard> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 480));
-  bool _hover = false;
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(milliseconds: widget.delayMs), () {
-      if (mounted) _c.forward();
-    });
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bx = context.bx;
-    final b = widget.biz;
-    return FadeTransition(
-      opacity: _c,
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (context, child) => Transform.translate(offset: Offset(0, 10 * (1 - _c.value)), child: child),
-        child: MouseRegion(
-          onEnter: (_) => setState(() => _hover = true),
-          onExit: (_) => setState(() => _hover = false),
-          child: GestureDetector(
-            onTap: widget.onTap,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              transform: _hover ? (Matrix4.identity()..translateByDouble(0, -3, 0, 1)) : Matrix4.identity(),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(Bx.radius),
-                border: Border.all(color: _hover ? bx.brand : bx.border),
-                boxShadow: _hover ? [BoxShadow(color: Colors.black.withValues(alpha: 0.18), blurRadius: 40, offset: const Offset(0, 20))] : null,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(color: bx.brand.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(12)),
-                    child: BizIcon(bizKey: b.key, fallback: b.icon),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(b.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                  Text(
-                    b.edition,
-                    style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: bx.accent),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    b.tag,
-                    style: TextStyle(fontSize: 12.5, color: bx.muted, height: 1.4),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const Spacer(),
-                  Wrap(spacing: 5, runSpacing: 5, children: [...b.on.take(2).map((c) => _tag(bx, capabilityByKey(c).name.split(' ').take(2).join(' '))), _tag(bx, '+${b.on.length - 2} more')]),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _tag(BxColors bx, String s) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-    decoration: BoxDecoration(
-      color: bx.surface2,
-      borderRadius: BorderRadius.circular(6),
-      border: Border.all(color: bx.border),
-    ),
-    child: Text(
-      s,
-      style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: bx.muted),
-    ),
-  );
 }

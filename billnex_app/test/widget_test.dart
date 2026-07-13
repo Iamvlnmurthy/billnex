@@ -77,9 +77,10 @@ void main() {
     // First run shows the Get Started splash; tap through to the picker.
     expect(find.text('Get Started'), findsOneWidget);
     await tester.tap(find.text('Get Started'));
-    await tester.pumpAndSettle(); // let the staggered card reveal timers finish
-    expect(find.text('Kirana / General Store'), findsOneWidget);
-    expect(find.textContaining('Pick your business'), findsOneWidget);
+    await tester.pumpAndSettle();
+    // Compact onboarding: a business-type dropdown + Continue button.
+    expect(find.text('Choose your trade'), findsOneWidget);
+    expect(find.text('Continue'), findsOneWidget);
   });
 
   test('setupBusiness onboards with a real profile and empty catalogue', () {

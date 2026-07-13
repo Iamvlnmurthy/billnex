@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import 'nav.dart';
 import 'dashboard_screen.dart';
 import 'quick_bill_screen.dart';
+import 'menu_screen.dart';
 import 'features_screen.dart';
 import 'pos_screen.dart';
 import 'sales_screen.dart';
@@ -64,6 +65,7 @@ class _HomeShellState extends State<HomeShell> {
       NavId.reports,
       NavId.features,
       NavId.print,
+      NavId.menu,
     ];
     return all.where((id) => s.roleCanAccess(id.name)).toList();
   }
@@ -84,7 +86,15 @@ class _HomeShellState extends State<HomeShell> {
       NavId.reports => ReportsScreen(state: s),
       NavId.features => FeaturesScreen(state: s),
       NavId.print => TemplatesScreen(state: s),
+      NavId.menu => MenuScreen(state: s, goTo: _go),
     };
+  }
+
+  /// The fixed bottom bar (Vyapar-style): up to three primary destinations the
+  /// role can reach, then a Menu hub that holds everything else.
+  List<NavId> _bottomTabs(List<NavId> order) {
+    final pref = [NavId.quickbill, NavId.dash, NavId.inventory, NavId.sales].where(order.contains).take(3).toList();
+    return [...pref, NavId.menu];
   }
 
   @override
@@ -95,10 +105,7 @@ class _HomeShellState extends State<HomeShell> {
     return LayoutBuilder(
       builder: (context, c) {
         final wide = c.maxWidth >= 720;
-        // Mobile bottom nav caps at 5; overflow goes to a "More" sheet.
-        final showMore = !wide && order.length > 5;
-        final primary = showMore ? order.take(4).toList() : order;
-        final overflow = showMore ? order.skip(4).toList() : <NavId>[];
+        final tabs = _bottomTabs(order);
 
         return Scaffold(
           body: Column(
@@ -120,54 +127,21 @@ class _HomeShellState extends State<HomeShell> {
           bottomNavigationBar: wide
               ? null
               : NavigationBar(
-                  selectedIndex: _mobileSelectedIndex(primary, overflow),
-                  onDestinationSelected: (i) {
-                    if (showMore && i == primary.length) {
-                      _openMore(context, overflow);
-                    } else {
-                      _go(primary[i]);
-                    }
-                  },
+                  selectedIndex: _mobileSelectedIndex(tabs),
+                  onDestinationSelected: (i) => _go(tabs[i]),
                   height: 66,
-                  destinations: [
-                    for (final id in primary) NavigationDestination(icon: Icon(kNavSpecs[id]!.icon), selectedIcon: Icon(kNavSpecs[id]!.activeIcon), label: navLabel(context, id)),
-                    if (showMore) const NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
-                  ],
+                  destinations: [for (final id in tabs) NavigationDestination(icon: Icon(kNavSpecs[id]!.icon), selectedIcon: Icon(kNavSpecs[id]!.activeIcon), label: navLabel(context, id))],
                 ),
         );
       },
     );
   }
 
-  int _mobileSelectedIndex(List<NavId> primary, List<NavId> overflow) {
-    final i = primary.indexOf(_current);
+  int _mobileSelectedIndex(List<NavId> tabs) {
+    final i = tabs.indexOf(_current);
     if (i >= 0) return i;
-    // current is in overflow -> highlight the "More" slot
-    return primary.length;
-  }
-
-  void _openMore(BuildContext context, List<NavId> overflow) {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final id in overflow)
-              ListTile(
-                leading: Icon(kNavSpecs[id]!.icon),
-                title: Text(kNavSpecs[id]!.label),
-                selected: _current == id,
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _go(id);
-                },
-              ),
-          ],
-        ),
-      ),
-    );
+    // Viewing a screen reached via the hub → highlight the Menu tab.
+    return tabs.indexOf(NavId.menu);
   }
 }
 
