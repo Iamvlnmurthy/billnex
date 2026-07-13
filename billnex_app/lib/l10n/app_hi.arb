@@ -340,5 +340,20 @@
   "printSampleFail": "नमूना प्रिंट नहीं हो सका",
   "defaultLabel": "डिफ़ॉल्ट",
   "defaultTemplateSet": "डिफ़ॉल्ट टेम्पलेट सेट हो गया",
-  "setDefault": "डिफ़ॉल्ट बनाएं"
+  "setDefault": "डिफ़ॉल्ट बनाएं",
+  "apptBook": "बुक करें",
+  "apptSubtitle": "{count} आगामी · सेवा, स्टाफ और स्लॉट बुक करें।",
+  "apptVerticalPack": "वर्टिकल पैक",
+  "apptEmptyTitle": "अभी कोई अपॉइंटमेंट नहीं",
+  "apptStatusBooked": "बुक",
+  "apptStatusDone": "पूर्ण",
+  "apptStatusNoShow": "नहीं आए",
+  "apptMarkDone": "पूर्ण चिह्नित करें",
+  "apptBookTitle": "अपॉइंटमेंट बुक करें",
+  "apptCustomer": "ग्राहक",
+  "apptEnterCustomer": "ग्राहक का नाम दर्ज करें",
+  "apptStaff": "स्टाफ",
+  "apptSlot": "स्लॉट · {time}",
+  "apptConfirmBooking": "बुकिंग पक्की करें",
+  "apptBookedSnack": "अपॉइंटमेंट बुक हो गई ✓"
 }

@@ -1134,4 +1134,53 @@ class LHi extends L {
 
   @override
   String get setDefault => 'डिफ़ॉल्ट बनाएं';
+
+  @override
+  String get apptBook => 'बुक करें';
+
+  @override
+  String apptSubtitle(String count) {
+    return '$count आगामी · सेवा, स्टाफ और स्लॉट बुक करें।';
+  }
+
+  @override
+  String get apptVerticalPack => 'वर्टिकल पैक';
+
+  @override
+  String get apptEmptyTitle => 'अभी कोई अपॉइंटमेंट नहीं';
+
+  @override
+  String get apptStatusBooked => 'बुक';
+
+  @override
+  String get apptStatusDone => 'पूर्ण';
+
+  @override
+  String get apptStatusNoShow => 'नहीं आए';
+
+  @override
+  String get apptMarkDone => 'पूर्ण चिह्नित करें';
+
+  @override
+  String get apptBookTitle => 'अपॉइंटमेंट बुक करें';
+
+  @override
+  String get apptCustomer => 'ग्राहक';
+
+  @override
+  String get apptEnterCustomer => 'ग्राहक का नाम दर्ज करें';
+
+  @override
+  String get apptStaff => 'स्टाफ';
+
+  @override
+  String apptSlot(String time) {
+    return 'स्लॉट · $time';
+  }
+
+  @override
+  String get apptConfirmBooking => 'बुकिंग पक्की करें';
+
+  @override
+  String get apptBookedSnack => 'अपॉइंटमेंट बुक हो गई ✓';
 }

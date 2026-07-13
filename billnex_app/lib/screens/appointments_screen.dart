@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/appointment.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import 'customers_screen.dart' show StatusChip;
+
+String _apptStatusLabel(L l, ApptStatus s) => switch (s) {
+  ApptStatus.booked => l.apptStatusBooked,
+  ApptStatus.done => l.apptStatusDone,
+  ApptStatus.noShow => l.apptStatusNoShow,
+};
 
 /// Appointments vertical pack (salon/clinic) — gated by the `appointments` flag.
 class AppointmentsScreen extends StatelessWidget {
@@ -12,11 +19,12 @@ class AppointmentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final bx = context.bx;
     final appts = state.appointments;
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton.extended(onPressed: () => _book(context), icon: const Icon(Icons.event_available), label: const Text('Book')),
+      floatingActionButton: FloatingActionButton.extended(onPressed: () => _book(context), icon: const Icon(Icons.event_available), label: Text(l.apptBook)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
         children: [
@@ -25,7 +33,7 @@ class AppointmentsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PageHeader('Appointments', '${state.upcomingAppts} upcoming · book service, staff and slot.', trailing: const Badge2('Vertical pack')),
+                PageHeader(l.navAppointments, l.apptSubtitle('${state.upcomingAppts}'), trailing: Badge2(l.apptVerticalPack)),
                 if (appts.isEmpty)
                   Card(
                     child: Padding(
@@ -35,7 +43,7 @@ class AppointmentsScreen extends StatelessWidget {
                           Icon(Icons.event_outlined, size: 40, color: bx.faint),
                           const SizedBox(height: 12),
                           Text(
-                            'No appointments yet',
+                            l.apptEmptyTitle,
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: bx.muted),
                           ),
                         ],
@@ -53,6 +61,7 @@ class AppointmentsScreen extends StatelessWidget {
   }
 
   Widget _row(BuildContext context, Appointment a, bool first) {
+    final l = L.of(context);
     final bx = context.bx;
     final (fg, bg) = switch (a.status) {
       ApptStatus.booked => (bx.accent, bx.accent.withValues(alpha: 0.12)),
@@ -87,7 +96,7 @@ class AppointmentsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    StatusChip(a.status.label.toUpperCase(), fg, bg),
+                    StatusChip(_apptStatusLabel(l, a.status).toUpperCase(), fg, bg),
                   ],
                 ),
                 const SizedBox(height: 2),
@@ -99,7 +108,7 @@ class AppointmentsScreen extends StatelessWidget {
             PopupMenuButton<ApptStatus>(
               icon: Icon(Icons.more_vert, color: bx.muted),
               onSelected: (s) => state.setApptStatus(a, s),
-              itemBuilder: (ctx) => const [PopupMenuItem(value: ApptStatus.done, child: Text('Mark done')), PopupMenuItem(value: ApptStatus.noShow, child: Text('No-show'))],
+              itemBuilder: (ctx) => [PopupMenuItem(value: ApptStatus.done, child: Text(l.apptMarkDone)), PopupMenuItem(value: ApptStatus.noShow, child: Text(l.apptStatusNoShow))],
             ),
         ],
       ),
@@ -107,6 +116,7 @@ class AppointmentsScreen extends StatelessWidget {
   }
 
   Future<void> _book(BuildContext context) async {
+    final l = L.of(context);
     final customer = TextEditingController();
     final service = TextEditingController();
     final staff = TextEditingController();
@@ -127,23 +137,23 @@ class AppointmentsScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text('Book appointment', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  Text(l.apptBookTitle, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: customer,
                     autofocus: true,
-                    decoration: const InputDecoration(labelText: 'Customer', border: OutlineInputBorder()),
-                    validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a customer name' : null,
+                    decoration: InputDecoration(labelText: l.apptCustomer, border: const OutlineInputBorder()),
+                    validator: (v) => (v ?? '').trim().isEmpty ? l.apptEnterCustomer : null,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: service,
-                    decoration: const InputDecoration(labelText: 'Service', border: OutlineInputBorder()),
+                    decoration: InputDecoration(labelText: l.serviceLabel, border: const OutlineInputBorder()),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: staff,
-                    decoration: const InputDecoration(labelText: 'Staff', border: OutlineInputBorder()),
+                    decoration: InputDecoration(labelText: l.apptStaff, border: const OutlineInputBorder()),
                   ),
                   const SizedBox(height: 10),
                   OutlinedButton.icon(
@@ -152,7 +162,7 @@ class AppointmentsScreen extends StatelessWidget {
                       if (t != null) setSt(() => time = t);
                     },
                     icon: const Icon(Icons.schedule, size: 18),
-                    label: Text('Slot · ${time.format(ctx)}'),
+                    label: Text(l.apptSlot(time.format(ctx))),
                   ),
                   const SizedBox(height: 16),
                   FilledButton(
@@ -160,7 +170,7 @@ class AppointmentsScreen extends StatelessWidget {
                       if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
                     },
                     style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                    child: const Text('Confirm booking'),
+                    child: Text(l.apptConfirmBooking),
                   ),
                 ],
               ),
@@ -173,12 +183,12 @@ class AppointmentsScreen extends StatelessWidget {
         final slot = DateTime(now.year, now.month, now.day, time.hour, time.minute).millisecondsSinceEpoch;
         state.addAppointment(
           customer: customer.text.trim(),
-          service: service.text.trim().isEmpty ? 'Service' : service.text.trim(),
-          staff: staff.text.trim().isEmpty ? 'Staff' : staff.text.trim(),
+          service: service.text.trim().isEmpty ? l.serviceLabel : service.text.trim(),
+          staff: staff.text.trim().isEmpty ? l.apptStaff : staff.text.trim(),
           slotMs: slot,
           nowMs: DateTime.now().millisecondsSinceEpoch,
         );
-        messenger.showSnackBar(const SnackBar(content: Text('Appointment booked ✓')));
+        messenger.showSnackBar(SnackBar(content: Text(l.apptBookedSnack)));
       }
     } finally {
       customer.dispose();

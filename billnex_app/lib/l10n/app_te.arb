@@ -340,5 +340,20 @@
   "printSampleFail": "నమూనా ప్రింట్ చేయలేకపోయాము",
   "defaultLabel": "డిఫాల్ట్",
   "defaultTemplateSet": "డిఫాల్ట్ టెంప్లేట్ సెట్ చేయబడింది",
-  "setDefault": "డిఫాల్ట్‌గా చేయి"
+  "setDefault": "డిఫాల్ట్‌గా చేయి",
+  "apptBook": "బుక్ చేయి",
+  "apptSubtitle": "{count} రాబోయేవి · సేవ, సిబ్బంది, స్లాట్ బుక్ చేయండి.",
+  "apptVerticalPack": "వర్టికల్ ప్యాక్",
+  "apptEmptyTitle": "ఇంకా అపాయింట్‌మెంట్లు లేవు",
+  "apptStatusBooked": "బుక్ అయింది",
+  "apptStatusDone": "పూర్తయింది",
+  "apptStatusNoShow": "రాలేదు",
+  "apptMarkDone": "పూర్తయినట్లు గుర్తించు",
+  "apptBookTitle": "అపాయింట్‌మెంట్ బుక్ చేయి",
+  "apptCustomer": "కస్టమర్",
+  "apptEnterCustomer": "కస్టమర్ పేరు నమోదు చేయండి",
+  "apptStaff": "సిబ్బంది",
+  "apptSlot": "స్లాట్ · {time}",
+  "apptConfirmBooking": "బుకింగ్ నిర్ధారించు",
+  "apptBookedSnack": "అపాయింట్‌మెంట్ బుక్ అయింది ✓"
 }

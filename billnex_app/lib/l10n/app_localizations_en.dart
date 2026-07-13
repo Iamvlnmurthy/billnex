@@ -1134,4 +1134,53 @@ class LEn extends L {
 
   @override
   String get setDefault => 'Set default';
+
+  @override
+  String get apptBook => 'Book';
+
+  @override
+  String apptSubtitle(String count) {
+    return '$count upcoming · book service, staff and slot.';
+  }
+
+  @override
+  String get apptVerticalPack => 'Vertical pack';
+
+  @override
+  String get apptEmptyTitle => 'No appointments yet';
+
+  @override
+  String get apptStatusBooked => 'Booked';
+
+  @override
+  String get apptStatusDone => 'Done';
+
+  @override
+  String get apptStatusNoShow => 'No-show';
+
+  @override
+  String get apptMarkDone => 'Mark done';
+
+  @override
+  String get apptBookTitle => 'Book appointment';
+
+  @override
+  String get apptCustomer => 'Customer';
+
+  @override
+  String get apptEnterCustomer => 'Enter a customer name';
+
+  @override
+  String get apptStaff => 'Staff';
+
+  @override
+  String apptSlot(String time) {
+    return 'Slot · $time';
+  }
+
+  @override
+  String get apptConfirmBooking => 'Confirm booking';
+
+  @override
+  String get apptBookedSnack => 'Appointment booked ✓';
 }

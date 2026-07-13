@@ -391,5 +391,22 @@
   "printSampleFail": "Couldn't print the sample",
   "defaultLabel": "Default",
   "defaultTemplateSet": "Default template set",
-  "setDefault": "Set default"
+  "setDefault": "Set default",
+  "apptBook": "Book",
+  "apptSubtitle": "{count} upcoming · book service, staff and slot.",
+  "@apptSubtitle": { "placeholders": { "count": { "type": "String" } } },
+  "apptVerticalPack": "Vertical pack",
+  "apptEmptyTitle": "No appointments yet",
+  "apptStatusBooked": "Booked",
+  "apptStatusDone": "Done",
+  "apptStatusNoShow": "No-show",
+  "apptMarkDone": "Mark done",
+  "apptBookTitle": "Book appointment",
+  "apptCustomer": "Customer",
+  "apptEnterCustomer": "Enter a customer name",
+  "apptStaff": "Staff",
+  "apptSlot": "Slot · {time}",
+  "@apptSlot": { "placeholders": { "time": { "type": "String" } } },
+  "apptConfirmBooking": "Confirm booking",
+  "apptBookedSnack": "Appointment booked ✓"
 }

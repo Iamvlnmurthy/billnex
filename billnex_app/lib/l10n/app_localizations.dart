@@ -2138,6 +2138,96 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Set default'**
   String get setDefault;
+
+  /// No description provided for @apptBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get apptBook;
+
+  /// No description provided for @apptSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} upcoming · book service, staff and slot.'**
+  String apptSubtitle(String count);
+
+  /// No description provided for @apptVerticalPack.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical pack'**
+  String get apptVerticalPack;
+
+  /// No description provided for @apptEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No appointments yet'**
+  String get apptEmptyTitle;
+
+  /// No description provided for @apptStatusBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get apptStatusBooked;
+
+  /// No description provided for @apptStatusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get apptStatusDone;
+
+  /// No description provided for @apptStatusNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show'**
+  String get apptStatusNoShow;
+
+  /// No description provided for @apptMarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark done'**
+  String get apptMarkDone;
+
+  /// No description provided for @apptBookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Book appointment'**
+  String get apptBookTitle;
+
+  /// No description provided for @apptCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get apptCustomer;
+
+  /// No description provided for @apptEnterCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a customer name'**
+  String get apptEnterCustomer;
+
+  /// No description provided for @apptStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get apptStaff;
+
+  /// No description provided for @apptSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot · {time}'**
+  String apptSlot(String time);
+
+  /// No description provided for @apptConfirmBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm booking'**
+  String get apptConfirmBooking;
+
+  /// No description provided for @apptBookedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment booked ✓'**
+  String get apptBookedSnack;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

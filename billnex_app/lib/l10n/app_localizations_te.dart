@@ -1134,4 +1134,53 @@ class LTe extends L {
 
   @override
   String get setDefault => 'డిఫాల్ట్‌గా చేయి';
+
+  @override
+  String get apptBook => 'బుక్ చేయి';
+
+  @override
+  String apptSubtitle(String count) {
+    return '$count రాబోయేవి · సేవ, సిబ్బంది, స్లాట్ బుక్ చేయండి.';
+  }
+
+  @override
+  String get apptVerticalPack => 'వర్టికల్ ప్యాక్';
+
+  @override
+  String get apptEmptyTitle => 'ఇంకా అపాయింట్‌మెంట్లు లేవు';
+
+  @override
+  String get apptStatusBooked => 'బుక్ అయింది';
+
+  @override
+  String get apptStatusDone => 'పూర్తయింది';
+
+  @override
+  String get apptStatusNoShow => 'రాలేదు';
+
+  @override
+  String get apptMarkDone => 'పూర్తయినట్లు గుర్తించు';
+
+  @override
+  String get apptBookTitle => 'అపాయింట్‌మెంట్ బుక్ చేయి';
+
+  @override
+  String get apptCustomer => 'కస్టమర్';
+
+  @override
+  String get apptEnterCustomer => 'కస్టమర్ పేరు నమోదు చేయండి';
+
+  @override
+  String get apptStaff => 'సిబ్బంది';
+
+  @override
+  String apptSlot(String time) {
+    return 'స్లాట్ · $time';
+  }
+
+  @override
+  String get apptConfirmBooking => 'బుకింగ్ నిర్ధారించు';
+
+  @override
+  String get apptBookedSnack => 'అపాయింట్‌మెంట్ బుక్ అయింది ✓';
 }
