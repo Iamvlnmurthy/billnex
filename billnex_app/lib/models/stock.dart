@@ -33,6 +33,7 @@ class StockItem {
   String? barcode;
   String? category;
   String? hsn;
+  bool stockTracked; // false for services (salon, repair) — no stock ledger
   final List<Batch> batches;
 
   StockItem({
@@ -47,11 +48,12 @@ class StockItem {
     this.barcode,
     this.category,
     this.hsn,
+    this.stockTracked = true,
     List<Batch>? batches,
   }) : batches = batches ?? [];
 
-  bool get low => qty <= reorderLevel;
-  bool get out => qty <= 0;
+  bool get low => stockTracked && qty <= reorderLevel;
+  bool get out => stockTracked && qty <= 0;
 
   Product toProduct() => Product(name, unit, price);
 
@@ -67,6 +69,7 @@ class StockItem {
         'bc': barcode,
         'cat': category,
         'hsn': hsn,
+        'st': stockTracked,
         'b': batches.map((e) => e.toJson()).toList(),
       };
 
@@ -82,6 +85,7 @@ class StockItem {
         barcode: j['bc'] as String?,
         category: j['cat'] as String?,
         hsn: j['hsn'] as String?,
+        stockTracked: j['st'] as bool? ?? true,
         batches: (j['b'] as List?)?.map((e) => Batch.fromJson(e as Map<String, dynamic>)).toList() ?? [],
       );
 }

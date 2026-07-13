@@ -3,10 +3,16 @@ import 'dart:math' as math;
 /// One line as seen by the calculator.
 class BillInput {
   final double price; // unit price (tax-inclusive or exclusive per [taxInclusive])
-  final int qty;
+  final double qty; // supports weighed/loose goods (e.g. 0.5 kg)
   final double gstRate; // %, e.g. 0/5/12/18/28
   final double lineDiscount; // absolute ₹ off this line
   const BillInput({required this.price, required this.qty, required this.gstRate, this.lineDiscount = 0});
+}
+
+/// Formats a quantity: integer when whole (2), else trimmed decimals (0.5, 1.25).
+String qtyLabel(num q) {
+  if (q == q.roundToDouble()) return q.toInt().toString();
+  return q.toStringAsFixed(3).replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
 }
 
 /// Per-GST-rate aggregation (for the HSN/tax summary on the invoice).

@@ -5,6 +5,7 @@ import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/receipt.dart';
+import '../services/billing.dart';
 import '../services/pdf_service.dart';
 import '../models/customer.dart';
 import '../models/stock.dart';
@@ -31,8 +32,7 @@ class PosScreen extends StatelessWidget {
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1180),
               child: Column(children: [
-                const PageHeader('Billing', 'Search or scan · live receipt updates as you go.',
-                    trailing: Badge2('5-item sale in <20s')),
+                const PageHeader('Billing', 'Search or scan · live receipt updates as you go.'),
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Expanded(child: _Catalog(state: state, items: items)),
                   const SizedBox(width: 16),
@@ -153,19 +153,32 @@ class _CatalogState extends State<_Catalog> {
     }
   }
 
-  Future<String?> _manualEntry(BuildContext context) {
+  /// Adds a product to the cart; warns when a tracked item is out of stock
+  /// instead of silently driving stock negative.
+  void _add(BuildContext context, StockItem item) {
+    final ok = widget.state.addProduct(item);
+    if (!ok) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${item.name} is out of stock')));
+    }
+  }
+
+  Future<String?> _manualEntry(BuildContext context) async {
     final c = TextEditingController();
-    return showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Enter barcode / SKU'),
-        content: TextField(controller: c, autofocus: true, decoration: const InputDecoration(hintText: 'Barcode or product code', border: OutlineInputBorder())),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Add')),
-        ],
-      ),
-    );
+    try {
+      return await showDialog<String>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Enter barcode / SKU'),
+          content: TextField(controller: c, autofocus: true, decoration: const InputDecoration(hintText: 'Barcode or product code', border: OutlineInputBorder())),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Add')),
+          ],
+        ),
+      );
+    } finally {
+      c.dispose();
+    }
   }
 
   @override
@@ -174,7 +187,12 @@ class _CatalogState extends State<_Catalog> {
     final all = widget.items;
     final items = _q.isEmpty
         ? all
-        : all.where((i) => i.name.toLowerCase().contains(_q.toLowerCase()) || (i.barcode?.contains(_q) ?? false)).toList();
+        : all.where((i) {
+            final q = _q.toLowerCase();
+            return i.name.toLowerCase().contains(q) ||
+                (i.barcode?.toLowerCase().contains(q) ?? false) ||
+                i.sku.toLowerCase().contains(q);
+          }).toList();
     return Column(children: [
       Row(children: [
         Expanded(
@@ -232,7 +250,7 @@ class _CatalogState extends State<_Catalog> {
             crossAxisSpacing: 10,
             mainAxisExtent: 118,
           ),
-          itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => widget.state.addProduct(items[i])),
+          itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => _add(context, items[i])),
         ),
     ]);
   }
@@ -247,7 +265,9 @@ class _ProductTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final bx = context.bx;
     final qtyColor = item.out ? bx.danger : (item.low ? bx.warn : bx.muted);
-    return InkWell(
+    return Opacity(
+      opacity: item.out ? 0.55 : 1,
+      child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -255,7 +275,7 @@ class _ProductTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: bx.border),
+          border: Border.all(color: item.out ? bx.danger.withValues(alpha: 0.5) : bx.border),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
@@ -268,7 +288,7 @@ class _ProductTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
               decoration: BoxDecoration(color: qtyColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
-              child: Text('${item.qty.toStringAsFixed(item.qty % 1 == 0 ? 0 : 1)} ${item.unit}',
+              child: Text(item.stockTracked ? '${qtyLabel(item.qty)} ${item.unit}' : 'Service',
                   style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: qtyColor)),
             ),
           ]),
@@ -281,6 +301,7 @@ class _ProductTile extends StatelessWidget {
             Text('/ ${item.unit}', style: TextStyle(fontSize: 11, color: bx.muted)),
           ]),
         ]),
+      ),
       ),
     );
   }
@@ -331,15 +352,7 @@ class _CartPanel extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text('Bill discount', style: TextStyle(fontSize: 13, color: bx.muted)),
                   const Spacer(),
-                  SizedBox(
-                    width: 90,
-                    child: TextField(
-                      textAlign: TextAlign.right,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(prefixText: '₹ ', isDense: true, border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6)),
-                      onChanged: (v) => state.setBillDiscount(double.tryParse(v) ?? 0),
-                    ),
-                  ),
+                  SizedBox(width: 90, child: _BillDiscountField(state: state)),
                 ]),
               ),
             ],
@@ -353,15 +366,18 @@ class _CartPanel extends StatelessWidget {
               ]),
             ),
             const SizedBox(height: 12),
-            Row(children: [
-              Expanded(child: OutlinedButton.icon(onPressed: () => _charge(context, 'Cash'), icon: const Icon(Icons.account_balance_wallet_outlined, size: 18), label: const Text('Cash'))),
-              const SizedBox(width: 8),
-              Expanded(child: OutlinedButton(onPressed: () => _charge(context, 'UPI'), child: const Text('UPI QR'))),
-              if (state.isOn('creditLedger')) ...[
+            Builder(builder: (context) {
+              final empty = state.cart.isEmpty;
+              return Row(children: [
+                Expanded(child: OutlinedButton.icon(onPressed: empty ? null : () => _charge(context, 'Cash'), icon: const Icon(Icons.account_balance_wallet_outlined, size: 18), label: const Text('Cash'))),
                 const SizedBox(width: 8),
-                Expanded(child: OutlinedButton(onPressed: () => _charge(context, 'Credit'), child: const Text('Credit'))),
-              ],
-            ]),
+                Expanded(child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'UPI'), child: const Text('UPI QR'))),
+                if (state.isOn('creditLedger')) ...[
+                  const SizedBox(width: 8),
+                  Expanded(child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'Credit'), child: const Text('Credit'))),
+                ],
+              ]);
+            }),
             const SizedBox(height: 8),
             if (state.isOn('kot')) ...[
               OutlinedButton.icon(
@@ -372,9 +388,9 @@ class _CartPanel extends StatelessWidget {
               const SizedBox(height: 8),
             ],
             FilledButton.icon(
-              onPressed: () => _charge(context, 'Cash'),
+              onPressed: state.cart.isEmpty ? null : () => _charge(context, 'Cash'),
               icon: const Icon(Icons.print_outlined, size: 18),
-              label: Text('Charge & print · ${money(state.total)}'),
+              label: Text(state.cart.isEmpty ? 'Add items to charge' : 'Charge & print · ${money(state.total)}'),
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
             ),
           ]),
@@ -400,7 +416,7 @@ class _CartPanel extends StatelessWidget {
           address: state.profile?.address,
           lines: state.cart.isEmpty
               ? const [RcptLine('— add items —', 0, 0)]
-              : state.cart.map((l) => RcptLine(l.name, l.qty, l.amount)).toList(),
+              : state.cart.map((l) => RcptLine(l.name, l.qty, l.net)).toList(),
           subtotal: state.subtotal,
           gst: state.gst,
           total: state.total,
@@ -411,6 +427,7 @@ class _CartPanel extends StatelessWidget {
 
   Future<void> _sendKot(BuildContext context) async {
     // Print a kitchen ticket (no price) without posting the sale.
+    final messenger = ScaffoldMessenger.of(context);
     final kot = Sale(
       invoiceNo: '#KOT',
       epochMs: DateTime.now().millisecondsSinceEpoch,
@@ -419,10 +436,12 @@ class _CartPanel extends StatelessWidget {
       lines: state.cart.map((l) => SaleLine(l.name, l.qty, l.price)).toList(),
       subtotal: state.subtotal, gst: state.gst, total: state.total, paymentMode: 'KOT',
     );
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('KOT sent to kitchen ✓')));
     try {
       await PdfService.printSale(kot);
-    } catch (_) {}
+      messenger.showSnackBar(const SnackBar(content: Text('KOT sent to kitchen ✓')));
+    } catch (_) {
+      messenger.showSnackBar(const SnackBar(content: Text('Couldn\'t print the kitchen ticket — check the printer')));
+    }
   }
 
   Future<void> _charge(BuildContext context, String mode) async {
@@ -497,20 +516,59 @@ class _CartRow extends StatelessWidget {
           ]),
         ),
         _stepBtn(bx, Icons.remove, () => state.dec(index)),
-        SizedBox(width: 28, child: Text('${line.qty}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700))),
+        InkWell(
+          onTap: () => _editQty(context),
+          borderRadius: BorderRadius.circular(6),
+          child: SizedBox(
+            width: 44, height: 44,
+            child: Center(child: Text(qtyLabel(line.qty), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700))),
+          ),
+        ),
         _stepBtn(bx, Icons.add, () => state.inc(index)),
-        SizedBox(width: 70, child: Text(money(line.amount), textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w800))),
+        SizedBox(width: 66, child: Text(money(line.net), textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w800))),
       ]),
     );
   }
 
+  /// Tap-to-edit exact quantity — lets a grocer bill 0.5 kg of loose goods.
+  Future<void> _editQty(BuildContext context) async {
+    final c = TextEditingController(text: qtyLabel(line.qty));
+    try {
+      final v = await showDialog<double>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Quantity · ${line.name}'),
+          content: TextField(
+            controller: c,
+            autofocus: true,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(suffixText: line.unit, border: const OutlineInputBorder()),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, double.tryParse(c.text.trim())), child: const Text('Set')),
+          ],
+        ),
+      );
+      if (v != null) state.setQty(index, v);
+    } finally {
+      c.dispose();
+    }
+  }
+
   Widget _stepBtn(BxColors bx, IconData ic, VoidCallback onTap) => InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(7),
-        child: Container(
-          width: 26, height: 26,
-          decoration: BoxDecoration(color: bx.surface2, borderRadius: BorderRadius.circular(7), border: Border.all(color: bx.border)),
-          child: Icon(ic, size: 15),
+        borderRadius: BorderRadius.circular(22),
+        child: SizedBox(
+          width: 44, height: 44,
+          child: Center(
+            child: Container(
+              width: 28, height: 28,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(color: bx.surface2, borderRadius: BorderRadius.circular(8), border: Border.all(color: bx.border)),
+              child: Icon(ic, size: 16),
+            ),
+          ),
         ),
       );
 }
@@ -548,11 +606,65 @@ class _CustomerChip extends StatelessWidget {
                   ]),
           ),
           if (c != null)
-            InkWell(onTap: () => state.selectCustomer(null), child: Icon(Icons.close, size: 16, color: bx.muted))
+            InkWell(
+              onTap: () => state.selectCustomer(null),
+              borderRadius: BorderRadius.circular(22),
+              child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.muted)),
+            )
           else
             Icon(Icons.chevron_right, size: 18, color: bx.faint),
         ]),
       ),
+    );
+  }
+}
+
+/// Controlled bill-discount input — stays in sync with `state.billDiscount`
+/// so it clears to blank after a sale posts (was an uncontrolled field that
+/// retained stale text and desynced from the actual discount).
+class _BillDiscountField extends StatefulWidget {
+  final AppState state;
+  const _BillDiscountField({required this.state});
+  @override
+  State<_BillDiscountField> createState() => _BillDiscountFieldState();
+}
+
+class _BillDiscountFieldState extends State<_BillDiscountField> {
+  late final TextEditingController _c;
+
+  String _fmt(double v) => v <= 0 ? '' : (v == v.roundToDouble() ? v.toInt().toString() : v.toString());
+
+  @override
+  void initState() {
+    super.initState();
+    _c = TextEditingController(text: _fmt(widget.state.billDiscount));
+  }
+
+  @override
+  void didUpdateWidget(_BillDiscountField old) {
+    super.didUpdateWidget(old);
+    // Sync only on external changes (e.g. reset to 0 after posting); never
+    // clobber the value the user is actively typing.
+    final external = widget.state.billDiscount;
+    if ((double.tryParse(_c.text.trim()) ?? 0) != external) {
+      _c.text = _fmt(external);
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _c,
+      textAlign: TextAlign.right,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: const InputDecoration(prefixText: '₹ ', isDense: true, border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6)),
+      onChanged: (v) => widget.state.setBillDiscount(double.tryParse(v) ?? 0),
     );
   }
 }
@@ -569,7 +681,9 @@ class _TplChip extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+        constraints: const BoxConstraints(minHeight: 44),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: on ? bx.brand.withValues(alpha: 0.12) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),

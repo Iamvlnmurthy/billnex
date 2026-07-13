@@ -287,6 +287,7 @@ class _TopBar extends StatelessWidget {
     final hasPin = await auth.hasPin();
     if (!context.mounted) return;
     final controller = TextEditingController();
+    try {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -327,6 +328,9 @@ class _TopBar extends StatelessWidget {
         ]),
       ),
     );
+    } finally {
+      controller.dispose();
+    }
   }
 
   void _showAudit(BuildContext context, AppState state) {
@@ -408,7 +412,8 @@ class _TrustBar extends StatelessWidget {
             onTap: () => state.setOnline(!state.online),
             borderRadius: BorderRadius.circular(999),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              constraints: const BoxConstraints(minHeight: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(color: (state.online ? bx.trustOnline : bx.warn).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 Container(width: 8, height: 8, decoration: BoxDecoration(color: state.online ? bx.trustOnline : bx.warn, shape: BoxShape.circle)),
@@ -421,15 +426,17 @@ class _TrustBar extends StatelessWidget {
           seg(L.of(context).queue, '${state.queueCount}'),
           if (state.queueCount > 0) ...[
             const SizedBox(width: 8),
-            TextButton(onPressed: state.syncNow, style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero), child: const Text('Sync now', style: TextStyle(fontSize: 12.5))),
+            TextButton(onPressed: state.syncNow, style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10), minimumSize: const Size(0, 40)), child: const Text('Sync now', style: TextStyle(fontSize: 12.5))),
           ],
           const SizedBox(width: 16),
           InkWell(
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state)))),
             borderRadius: BorderRadius.circular(6),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 40),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 if (state.backupDue) ...[Icon(Icons.warning_amber_rounded, size: 13, color: bx.warn), const SizedBox(width: 4)],
                 Text('Backup ', style: TextStyle(fontSize: 12.5, color: bx.muted)),

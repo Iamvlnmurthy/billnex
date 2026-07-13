@@ -1,7 +1,7 @@
 /// A single posted line on a sale.
 class SaleLine {
   final String name;
-  final int qty;
+  final double qty; // supports weighed/loose goods (e.g. 0.5 kg)
   final double price;
   final double gstRate;
   final double discount;
@@ -11,7 +11,7 @@ class SaleLine {
   Map<String, dynamic> toJson() => {'n': name, 'q': qty, 'p': price, 'g': gstRate, 'd': discount};
   factory SaleLine.fromJson(Map<String, dynamic> j) => SaleLine(
         j['n'] as String,
-        (j['q'] as num).toInt(),
+        (j['q'] as num).toDouble(),
         (j['p'] as num).toDouble(),
         gstRate: (j['g'] as num?)?.toDouble() ?? 5,
         discount: (j['d'] as num?)?.toDouble() ?? 0,
@@ -74,7 +74,7 @@ class Sale {
     return '$hh:$mm ${d.hour < 12 ? 'AM' : 'PM'}';
   }
 
-  int get itemCount => lines.fold(0, (a, l) => a + l.qty);
+  double get itemCount => lines.fold(0.0, (a, l) => a + l.qty);
 
   Map<String, dynamic> toJson() => {
         'no': invoiceNo,

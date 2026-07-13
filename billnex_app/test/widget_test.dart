@@ -100,7 +100,7 @@ void main() {
     expect(s.gstin, '36ABCDE1234F1Z5');
     expect(s.stockItems, isEmpty); // no fake demo data
     // a sale carries the seller's real GSTIN for correct reprints
-    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 10, nowMs: 1);
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 10, nowMs: 1)!;
     s.addProduct(s.stockItems.first);
     final sale = s.postSale(paymentMode: 'Cash', nowMs: 2);
     expect(sale.businessName, 'Rajesh Kirana Store');
@@ -129,7 +129,7 @@ void main() {
   test('postSale creates an immutable numbered bill and clears the cart', () {
     final s = AppState();
     s.applyPreset('kirana');
-    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1), s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)];
+    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1)!, s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)!];
     s.addProduct(p[0]);
     s.addProduct(p[0]); // qty 2
     s.addProduct(p[1]);
@@ -153,7 +153,7 @@ void main() {
     final s = AppState();
     s.applyPreset('kirana'); // has creditLedger
     final cust = s.addCustomer(name: 'Anita Sharma', mobile: '9848000000', creditLimit: 5000);
-    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1), s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)];
+    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1)!, s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)!];
     s.addProduct(p[0]);
     s.addProduct(p[1]);
     final due = s.total;
@@ -184,7 +184,7 @@ void main() {
     final s = AppState();
     s.applyPreset('kirana');
     expect(s.stockItems, isEmpty); // real installs start with no products
-    final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
+    final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1)!;
     final before = s.stockOf(item.sku);
     s.addProduct(item);
     s.addProduct(item); // qty 2
@@ -196,7 +196,7 @@ void main() {
   test('manual adjustment changes qty and low-stock count', () {
     final s = AppState();
     s.applyPreset('kirana');
-    final it = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
+    final it = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1)!;
     final q0 = s.stockOf(it.sku);
     s.adjustStock(sku: it.sku, delta: -(q0 - 2), reason: 'test', nowMs: 1);
     expect(s.stockOf(it.sku), 2);
@@ -207,7 +207,7 @@ void main() {
     final s = AppState();
     s.applyPreset('kirana');
     final n = s.stockItems.length;
-    s.addStockItem(name: 'New SKU', unit: 'Piece', price: 50, qty: 25, nowMs: 1);
+    s.addStockItem(name: 'New SKU', unit: 'Piece', price: 50, qty: 25, nowMs: 1)!;
     expect(s.stockItems.length, n + 1);
     expect(s.stockOf('New SKU'), 25);
   });
@@ -216,7 +216,7 @@ void main() {
     final s = AppState();
     s.applyPreset('kirana');
     final sup = s.addSupplier(name: 'Metro', phone: '9', nowMs: 1);
-    final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 5, nowMs: 1);
+    final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 5, nowMs: 1)!;
     final before = s.stockOf(item.sku);
     final pur = s.recordPurchase(
       supplier: sup,
@@ -235,7 +235,7 @@ void main() {
   test('reports aggregate posted sales correctly', () {
     final s = AppState();
     s.applyPreset('kirana');
-    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1), s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)];
+    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1)!, s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)!];
     s.addProduct(p[0]);
     s.addProduct(p[0]);
     s.postSale(paymentMode: 'Cash', nowMs: 1);
@@ -267,7 +267,7 @@ void main() {
     final s = AppState();
     s.applyPreset('kirana');
     s.setOnline(false);
-    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1), s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)];
+    final p = [s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1)!, s.addStockItem(name: 'Oil', unit: 'L', price: 100, qty: 100, nowMs: 1)!];
     s.addProduct(p[0]);
     s.postSale(paymentMode: 'Cash', nowMs: 1);
     s.addProduct(p[1]);
@@ -301,7 +301,7 @@ void main() {
     await s1.init();
     s1.applyPreset('kirana');
     final cust = s1.addCustomer(name: 'Anita', mobile: '9', creditLimit: 5000, nowMs: 1);
-    final item = s1.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
+    final item = s1.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1)!;
     final stockBefore = s1.stockOf(item.sku);
     s1.addProduct(item);
     s1.postSale(paymentMode: 'Credit', nowMs: 2, customer: cust);
@@ -324,7 +324,7 @@ void main() {
     final s = AppState(sync: fake);
     s.applyPreset('kirana');
     s.setOnline(false); // queue while offline
-    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1); s.addProduct(s.stockItems.first);
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1)!; s.addProduct(s.stockItems.first);
     s.postSale(paymentMode: 'Cash', nowMs: 1);
     expect(s.queueCount, greaterThanOrEqualTo(1));
 
@@ -339,7 +339,7 @@ void main() {
     await a.init();
     a.applyPreset('kirana');
     final cust = a.addCustomer(name: 'Ravi', mobile: '9', creditLimit: 5000, nowMs: 1);
-    a.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1);
+    a.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 20, nowMs: 1)!;
     a.addProduct(a.stockItems.first);
     a.postSale(paymentMode: 'Credit', nowMs: 2, customer: cust);
     final blob = a.exportData(nowMs: 3);
@@ -400,5 +400,71 @@ void main() {
     expect(back.invoiceNo, sale.invoiceNo);
     expect(back.total, sale.total);
     expect(back.lines.single.amount, 100);
+  });
+
+  test('decimal quantity: 0.5 kg of loose goods bills correctly', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    final rice = s.addStockItem(name: 'Rice', unit: 'kg', price: 60, qty: 10, gstRate: 0, nowMs: 1)!;
+    s.addProduct(rice);
+    s.setQty(0, 0.5);
+    expect(s.cartQty, 0.5);
+    expect(s.total, 30); // 0.5 kg × ₹60, 0% GST
+    final sale = s.postSale(paymentMode: 'Cash', nowMs: 1);
+    expect(sale.lines.single.qty, 0.5);
+    expect(s.stockOf(rice.sku), 9.5); // stock decremented by 0.5
+  });
+
+  test('stock is never driven negative and out-of-stock add is refused', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 1, nowMs: 1)!;
+    expect(s.addProduct(item), true); // 1 in cart
+    expect(s.addProduct(item), false); // no stock left → refused
+    expect(s.cartQty, 1);
+    s.postSale(paymentMode: 'Cash', nowMs: 1);
+    expect(s.stockOf(item.sku), 0); // clamped, not negative
+  });
+
+  test('services (untracked) can be billed without stock', () {
+    final s = AppState();
+    s.applyPreset('salon');
+    final cut = s.addStockItem(name: 'Haircut', unit: 'service', price: 200, qty: 0, stockTracked: false, nowMs: 1)!;
+    expect(s.addProduct(cut), true);
+    expect(s.addProduct(cut), true); // no stock limit for services
+    expect(s.cartQty, 2);
+  });
+
+  test('duplicate product name is rejected, not overwritten', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    final a = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 10, nowMs: 1)!;
+    final dup = s.addStockItem(name: 'Rice', unit: 'kg', price: 999, qty: 5, nowMs: 2);
+    expect(dup, isNull); // rejected
+    expect(s.stockOf(a.sku), 10); // original untouched
+    expect(s.stockItems.length, 1);
+  });
+
+  test('collection is capped at the outstanding balance', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    final cust = s.addCustomer(name: 'A', mobile: '9', creditLimit: 5000);
+    final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 100, qty: 10, gstRate: 0, nowMs: 1)!;
+    s.addProduct(item);
+    final due = s.total;
+    s.postSale(paymentMode: 'Credit', nowMs: 1, customer: cust);
+    s.collect(customer: cust, amount: due + 500, mode: 'Cash', nowMs: 2); // overpay attempt
+    expect(s.balanceOf(cust.id), 0); // never goes negative
+  });
+
+  test('purchase GST uses each item\'s own slab', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 0, gstRate: 5, nowMs: 1);
+    s.addStockItem(name: 'AC', unit: 'pc', price: 30000, qty: 0, gstRate: 28, nowMs: 2);
+    final lines = [const PurchaseLine('Rice', 10, 40), const PurchaseLine('AC', 1, 20000)];
+    // 400×5% + 20000×28% = 20 + 5600 = 5620
+    expect(s.purchaseTax(lines), 5620);
+    expect(s.purchaseTotal(lines), 20400 + 5620);
   });
 }

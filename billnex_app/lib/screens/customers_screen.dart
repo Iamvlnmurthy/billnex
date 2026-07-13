@@ -232,51 +232,57 @@ class CustomerDetailScreen extends StatelessWidget {
   }
 
   Future<void> _collect(BuildContext context, Customer c, double due) async {
-    final controller = TextEditingController(text: due.round().toString());
+    final controller = TextEditingController(text: due.toStringAsFixed(2));
     String mode = 'Cash';
-    final result = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (ctx) {
-        final bx = ctx.bx;
-        return StatefulBuilder(builder: (ctx, setSt) {
-          return Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              Text('Collect from ${c.name}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 4),
-              Text('${money(due)} outstanding', style: TextStyle(fontSize: 13, color: bx.muted)),
-              const SizedBox(height: 14),
-              TextField(
-                controller: controller,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Amount', border: OutlineInputBorder()),
-              ),
-              const SizedBox(height: 12),
-              Wrap(spacing: 8, children: [
-                for (final m in ['Cash', 'UPI', 'Bank'])
-                  ChoiceChip(label: Text(m), selected: mode == m, onSelected: (_) => setSt(() => mode = m)),
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final result = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (ctx) {
+          final bx = ctx.bx;
+          return StatefulBuilder(builder: (ctx, setSt) {
+            return Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Text('Collect from ${c.name}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 4),
+                Text('${money(due)} outstanding', style: TextStyle(fontSize: 13, color: bx.muted)),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: controller,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Amount', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 12),
+                Wrap(spacing: 8, children: [
+                  for (final m in ['Cash', 'UPI', 'Bank'])
+                    ChoiceChip(label: Text(m), selected: mode == m, onSelected: (_) => setSt(() => mode = m)),
+                ]),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                  child: const Text('Record collection'),
+                ),
               ]),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                child: const Text('Record collection'),
-              ),
-            ]),
-          );
-        });
-      },
-    );
-    if (result == true) {
-      final amt = double.tryParse(controller.text) ?? 0;
-      if (amt > 0) {
-        final entry = state.collect(customer: c, amount: amt, mode: mode, nowMs: DateTime.now().millisecondsSinceEpoch);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${entry.ref} · ${money(amt)} collected ✓')));
+            );
+          });
+        },
+      );
+      if (result == true) {
+        var amt = double.tryParse(controller.text.trim()) ?? 0;
+        if (amt <= 0) {
+          messenger.showSnackBar(const SnackBar(content: Text('Enter an amount greater than 0')));
+          return;
         }
+        if (amt > due) amt = due; // never collect more than what's outstanding
+        final entry = state.collect(customer: c, amount: amt, mode: mode, nowMs: DateTime.now().millisecondsSinceEpoch);
+        messenger.showSnackBar(SnackBar(content: Text('${entry.ref} · ${money(amt)} collected ✓')));
       }
+    } finally {
+      controller.dispose();
     }
   }
 }

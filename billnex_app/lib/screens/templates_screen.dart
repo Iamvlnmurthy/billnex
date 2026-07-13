@@ -126,8 +126,7 @@ class _TemplateCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 IconButton(
                   tooltip: 'Print sample',
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () => PdfService.printSale(_sampleSale(state, template.id)),
+                  onPressed: () => PdfService.run(context, () => PdfService.printSale(_sampleSale(state, template.id)), failure: "Couldn't print the sample"),
                   icon: Icon(Icons.print_outlined, size: 18, color: bx.muted),
                 ),
               ]),
@@ -144,7 +143,7 @@ class _TemplateCard extends StatelessWidget {
                     state.setTemplate(template.id);
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Default template set')));
                   },
-                  style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), minimumSize: Size.zero),
+                  style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10), minimumSize: const Size(0, 44)),
                   child: const Text('Set default', style: TextStyle(fontSize: 12)),
                 ),
             ]),

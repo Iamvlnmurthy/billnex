@@ -85,11 +85,21 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
                 const SizedBox(height: 20),
                 _field(_shop, 'Shop / business name *', hint: 'e.g. Rajesh Kirana Store', validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null, autofocus: !_editing),
                 _field(_owner, 'Owner name', hint: 'e.g. Rajesh Kumar'),
-                _field(_phone, 'Phone', keyboard: TextInputType.phone),
+                _field(_phone, 'Phone', keyboard: TextInputType.phone,
+                    validator: (v) {
+                      final t = (v ?? '').trim();
+                      if (t.isEmpty) return null;
+                      return RegExp(r'^[0-9]{10}$').hasMatch(t) ? null : 'Enter a 10-digit phone';
+                    }),
                 _field(_gstin, 'GSTIN (optional)', hint: '15-character GST number', caps: true,
                     validator: (v) => (v != null && v.trim().isNotEmpty && v.trim().length != 15) ? 'GSTIN must be 15 characters' : null),
                 _field(_addr, 'Address', maxLines: 2),
-                _field(_state, 'GST state code', keyboard: TextInputType.number, hint: '36 = Telangana'),
+                _field(_state, 'GST state code', keyboard: TextInputType.number, hint: '36 = Telangana',
+                    validator: (v) {
+                      final t = (v ?? '').trim();
+                      if (t.isEmpty) return null;
+                      return RegExp(r'^[0-9]{2}$').hasMatch(t) ? null : '2-digit code (e.g. 36)';
+                    }),
                 const SizedBox(height: 4),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,

@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart' show BuildContext, ScaffoldMessenger, SnackBar, Text;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../data/catalog.dart';
 import '../models/sale.dart';
+import 'billing.dart';
 
 /// Turns a posted [Sale] into a printable/shareable PDF for any of the 11
 /// templates. A4 templates use a page; thermal templates use a narrow roll
@@ -51,12 +54,20 @@ class PdfService {
         if ((sale.sellerPhone ?? '').trim().isNotEmpty) 'Ph ${sale.sellerPhone!.trim()}',
       ].join(' · ');
 
+  // Bundled Inter faces — loaded once and reused. No network dependency, so
+  // reprint/share works fully offline (previously used PdfGoogleFonts, which
+  // fetched over the network and failed silently with no connection).
+  static pw.Font? _base, _bold;
+  static Future<pw.ThemeData> _theme() async {
+    _base ??= pw.Font.ttf(await rootBundle.load('assets/fonts/Inter-Regular.ttf'));
+    _bold ??= pw.Font.ttf(await rootBundle.load('assets/fonts/Inter-SemiBold.ttf'));
+    return pw.ThemeData.withFont(base: _base!, bold: _bold!);
+  }
+
   static Future<pw.Document> build(Sale sale) async {
     final tpl = templateById(sale.templateId);
     final doc = pw.Document(title: 'BillNex ${sale.invoiceNo}');
-    final font = await PdfGoogleFonts.notoSansRegular();
-    final bold = await PdfGoogleFonts.notoSansBold();
-    final theme = pw.ThemeData.withFont(base: font, bold: bold);
+    final theme = await _theme();
 
     if (tpl.size == PaperSize.a4) {
       doc.addPage(pw.Page(
@@ -81,16 +92,25 @@ class PdfService {
     await Printing.layoutPdf(onLayout: (f) => doc.save(), name: 'BillNex-${sale.invoiceNo}');
   }
 
+  /// Runs a PDF action and surfaces a friendly message on failure instead of
+  /// throwing into the void (reprint/share/export are fire-and-forget taps).
+  static Future<void> run(BuildContext context, Future<void> Function() action, {String failure = "Couldn't generate the PDF"}) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await action();
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(failure)));
+    }
+  }
+
   /// A one-page business summary report (PRD BNX-0311 Excel/PDF export).
   static Future<void> shareReport({
     required String businessName,
     required Map<String, String> summary,
     required Map<String, double> paymentMix,
-    required List<({String name, int qty, double value})> items,
+    required List<({String name, double qty, double value})> items,
   }) async {
-    final font = await PdfGoogleFonts.notoSansRegular();
-    final bold = await PdfGoogleFonts.notoSansBold();
-    final doc = pw.Document(theme: pw.ThemeData.withFont(base: font, bold: bold));
+    final doc = pw.Document(theme: await _theme());
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(32),
@@ -122,7 +142,7 @@ class PdfService {
         pw.SizedBox(height: 6),
         pw.Table(border: pw.TableBorder.all(color: PdfColors.grey300), children: [
           pw.TableRow(decoration: const pw.BoxDecoration(color: PdfColors.grey200), children: [_cell('Item'), _cell('Qty', right: true), _cell('Value', right: true)]),
-          for (final r in items) pw.TableRow(children: [_cell(r.name), _cell('${r.qty}', right: true), _cell(_rupee(r.value), right: true)]),
+          for (final r in items) pw.TableRow(children: [_cell(r.name), _cell(qtyLabel(r.qty), right: true), _cell(_rupee(r.value), right: true)]),
         ]),
       ],
     ));
@@ -196,7 +216,7 @@ class PdfService {
           for (final l in sale.lines)
             pw.TableRow(children: [
               _td(l.name),
-              _td('${l.qty}', align: pw.TextAlign.center),
+              _td(qtyLabel(l.qty), align: pw.TextAlign.center),
               _td(_rupee(l.amount), align: pw.TextAlign.right),
             ]),
         ],
@@ -255,7 +275,7 @@ class PdfService {
       for (final l in sale.lines)
         pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
           pw.Expanded(child: pw.Text(l.name, style: const pw.TextStyle(fontSize: 8))),
-          pw.Text(' ${l.qty} ', style: const pw.TextStyle(fontSize: 8)),
+          pw.Text(' ${qtyLabel(l.qty)} ', style: const pw.TextStyle(fontSize: 8)),
           pw.Text(_rupee(l.amount), style: const pw.TextStyle(fontSize: 8)),
         ]),
       _dash(),
@@ -283,7 +303,7 @@ class PdfService {
       pw.Container(height: 2, color: PdfColors.black, margin: const pw.EdgeInsets.symmetric(vertical: 6)),
       for (final l in sale.lines)
         pw.Row(children: [
-          pw.Text('${l.qty} x  ', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+          pw.Text('${qtyLabel(l.qty)} x  ', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
           pw.Expanded(child: pw.Text(l.name, style: const pw.TextStyle(fontSize: 11))),
         ]),
       pw.Container(height: 2, color: PdfColors.black, margin: const pw.EdgeInsets.symmetric(vertical: 6)),

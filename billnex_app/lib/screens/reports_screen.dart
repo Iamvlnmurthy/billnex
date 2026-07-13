@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../state/app_state.dart';
 import '../services/pdf_service.dart';
+import '../services/billing.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 
@@ -23,7 +24,7 @@ class ReportsScreen extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             PageHeader('Reports & Analytics', 'Everything below is computed live from posted transactions.',
                 trailing: FilledButton.icon(
-                  onPressed: () => PdfService.shareReport(
+                  onPressed: () => PdfService.run(context, () => PdfService.shareReport(
                     businessName: state.shopName,
                     summary: {
                       'Gross sales': money(state.salesGross),
@@ -37,7 +38,7 @@ class ReportsScreen extends StatelessWidget {
                     },
                     paymentMix: mix,
                     items: items,
-                  ),
+                  ), failure: "Couldn't export the report"),
                   icon: const Icon(Icons.ios_share, size: 18),
                   label: const Text('Export PDF'),
                 )),
@@ -56,7 +57,7 @@ class ReportsScreen extends StatelessWidget {
                   _kpi(bx, 'GST collected', money(state.gstCollected)),
                   _kpi(bx, 'Bills', '${state.billCount}'),
                   _kpi(bx, 'Avg bill', money(state.avgBill)),
-                  _kpi(bx, 'Items sold', '${state.itemsSold}'),
+                  _kpi(bx, 'Items sold', qtyLabel(state.itemsSold)),
                   _kpi(bx, 'Receivable', money(state.totalReceivable)),
                   _kpi(bx, 'Payable', money(state.totalPayable)),
                   _kpi(bx, 'Stock @ cost', money(state.stockValueAtCost)),
@@ -132,7 +133,7 @@ class ReportsScreen extends StatelessWidget {
     );
   }
 
-  Widget _itemsCard(BuildContext context, List<({String name, int qty, double value})> items) {
+  Widget _itemsCard(BuildContext context, List<({String name, double qty, double value})> items) {
     final bx = context.bx;
     final top = items.take(8).toList();
     return Card(
@@ -148,7 +149,7 @@ class ReportsScreen extends StatelessWidget {
               child: Row(children: [
                 SizedBox(width: 22, child: Text('${i + 1}', style: TextStyle(fontWeight: FontWeight.w800, color: bx.faint))),
                 Expanded(child: Text(top[i].name, style: const TextStyle(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis)),
-                Text('${top[i].qty} sold', style: TextStyle(fontSize: 12, color: bx.muted)),
+                Text('${qtyLabel(top[i].qty)} sold', style: TextStyle(fontSize: 12, color: bx.muted)),
                 const SizedBox(width: 12),
                 Text(money(top[i].value), style: const TextStyle(fontWeight: FontWeight.w800)),
               ]),

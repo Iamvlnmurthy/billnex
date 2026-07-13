@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../data/catalog.dart';
+import '../services/billing.dart';
 import 'common.dart';
 
 /// A single line on a receipt.
 class RcptLine {
   final String name;
-  final int qty;
+  final double qty;
   final double amount;
   const RcptLine(this.name, this.qty, this.amount);
 }
@@ -82,7 +83,7 @@ class ReceiptView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 1),
               child: Row(children: [
                 Expanded(child: Text(l.name, style: const TextStyle(fontSize: 11, fontFamily: 'monospace'))),
-                Text('${l.qty}', style: const TextStyle(fontSize: 11, fontFamily: 'monospace')),
+                Text(qtyLabel(l.qty), style: const TextStyle(fontSize: 11, fontFamily: 'monospace')),
                 SizedBox(width: 64, child: Text(money(l.amount), textAlign: TextAlign.right, style: const TextStyle(fontSize: 11, fontFamily: 'monospace'))),
               ]),
             )),
@@ -112,7 +113,7 @@ class ReceiptView extends StatelessWidget {
         ...lines.map((l) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 3),
               child: Row(children: [
-                Text('${l.qty} ×  ', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+                Text('${qtyLabel(l.qty)} ×  ', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
                 Expanded(child: Text(l.name, style: const TextStyle(fontSize: 13))),
               ]),
             )),
@@ -158,7 +159,7 @@ class ReceiptView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Row(children: [
                     Expanded(child: Text(l.name, style: const TextStyle(fontSize: 11))),
-                    SizedBox(width: 28, child: Text('${l.qty}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 11))),
+                    SizedBox(width: 28, child: Text(qtyLabel(l.qty), textAlign: TextAlign.center, style: const TextStyle(fontSize: 11))),
                     SizedBox(width: 70, child: Text(money(l.amount), textAlign: TextAlign.right, style: const TextStyle(fontSize: 11))),
                   ]),
                 )),

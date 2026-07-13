@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/stock.dart';
 import '../state/app_state.dart';
+import '../services/billing.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/empty_state.dart';
@@ -110,8 +111,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ]),
           ),
           Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text(it.qty.toStringAsFixed(it.qty % 1 == 0 ? 0 : 1), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: qtyColor)),
-            Text(it.unit, style: TextStyle(fontSize: 11, color: bx.faint)),
+            Text(it.stockTracked ? qtyLabel(it.qty) : '—', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: qtyColor)),
+            Text(it.stockTracked ? it.unit : 'service', style: TextStyle(fontSize: 11, color: bx.faint)),
           ]),
           Icon(Icons.chevron_right, size: 20, color: bx.faint),
         ]),
@@ -123,61 +124,148 @@ class _InventoryScreenState extends State<InventoryScreen> {
     final name = TextEditingController();
     final unit = TextEditingController(text: 'Piece');
     final price = TextEditingController();
+    final cost = TextEditingController();
     final qty = TextEditingController(text: '0');
     final reorder = TextEditingController(text: '10');
     final barcode = TextEditingController();
+    final category = TextEditingController();
+    final hsn = TextEditingController();
+    final formKey = GlobalKey<FormState>();
     double gst = 5;
-    final ok = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => Padding(
-        padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-        child: SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            const Text('New product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 12),
-            TextField(controller: name, autofocus: true, textCapitalization: TextCapitalization.words, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(child: TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
-              const SizedBox(width: 10),
-              Expanded(child: TextField(controller: price, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Price', border: OutlineInputBorder()))),
-            ]),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(child: _GstDropdown(value: gst, onChanged: (v) => setSt(() => gst = v))),
-              const SizedBox(width: 10),
-              Expanded(child: TextField(controller: qty, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Opening qty', border: OutlineInputBorder()))),
-            ]),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(child: TextField(controller: reorder, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Reorder level', border: OutlineInputBorder()))),
-              const SizedBox(width: 10),
-              Expanded(child: TextField(controller: barcode, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Barcode', border: OutlineInputBorder()))),
-            ]),
-            const SizedBox(height: 16),
-            FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Add to catalogue')),
-          ]),
-        ),
-      )),
-    );
-    if (ok == true && name.text.trim().isNotEmpty) {
-      widget.state.addStockItem(
-        name: name.text,
-        unit: unit.text.trim().isEmpty ? 'Piece' : unit.text.trim(),
-        price: double.tryParse(price.text) ?? 0,
-        cost: (double.tryParse(price.text) ?? 0) * 0.78,
-        qty: double.tryParse(qty.text) ?? 0,
-        reorder: double.tryParse(reorder.text) ?? 10,
-        gstRate: gst,
-        barcode: barcode.text.trim().isEmpty ? null : barcode.text.trim(),
-        nowMs: DateTime.now().millisecondsSinceEpoch,
+    bool tracked = true;
+    final messenger = ScaffoldMessenger.of(context);
+    final state = widget.state;
+    try {
+      final ok = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                const Text('New product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: name,
+                  autofocus: true,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+                  validator: (v) {
+                    final t = (v ?? '').trim();
+                    if (t.isEmpty) return 'Enter a product name';
+                    if (state.productExists(t)) return 'A product with this name already exists';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: TextFormField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
+                  const SizedBox(width: 10),
+                  Expanded(child: TextFormField(
+                    controller: price,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Sell price', border: OutlineInputBorder()),
+                    validator: (v) {
+                      final p = double.tryParse((v ?? '').trim());
+                      if (p == null || p <= 0) return 'Enter a price > 0';
+                      return null;
+                    },
+                  )),
+                ]),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: _GstDropdown(value: gst, onChanged: (v) => setSt(() => gst = v))),
+                  const SizedBox(width: 10),
+                  Expanded(child: TextFormField(
+                    controller: cost,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cost (optional)', border: OutlineInputBorder()),
+                  )),
+                ]),
+                const SizedBox(height: 10),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Track stock'),
+                  subtitle: const Text('Off for services (salon, repair)'),
+                  value: tracked,
+                  onChanged: (v) => setSt(() => tracked = v),
+                ),
+                if (tracked) ...[
+                  Row(children: [
+                    Expanded(child: TextFormField(
+                      controller: qty,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(labelText: 'Opening qty', border: OutlineInputBorder()),
+                      validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) < 0 ? '≥ 0' : null,
+                    )),
+                    const SizedBox(width: 10),
+                    Expanded(child: TextFormField(
+                      controller: reorder,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(labelText: 'Reorder level', border: OutlineInputBorder()),
+                      validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) < 0 ? '≥ 0' : null,
+                    )),
+                  ]),
+                  const SizedBox(height: 10),
+                ],
+                Row(children: [
+                  Expanded(child: TextFormField(controller: category, textCapitalization: TextCapitalization.words, decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()))),
+                  const SizedBox(width: 10),
+                  Expanded(child: TextFormField(controller: hsn, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'HSN/SAC', border: OutlineInputBorder()))),
+                ]),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: barcode,
+                  decoration: const InputDecoration(labelText: 'Barcode (optional)', border: OutlineInputBorder()),
+                  validator: (v) => state.barcodeInUse((v ?? '').trim()) ? 'Barcode already used by another product' : null,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
+                  },
+                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                  child: const Text('Add to catalogue'),
+                ),
+              ]),
+            ),
+          ),
+        )),
       );
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${name.text} added')));
+      if (ok == true) {
+        final sell = double.tryParse(price.text.trim()) ?? 0;
+        final added = state.addStockItem(
+          name: name.text,
+          unit: unit.text.trim().isEmpty ? 'Piece' : unit.text.trim(),
+          price: sell,
+          cost: double.tryParse(cost.text.trim()) ?? 0,
+          qty: tracked ? (double.tryParse(qty.text.trim()) ?? 0) : 0,
+          reorder: double.tryParse(reorder.text.trim()) ?? 10,
+          gstRate: gst,
+          barcode: barcode.text.trim().isEmpty ? null : barcode.text.trim(),
+          category: category.text.trim().isEmpty ? null : category.text.trim(),
+          hsn: hsn.text.trim().isEmpty ? null : hsn.text.trim(),
+          stockTracked: tracked,
+          nowMs: DateTime.now().millisecondsSinceEpoch,
+        );
+        messenger.showSnackBar(SnackBar(content: Text(added != null ? '${added.name} added ✓' : 'Could not add — name already exists')));
+      }
+    } finally {
+      for (final c in [name, unit, price, cost, qty, reorder, barcode, category, hsn]) {
+        c.dispose();
+      }
     }
   }
 }
+
+const _gstSlabs = <double>[0, 5, 12, 18, 28];
+
+/// Snaps any rate to the nearest supported GST slab so an off-slab value
+/// (e.g. a 3% imported item) can't crash the dropdown assertion.
+double snapGst(double v) => _gstSlabs.reduce((a, b) => (v - a).abs() <= (v - b).abs() ? a : b);
 
 /// GST-rate dropdown (0/5/12/18/28%).
 class _GstDropdown extends StatelessWidget {
@@ -186,9 +274,9 @@ class _GstDropdown extends StatelessWidget {
   const _GstDropdown({required this.value, required this.onChanged});
   @override
   Widget build(BuildContext context) => DropdownButtonFormField<double>(
-        initialValue: value,
+        initialValue: snapGst(value),
         decoration: const InputDecoration(labelText: 'GST %', border: OutlineInputBorder()),
-        items: const <double>[0, 5, 12, 18, 28].map((r) => DropdownMenuItem<double>(value: r, child: Text('${r.toStringAsFixed(0)}%'))).toList(),
+        items: _gstSlabs.map((r) => DropdownMenuItem<double>(value: r, child: Text('${r.toStringAsFixed(0)}%'))).toList(),
         onChanged: (v) => onChanged(v ?? 5),
       );
 }
@@ -204,7 +292,11 @@ class StockDetailScreen extends StatelessWidget {
     return AnimatedBuilder(
       animation: state,
       builder: (context, _) {
-        final it = state.stockItems.firstWhere((x) => x.sku == sku);
+        final it = state.stockItems.where((x) => x.sku == sku).firstOrNull;
+        if (it == null) {
+          // Product was just deleted — the pop is in flight; render a safe frame.
+          return const Scaffold(body: SizedBox.shrink());
+        }
         final moves = state.movementsFor(sku);
         final now = DateTime.now().millisecondsSinceEpoch;
         final qtyColor = it.out ? bx.danger : (it.low ? bx.warn : bx.pos);
@@ -225,7 +317,7 @@ class StockDetailScreen extends StatelessWidget {
                   Text('ON HAND', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint)),
                   const SizedBox(height: 6),
                   Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-                    Text(it.qty.toStringAsFixed(it.qty % 1 == 0 ? 0 : 1), style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: qtyColor)),
+                    Text(it.stockTracked ? qtyLabel(it.qty) : '—', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: qtyColor)),
                     const SizedBox(width: 6),
                     Text(it.unit, style: TextStyle(fontSize: 14, color: bx.muted)),
                     const Spacer(),
@@ -233,12 +325,14 @@ class StockDetailScreen extends StatelessWidget {
                   ]),
                   const SizedBox(height: 4),
                   Text('Reorder at ${it.reorderLevel.toStringAsFixed(0)} · cost ${money(it.cost)}', style: TextStyle(fontSize: 13, color: bx.muted)),
-                  const SizedBox(height: 14),
-                  Row(children: [
-                    Expanded(child: OutlinedButton.icon(onPressed: () => _adjust(context, it, false), icon: const Icon(Icons.remove, size: 18), label: const Text('Reduce'))),
-                    const SizedBox(width: 10),
-                    Expanded(child: FilledButton.icon(onPressed: () => _adjust(context, it, true), icon: const Icon(Icons.add, size: 18), label: const Text('Add stock'))),
-                  ]),
+                  if (it.stockTracked) ...[
+                    const SizedBox(height: 14),
+                    Row(children: [
+                      Expanded(child: OutlinedButton.icon(onPressed: () => _adjust(context, it, false), icon: const Icon(Icons.remove, size: 18), label: const Text('Reduce'))),
+                      const SizedBox(width: 10),
+                      Expanded(child: FilledButton.icon(onPressed: () => _adjust(context, it, true), icon: const Icon(Icons.add, size: 18), label: const Text('Add stock'))),
+                    ]),
+                  ],
                 ]),
               ),
             ),
@@ -293,7 +387,7 @@ class StockDetailScreen extends StatelessWidget {
             Text('${m.ref} · ${m.dateLabel}', style: TextStyle(fontSize: 11.5, color: bx.muted)),
           ]),
         ),
-        Text('${positive ? '+' : ''}${m.delta.toStringAsFixed(m.delta % 1 == 0 ? 0 : 1)}',
+        Text('${positive ? '+' : '−'}${qtyLabel(m.delta.abs())}',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: positive ? bx.pos : bx.danger)),
       ]),
     );
@@ -304,53 +398,91 @@ class StockDetailScreen extends StatelessWidget {
     final unit = TextEditingController(text: it.unit);
     final price = TextEditingController(text: it.price.toStringAsFixed(it.price % 1 == 0 ? 0 : 2));
     final cost = TextEditingController(text: it.cost.toStringAsFixed(it.cost % 1 == 0 ? 0 : 2));
-    final reorder = TextEditingController(text: it.reorderLevel.toStringAsFixed(0));
+    final reorder = TextEditingController(text: qtyLabel(it.reorderLevel));
     final barcode = TextEditingController(text: it.barcode ?? '');
+    final category = TextEditingController(text: it.category ?? '');
+    final hsn = TextEditingController(text: it.hsn ?? '');
+    final formKey = GlobalKey<FormState>();
     double gst = it.gstRate;
-    final ok = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => Padding(
-        padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-        child: SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            const Text('Edit product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 12),
-            TextField(controller: name, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(child: TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
-              const SizedBox(width: 10),
-              Expanded(child: TextField(controller: reorder, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Reorder', border: OutlineInputBorder()))),
-            ]),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(child: TextField(controller: price, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Sell price', border: OutlineInputBorder()))),
-              const SizedBox(width: 10),
-              Expanded(child: TextField(controller: cost, keyboardType: TextInputType.number, decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cost', border: OutlineInputBorder()))),
-            ]),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(child: _GstDropdown(value: gst, onChanged: (v) => setSt(() => gst = v))),
-              const SizedBox(width: 10),
-              Expanded(child: TextField(controller: barcode, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Barcode', border: OutlineInputBorder()))),
-            ]),
-            const SizedBox(height: 16),
-            FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Save changes')),
-          ]),
-        ),
-      )),
-    );
-    if (ok == true) {
-      state.editStockItem(it.sku,
-          name: name.text, unit: unit.text,
-          price: double.tryParse(price.text) ?? it.price,
-          cost: double.tryParse(cost.text) ?? it.cost,
-          reorder: double.tryParse(reorder.text) ?? it.reorderLevel,
-          gstRate: gst, barcode: barcode.text,
-          nowMs: DateTime.now().millisecondsSinceEpoch);
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product updated ✓')));
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final ok = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                const Text('Edit product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: name,
+                  decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+                  validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a name' : null,
+                ),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: TextFormField(controller: unit, decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()))),
+                  const SizedBox(width: 10),
+                  Expanded(child: TextFormField(controller: reorder, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Reorder', border: OutlineInputBorder()))),
+                ]),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: TextFormField(
+                    controller: price,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Sell price', border: OutlineInputBorder()),
+                    validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) <= 0 ? '> 0' : null,
+                  )),
+                  const SizedBox(width: 10),
+                  Expanded(child: TextFormField(controller: cost, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cost', border: OutlineInputBorder()))),
+                ]),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: _GstDropdown(value: gst, onChanged: (v) => setSt(() => gst = v))),
+                  const SizedBox(width: 10),
+                  Expanded(child: TextFormField(controller: hsn, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'HSN/SAC', border: OutlineInputBorder()))),
+                ]),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: TextFormField(controller: category, textCapitalization: TextCapitalization.words, decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()))),
+                  const SizedBox(width: 10),
+                  Expanded(child: TextFormField(
+                    controller: barcode,
+                    decoration: const InputDecoration(labelText: 'Barcode', border: OutlineInputBorder()),
+                    validator: (v) => state.barcodeInUse((v ?? '').trim(), exceptSku: it.sku) ? 'Used by another product' : null,
+                  )),
+                ]),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
+                  },
+                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                  child: const Text('Save changes'),
+                ),
+              ]),
+            ),
+          ),
+        )),
+      );
+      if (ok == true) {
+        state.editStockItem(it.sku,
+            name: name.text, unit: unit.text,
+            price: double.tryParse(price.text) ?? it.price,
+            cost: double.tryParse(cost.text) ?? it.cost,
+            reorder: double.tryParse(reorder.text) ?? it.reorderLevel,
+            gstRate: gst, barcode: barcode.text, category: category.text, hsn: hsn.text,
+            nowMs: DateTime.now().millisecondsSinceEpoch);
+        messenger.showSnackBar(const SnackBar(content: Text('Product updated ✓')));
+      }
+    } finally {
+      for (final c in [name, unit, price, cost, reorder, barcode, category, hsn]) {
+        c.dispose();
+      }
     }
   }
 
@@ -375,26 +507,33 @@ class StockDetailScreen extends StatelessWidget {
   Future<void> _adjust(BuildContext context, StockItem it, bool add) async {
     final qty = TextEditingController();
     final reason = TextEditingController(text: add ? 'Purchase / restock' : 'Damage / correction');
-    final ok = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(add ? 'Add stock · ${it.name}' : 'Reduce stock · ${it.name}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 12),
-          TextField(controller: qty, autofocus: true, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Quantity (${it.unit})', border: const OutlineInputBorder())),
-          const SizedBox(height: 10),
-          TextField(controller: reason, decoration: const InputDecoration(labelText: 'Reason', border: OutlineInputBorder())),
-          const SizedBox(height: 16),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Record adjustment')),
-        ]),
-      ),
-    );
-    if (ok == true) {
-      final q = double.tryParse(qty.text) ?? 0;
-      if (q > 0) {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final ok = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (ctx) => Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(add ? 'Add stock · ${it.name}' : 'Reduce stock · ${it.name}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            if (!add) Padding(padding: const EdgeInsets.only(top: 4), child: Text('On hand: ${qtyLabel(it.qty)} ${it.unit}', style: TextStyle(fontSize: 12.5, color: context.bx.muted))),
+            const SizedBox(height: 12),
+            TextField(controller: qty, autofocus: true, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: 'Quantity (${it.unit})', border: const OutlineInputBorder())),
+            const SizedBox(height: 10),
+            TextField(controller: reason, decoration: const InputDecoration(labelText: 'Reason', border: OutlineInputBorder())),
+            const SizedBox(height: 16),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Record adjustment')),
+          ]),
+        ),
+      );
+      if (ok == true) {
+        var q = double.tryParse(qty.text.trim()) ?? 0;
+        if (q <= 0) {
+          messenger.showSnackBar(const SnackBar(content: Text('Enter a quantity greater than 0')));
+          return;
+        }
+        if (!add && q > it.qty) q = it.qty; // can't reduce below on-hand
         state.adjustStock(
           sku: it.sku,
           delta: add ? q : -q,
@@ -402,8 +541,11 @@ class StockDetailScreen extends StatelessWidget {
           kind: add ? MoveKind.purchase : MoveKind.damage,
           nowMs: DateTime.now().millisecondsSinceEpoch,
         );
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Stock ${add ? 'added' : 'reduced'} ✓')));
+        messenger.showSnackBar(SnackBar(content: Text('Stock ${add ? 'added' : 'reduced'} ✓')));
       }
+    } finally {
+      qty.dispose();
+      reason.dispose();
     }
   }
 }

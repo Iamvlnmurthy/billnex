@@ -171,11 +171,14 @@ class _BackupScreenState extends State<BackupScreen> {
   // ── local ──
   Future<void> _save(BuildContext context) async {
     final m = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
     try {
       final ok = await BackupService.saveToFile(state);
       m.showSnackBar(SnackBar(content: Text(ok ? 'Backup saved ✓' : 'Save cancelled')));
     } catch (e) {
       m.showSnackBar(SnackBar(content: Text('Backup failed: $e')));
+    } finally {
+      if (mounted) setState(() => _busy = false); // refresh counts / last-backup label
     }
   }
 
@@ -183,6 +186,7 @@ class _BackupScreenState extends State<BackupScreen> {
     if (!await _confirmRestore(context)) return;
     if (!context.mounted) return;
     final m = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
     try {
       final ok = await BackupService.restoreFromFile(state);
       m.showSnackBar(SnackBar(content: Text(ok ? 'Data restored ✓' : 'Restore cancelled')));
@@ -190,6 +194,8 @@ class _BackupScreenState extends State<BackupScreen> {
       m.showSnackBar(const SnackBar(content: Text('That file is not a BillNex backup')));
     } catch (e) {
       m.showSnackBar(SnackBar(content: Text('Restore failed: $e')));
+    } finally {
+      if (mounted) setState(() => _busy = false); // refresh after restore
     }
   }
 
@@ -239,6 +245,7 @@ class _BackupScreenState extends State<BackupScreen> {
 
   Future<void> _driveSignOut() async {
     await _drive.signOut();
+    if (!mounted) return;
     setState(() => _driveFiles = const []);
   }
 

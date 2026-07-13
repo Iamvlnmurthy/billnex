@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/sale.dart';
 import '../services/pdf_service.dart';
+import '../services/billing.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
@@ -71,19 +72,19 @@ class _SaleRow extends StatelessWidget {
                   : StatusChip('PAID · ${sale.paymentMode}', bx.pos, bx.posBg),
             ]),
             const SizedBox(height: 2),
-            Text('${sale.dateLabel} · ${sale.itemCount} items', style: TextStyle(fontSize: 12, color: bx.muted)),
+            Text('${sale.dateLabel} · ${qtyLabel(sale.itemCount)} items', style: TextStyle(fontSize: 12, color: bx.muted)),
           ]),
         ),
         Text(money(sale.total), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
         const SizedBox(width: 6),
         IconButton(
           tooltip: 'Reprint',
-          onPressed: () => PdfService.printSale(sale),
+          onPressed: () => PdfService.run(context, () => PdfService.printSale(sale), failure: "Couldn't reprint — check the printer"),
           icon: Icon(Icons.print_outlined, size: 20, color: bx.muted),
         ),
         IconButton(
           tooltip: 'Share PDF',
-          onPressed: () => PdfService.shareSale(sale),
+          onPressed: () => PdfService.run(context, () => PdfService.shareSale(sale), failure: "Couldn't share the PDF"),
           icon: Icon(Icons.ios_share, size: 19, color: bx.muted),
         ),
       ]),

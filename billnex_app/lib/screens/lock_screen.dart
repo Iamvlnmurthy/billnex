@@ -43,6 +43,7 @@ class _LockScreenState extends State<LockScreen> {
       return;
     }
     final wait = await widget.auth.lockoutSeconds();
+    if (!mounted) return;
     setState(() {
       _entry = '';
       _error = wait > 0 ? 'Too many attempts' : 'Wrong PIN';

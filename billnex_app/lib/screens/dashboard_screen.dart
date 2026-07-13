@@ -21,6 +21,9 @@ class DashboardScreen extends StatelessWidget {
     final biz = state.business!;
     final owner = (state.profile?.owner ?? '').trim();
     final greetName = owner.isNotEmpty ? owner.split(' ').first : biz.name;
+    final canBill = state.roleCanAccess('billing');
+    final canInventory = state.roleCanAccess('inventory');
+    final canReports = state.roleCanAccess('reports');
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 22, 20, 110),
@@ -37,8 +40,8 @@ class DashboardScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
               const SizedBox(height: 18),
 
-              // ── Alert banners (only when actionable) ─────────────────
-              if (state.lowStockCount > 0)
+              // ── Alert banners (only when actionable for this role) ───
+              if (state.lowStockCount > 0 && canInventory)
                 _AlertBanner(
                   icon: Icons.warning_amber_rounded,
                   color: bx.warn,
@@ -47,7 +50,7 @@ class DashboardScreen extends StatelessWidget {
                   onTap: () => goTo(NavId.inventory),
                 ),
               if (state.backupDue) ...[
-                if (state.lowStockCount > 0) const SizedBox(height: 10),
+                if (state.lowStockCount > 0 && canInventory) const SizedBox(height: 10),
                 _AlertBanner(
                   icon: Icons.cloud_off_rounded,
                   color: bx.danger,
@@ -57,24 +60,26 @@ class DashboardScreen extends StatelessWidget {
                       builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state)))),
                 ),
               ],
-              if (state.lowStockCount > 0 || state.backupDue) const SizedBox(height: 18),
+              if ((state.lowStockCount > 0 && canInventory) || state.backupDue) const SizedBox(height: 18),
 
-              // ── Primary CTA ──────────────────────────────────────────
-              SizedBox(
-                height: 56,
-                child: FilledButton.icon(
-                  onPressed: () => goTo(NavId.billing),
-                  icon: const Icon(Icons.add, size: 22),
-                  label: const Text('Create New Bill', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                  style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              // ── Primary CTA (only for roles that can bill) ───────────
+              if (canBill) ...[
+                SizedBox(
+                  height: 56,
+                  child: FilledButton.icon(
+                    onPressed: () => goTo(NavId.billing),
+                    icon: const Icon(Icons.add, size: 22),
+                    label: const Text('Create New Bill', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
+              ],
 
               // ── Today's Summary ──────────────────────────────────────
               _SectionHead(
                 title: "Today's Summary",
-                action: 'Details',
+                action: canReports ? 'Details' : null,
                 onAction: () => goTo(NavId.reports),
               ),
               const SizedBox(height: 12),
@@ -90,7 +95,7 @@ class DashboardScreen extends StatelessWidget {
               // ── Recent Activity ──────────────────────────────────────
               _SectionHead(
                 title: 'Recent Activity',
-                action: state.billCount > 0 ? 'View all' : null,
+                action: (state.billCount > 0 && state.roleCanAccess('sales')) ? 'View all' : null,
                 onAction: () => goTo(NavId.sales),
               ),
               const SizedBox(height: 12),
@@ -124,9 +129,11 @@ class _SectionHead extends StatelessWidget {
       if (action != null)
         InkWell(
           onTap: onAction,
-          borderRadius: BorderRadius.circular(6),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 44),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(action!, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: bx.accent)),
           ),
         ),
@@ -273,12 +280,16 @@ class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ledgerOn = state.isOn('creditLedger');
+    final canInventory = state.roleCanAccess('inventory');
+    final canReports = state.roleCanAccess('reports');
+    final canCustomers = state.roleCanAccess('customers');
     final actions = <({IconData icon, String label, VoidCallback onTap})>[
-      (icon: Icons.add_box_outlined, label: 'Add Product', onTap: () => goTo(NavId.inventory)),
-      (icon: Icons.inventory_2_outlined, label: 'View Stock', onTap: () => goTo(NavId.inventory)),
-      if (ledgerOn) (icon: Icons.groups_outlined, label: 'Ledger', onTap: () => goTo(NavId.customers)),
-      (icon: Icons.assessment_outlined, label: 'Day Closing', onTap: () => goTo(NavId.reports)),
+      if (canInventory) (icon: Icons.add_box_outlined, label: 'Add Product', onTap: () => goTo(NavId.inventory)),
+      if (canInventory) (icon: Icons.inventory_2_outlined, label: 'View Stock', onTap: () => goTo(NavId.inventory)),
+      if (ledgerOn && canCustomers) (icon: Icons.groups_outlined, label: 'Ledger', onTap: () => goTo(NavId.customers)),
+      if (canReports) (icon: Icons.assessment_outlined, label: 'Day Closing', onTap: () => goTo(NavId.reports)),
     ];
+    if (actions.isEmpty) return const SizedBox.shrink();
     return Row(
       children: [
         for (var i = 0; i < actions.length; i++) ...[
@@ -338,12 +349,13 @@ class _RecentActivity extends StatelessWidget {
         ),
       );
     }
+    final canSales = state.roleCanAccess('sales');
     return Card(
       child: Column(children: [
         for (var i = 0; i < recent.length; i++)
           Container(
             decoration: BoxDecoration(border: i == 0 ? null : Border(top: BorderSide(color: bx.border))),
-            child: _ActivityRow(sale: recent[i]),
+            child: _ActivityRow(sale: recent[i], onTap: canSales ? () => goTo(NavId.sales) : null),
           ),
       ]),
     );
@@ -352,12 +364,15 @@ class _RecentActivity extends StatelessWidget {
 
 class _ActivityRow extends StatelessWidget {
   final Sale sale;
-  const _ActivityRow({required this.sale});
+  final VoidCallback? onTap;
+  const _ActivityRow({required this.sale, this.onTap});
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
     final pending = sale.paymentMode == 'Credit';
-    return Padding(
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
       child: Row(children: [
         Container(
@@ -379,6 +394,7 @@ class _ActivityRow extends StatelessWidget {
         ),
         _StatusChip(pending: pending),
       ]),
+      ),
     );
   }
 }

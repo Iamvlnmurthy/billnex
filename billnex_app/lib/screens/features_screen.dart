@@ -42,7 +42,10 @@ class _CategoryCard extends StatelessWidget {
     final bx = context.bx;
     final caps = kCapabilities.where((c) => c.category == cat.key).toList();
     final on = state.enabledInCategory(cat.key);
-    final allOn = on == caps.length;
+    // "Enable/Disable all" only toggles unlockable caps, so base its label on
+    // those (a locked Pro cap would otherwise pin the label to "Enable all").
+    final unlockable = caps.where((c) => !state.isLocked(c.key)).toList();
+    final allOn = unlockable.isNotEmpty && unlockable.every((c) => state.isOn(c.key));
 
     return Card(
       child: Column(children: [

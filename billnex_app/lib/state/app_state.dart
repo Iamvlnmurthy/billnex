@@ -18,11 +18,12 @@ class CartLine {
   final String unit;
   final double price;
   final double gstRate;
-  int qty;
+  double qty; // supports weighed/loose goods (e.g. 0.5 kg)
   double lineDiscount; // ₹ off this line
   CartLine({required this.sku, required this.name, required this.unit, required this.price, this.gstRate = 5, this.qty = 1, this.lineDiscount = 0});
   double get amount => price * qty;
-  factory CartLine.of(StockItem it, [int qty = 1]) =>
+  double get net => (amount - lineDiscount).clamp(0, double.infinity);
+  factory CartLine.of(StockItem it, [double qty = 1]) =>
       CartLine(sku: it.sku, name: it.name, unit: it.unit, price: it.price, gstRate: it.gstRate, qty: qty);
 }
 
@@ -292,7 +293,7 @@ class AppState extends ChangeNotifier {
   double get subtotal => bill.taxable;
   double get gst => bill.tax;
   double get total => bill.total;
-  int get cartQty => _cart.fold(0, (a, l) => a + l.qty);
+  double get cartQty => _cart.fold(0.0, (a, l) => a + l.qty);
 
   // -----------------------------------------------------------------------
   // Preset engine
@@ -342,8 +343,19 @@ class AppState extends ChangeNotifier {
     _store.saveMoves(_moves);
   }
 
-  StockItem addStockItem({required String name, required String unit, required double price, double cost = 0, double qty = 0, double reorder = 10, double gstRate = 5, String? barcode, String? category, int nowMs = 0}) {
-    final item = StockItem(sku: name.trim(), name: name.trim(), unit: unit, price: price, cost: cost, qty: qty, reorderLevel: reorder, gstRate: gstRate, barcode: barcode, category: category);
+  /// True if a product with this (trimmed) name already exists — the SKU key.
+  bool productExists(String name) => _stock.containsKey(name.trim());
+
+  /// True if a barcode is already assigned to a different product.
+  bool barcodeInUse(String code, {String? exceptSku}) =>
+      code.trim().isNotEmpty && _stock.values.any((i) => i.barcode == code.trim() && i.sku != exceptSku);
+
+  /// Adds a product. Returns null (adding nothing) if the name is already taken,
+  /// so the caller can warn instead of silently overwriting the original item.
+  StockItem? addStockItem({required String name, required String unit, required double price, double cost = 0, double qty = 0, double reorder = 10, double gstRate = 5, String? barcode, String? category, String? hsn, bool stockTracked = true, int nowMs = 0}) {
+    final key = name.trim();
+    if (_stock.containsKey(key)) return null; // never overwrite an existing SKU
+    final item = StockItem(sku: key, name: key, unit: unit, price: price, cost: cost, qty: qty, reorderLevel: reorder, gstRate: gstRate, barcode: barcode, category: category, hsn: hsn, stockTracked: stockTracked);
     _stock[item.sku] = item;
     if (qty != 0) _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.opening, delta: qty, ref: 'OPENING'));
     _store.saveStock(_stock.values.toList());
@@ -354,7 +366,7 @@ class AppState extends ChangeNotifier {
 
   /// Edit a product's master fields (name/price/unit/cost/reorder). Quantity is
   /// only changed via adjustments so the ledger stays truthful.
-  void editStockItem(String sku, {String? name, String? unit, double? price, double? cost, double? reorder, double? gstRate, String? barcode, int nowMs = 0}) {
+  void editStockItem(String sku, {String? name, String? unit, double? price, double? cost, double? reorder, double? gstRate, String? barcode, String? category, String? hsn, bool? stockTracked, int nowMs = 0}) {
     final item = _stock[sku];
     if (item == null) return;
     if (name != null && name.trim().isNotEmpty) item.name = name.trim();
@@ -364,6 +376,9 @@ class AppState extends ChangeNotifier {
     if (reorder != null) item.reorderLevel = reorder;
     if (gstRate != null) item.gstRate = gstRate;
     if (barcode != null) item.barcode = barcode.trim().isEmpty ? null : barcode.trim();
+    if (category != null) item.category = category.trim().isEmpty ? null : category.trim();
+    if (hsn != null) item.hsn = hsn.trim().isEmpty ? null : hsn.trim();
+    if (stockTracked != null) item.stockTracked = stockTracked;
     _store.saveStock(_stock.values.toList());
     _audit0('Product edited · ${item.name}', sku, nowMs);
     notifyListeners();
@@ -382,8 +397,10 @@ class AppState extends ChangeNotifier {
   void adjustStock({required String sku, required double delta, required String reason, MoveKind kind = MoveKind.adjustment, int nowMs = 0}) {
     final item = _stock[sku];
     if (item == null) return;
-    item.qty += delta;
-    _moves.add(StockMovement(sku: sku, epochMs: nowMs, kind: kind, delta: delta, ref: 'ADJ', reason: reason));
+    // Never drive on-hand negative; a reduction is capped at what's in stock.
+    final applied = (item.qty + delta) < 0 ? -item.qty : delta;
+    item.qty += applied;
+    _moves.add(StockMovement(sku: sku, epochMs: nowMs, kind: kind, delta: applied, ref: 'ADJ', reason: reason));
     _store.saveStock(_stock.values.toList());
     _store.saveMoves(_moves);
     _enqueue('adjustment', sku, nowMs);
@@ -430,12 +447,42 @@ class AppState extends ChangeNotifier {
   }
 
   // ---- cart ops ----
-  void addProduct(StockItem item) {
+  /// Available-to-sell for a stock-tracked item = on-hand minus what's already
+  /// in the cart. `double.infinity` for services/untracked items.
+  double _available(StockItem item) {
+    if (!item.stockTracked) return double.infinity;
+    final inCart = _cart.where((l) => l.sku == item.sku).fold(0.0, (a, l) => a + l.qty);
+    return item.qty - inCart;
+  }
+
+  /// Adds one unit. Returns false (and adds nothing) when a tracked item has no
+  /// stock left, so the POS can warn instead of driving stock negative.
+  bool addProduct(StockItem item) {
+    if (item.stockTracked && _available(item) < 1) return false;
     final existing = _cart.where((l) => l.sku == item.sku).firstOrNull;
     if (existing != null) {
-      existing.qty++;
+      existing.qty += 1;
     } else {
       _cart.add(CartLine.of(item));
+    }
+    notifyListeners();
+    return true;
+  }
+
+  /// Sets an exact (possibly decimal) quantity on a cart line — for weighed
+  /// goods. Clamps to available stock for tracked items; removes at 0.
+  void setQty(int i, double qty) {
+    final line = _cart[i];
+    final item = _stock[line.sku];
+    var q = qty;
+    if (item != null && item.stockTracked) {
+      final otherInCart = _cart.where((l) => l != line && l.sku == line.sku).fold(0.0, (a, l) => a + l.qty);
+      q = q.clamp(0, (item.qty - otherInCart).clamp(0, double.infinity));
+    }
+    if (q <= 0) {
+      _cart.removeAt(i);
+    } else {
+      line.qty = q;
     }
     notifyListeners();
   }
@@ -451,12 +498,15 @@ class AppState extends ChangeNotifier {
   }
 
   void inc(int i) {
-    _cart[i].qty++;
+    final line = _cart[i];
+    final item = _stock[line.sku];
+    if (item != null && item.stockTracked && _available(item) < 1) return; // no stock left
+    line.qty += 1;
     notifyListeners();
   }
 
   void dec(int i) {
-    _cart[i].qty--;
+    _cart[i].qty -= 1;
     if (_cart[i].qty <= 0) _cart.removeAt(i);
     notifyListeners();
   }
@@ -496,9 +546,9 @@ class AppState extends ChangeNotifier {
     var stockTouched = false;
     for (final l in _cart) {
       final item = _stock[l.sku];
-      if (item != null) {
-        item.qty -= l.qty;
-        _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.sale, delta: -l.qty.toDouble(), ref: invoiceNo));
+      if (item != null && item.stockTracked) {
+        item.qty = (item.qty - l.qty).clamp(0, double.infinity); // never negative
+        _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.sale, delta: -l.qty, ref: invoiceNo));
         stockTouched = true;
       }
     }
@@ -538,7 +588,7 @@ class AppState extends ChangeNotifier {
   double get gstCollected => _sales.fold(0.0, (a, s) => a + s.gst);
   double get salesNet => _sales.fold(0.0, (a, s) => a + s.total);
   double get avgBill => _sales.isEmpty ? 0 : salesNet / _sales.length;
-  int get itemsSold => _sales.fold(0, (a, s) => a + s.itemCount);
+  double get itemsSold => _sales.fold(0.0, (a, s) => a + s.itemCount);
 
   /// Payment-mode breakdown (PRD BNX-0299).
   Map<String, double> paymentMix() {
@@ -550,8 +600,8 @@ class AppState extends ChangeNotifier {
   }
 
   /// Item-wise sales, best sellers first (PRD BNX-0280).
-  List<({String name, int qty, double value})> itemSales() {
-    final qty = <String, int>{};
+  List<({String name, double qty, double value})> itemSales() {
+    final qty = <String, double>{};
     final val = <String, double>{};
     for (final s in _sales) {
       for (final l in s.lines) {
@@ -595,6 +645,20 @@ class AppState extends ChangeNotifier {
     return s;
   }
 
+  /// GST on a purchase computed per line from each item's own slab (falls back
+  /// to 5% for a not-yet-catalogued SKU), rounded to whole rupees.
+  double purchaseTax(List<PurchaseLine> lines) {
+    var tax = 0.0;
+    for (final l in lines) {
+      final rate = _stock[l.sku]?.gstRate ?? 5;
+      tax += l.amount * rate / 100;
+    }
+    return tax.roundToDouble();
+  }
+
+  double purchaseTotal(List<PurchaseLine> lines) =>
+      lines.fold<double>(0, (a, l) => a + l.amount) + purchaseTax(lines);
+
   /// Record a purchase: increases stock (movement per line) and creates a
   /// payable if not paid immediately (PRD BNX-0177/0178).
   Purchase recordPurchase({
@@ -606,7 +670,7 @@ class AppState extends ChangeNotifier {
   }) {
     _purSeq += 1;
     final subtotal = lines.fold<double>(0, (a, l) => a + l.amount);
-    final gst = (subtotal * 0.05).roundToDouble();
+    final gst = purchaseTax(lines);
     final total = subtotal + gst;
     final purchaseNo = '#PUR-$_purSeq';
     final purchase = Purchase(
@@ -663,15 +727,17 @@ class AppState extends ChangeNotifier {
   bool overLimit(Customer c, double addAmount) =>
       c.creditLimit > 0 && (balanceOf(c.id) + addAmount) > c.creditLimit;
 
-  /// Record a payment against a customer's outstanding (BNX-0129).
+  /// Record a payment against a customer's outstanding (BNX-0129). The amount
+  /// is capped at the current balance so a collection can't push it negative.
   LedgerEntry collect({required Customer customer, required double amount, required String mode, int nowMs = 0}) {
     _rcptSeq += 1;
+    final capped = amount.clamp(0, balanceOf(customer.id)).toDouble();
     final entry = LedgerEntry(
       customerId: customer.id,
       epochMs: nowMs,
       kind: LedgerKind.collection,
       ref: '#RCPT-$_rcptSeq',
-      credit: amount,
+      credit: capped,
       mode: mode,
     );
     _ledger.add(entry);

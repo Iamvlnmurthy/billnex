@@ -24,7 +24,18 @@ class _ScannerScreenState extends State<ScannerScreen> {
     final code = capture.barcodes.first.rawValue;
     if (code == null || code.isEmpty) return;
     _done = true;
+    if (!mounted) return;
     Navigator.of(context).pop(code);
+  }
+
+  Future<void> _safe(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not supported on this device')));
+      }
+    }
   }
 
   @override
@@ -36,8 +47,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
         foregroundColor: Colors.white,
         title: const Text('Scan barcode'),
         actions: [
-          IconButton(onPressed: () => _controller.toggleTorch(), icon: const Icon(Icons.flash_on)),
-          IconButton(onPressed: () => _controller.switchCamera(), icon: const Icon(Icons.cameraswitch)),
+          IconButton(onPressed: () => _safe(_controller.toggleTorch), icon: const Icon(Icons.flash_on)),
+          IconButton(onPressed: () => _safe(_controller.switchCamera), icon: const Icon(Icons.cameraswitch)),
         ],
       ),
       body: Stack(children: [

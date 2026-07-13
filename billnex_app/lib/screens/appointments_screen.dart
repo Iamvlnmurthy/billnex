@@ -89,46 +89,57 @@ class AppointmentsScreen extends StatelessWidget {
     final customer = TextEditingController();
     final service = TextEditingController();
     final staff = TextEditingController();
+    final formKey = GlobalKey<FormState>();
     TimeOfDay time = const TimeOfDay(hour: 10, minute: 0);
-    final ok = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => Padding(
-        padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('Book appointment', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 12),
-          TextField(controller: customer, autofocus: true, decoration: const InputDecoration(labelText: 'Customer', border: OutlineInputBorder())),
-          const SizedBox(height: 10),
-          TextField(controller: service, decoration: const InputDecoration(labelText: 'Service', border: OutlineInputBorder())),
-          const SizedBox(height: 10),
-          TextField(controller: staff, decoration: const InputDecoration(labelText: 'Staff', border: OutlineInputBorder())),
-          const SizedBox(height: 10),
-          OutlinedButton.icon(
-            onPressed: () async {
-              final t = await showTimePicker(context: ctx, initialTime: time);
-              if (t != null) setSt(() => time = t);
-            },
-            icon: const Icon(Icons.schedule, size: 18),
-            label: Text('Slot · ${time.format(ctx)}'),
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final ok = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+          child: Form(
+            key: formKey,
+            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              const Text('Book appointment', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 12),
+              TextFormField(controller: customer, autofocus: true, decoration: const InputDecoration(labelText: 'Customer', border: OutlineInputBorder()), validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a customer name' : null),
+              const SizedBox(height: 10),
+              TextFormField(controller: service, decoration: const InputDecoration(labelText: 'Service', border: OutlineInputBorder())),
+              const SizedBox(height: 10),
+              TextFormField(controller: staff, decoration: const InputDecoration(labelText: 'Staff', border: OutlineInputBorder())),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final t = await showTimePicker(context: ctx, initialTime: time);
+                  if (t != null) setSt(() => time = t);
+                },
+                icon: const Icon(Icons.schedule, size: 18),
+                label: Text('Slot · ${time.format(ctx)}'),
+              ),
+              const SizedBox(height: 16),
+              FilledButton(onPressed: () { if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true); }, style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Confirm booking')),
+            ]),
           ),
-          const SizedBox(height: 16),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)), child: const Text('Confirm booking')),
-        ]),
-      )),
-    );
-    if (ok == true && customer.text.trim().isNotEmpty) {
-      final now = DateTime.now();
-      final slot = DateTime(now.year, now.month, now.day, time.hour, time.minute).millisecondsSinceEpoch;
-      state.addAppointment(
-        customer: customer.text.trim(),
-        service: service.text.trim().isEmpty ? 'Service' : service.text.trim(),
-        staff: staff.text.trim().isEmpty ? 'Staff' : staff.text.trim(),
-        slotMs: slot,
-        nowMs: DateTime.now().millisecondsSinceEpoch,
+        )),
       );
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Appointment booked ✓')));
+      if (ok == true && customer.text.trim().isNotEmpty) {
+        final now = DateTime.now();
+        final slot = DateTime(now.year, now.month, now.day, time.hour, time.minute).millisecondsSinceEpoch;
+        state.addAppointment(
+          customer: customer.text.trim(),
+          service: service.text.trim().isEmpty ? 'Service' : service.text.trim(),
+          staff: staff.text.trim().isEmpty ? 'Staff' : staff.text.trim(),
+          slotMs: slot,
+          nowMs: DateTime.now().millisecondsSinceEpoch,
+        );
+        messenger.showSnackBar(const SnackBar(content: Text('Appointment booked ✓')));
+      }
+    } finally {
+      customer.dispose();
+      service.dispose();
+      staff.dispose();
     }
   }
 }
