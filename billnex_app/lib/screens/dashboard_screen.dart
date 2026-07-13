@@ -26,7 +26,7 @@ class DashboardScreen extends StatelessWidget {
     final canReports = state.roleCanAccess('reports');
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 22, 20, 110),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
       children: [
         Center(
           child: ConstrainedBox(
@@ -37,11 +37,11 @@ class DashboardScreen extends StatelessWidget {
                 // ── Greeting ─────────────────────────────────────────────
                 Text(
                   '${_greeting()}, $greetName!',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: bx.muted),
+                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, color: bx.muted),
                 ),
-                const SizedBox(height: 2),
-                Text('${state.shopName} Dashboard', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
-                const SizedBox(height: 18),
+                const SizedBox(height: 1),
+                Text('${state.shopName} Dashboard', style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
+                const SizedBox(height: 12),
 
                 // ── Alert banners (only when actionable for this role) ───
                 if (state.lowStockCount > 0 && canInventory)
@@ -69,37 +69,37 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-                if ((state.lowStockCount > 0 && canInventory) || state.backupDue) const SizedBox(height: 18),
+                if ((state.lowStockCount > 0 && canInventory) || state.backupDue) const SizedBox(height: 12),
 
                 // ── Primary CTA (only for roles that can bill) ───────────
                 if (canBill) ...[
                   SizedBox(
-                    height: 56,
+                    height: 50,
                     child: FilledButton.icon(
                       onPressed: () => goTo(NavId.billing),
-                      icon: const Icon(Icons.add, size: 22),
-                      label: const Text('Create New Bill', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      icon: const Icon(Icons.add, size: 20),
+                      label: const Text('Create New Bill', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                       style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 14),
                 ],
 
                 // ── Today's Summary ──────────────────────────────────────
                 _SectionHead(title: "Today's Summary", action: canReports ? 'Details' : null, onAction: () => goTo(NavId.reports)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 _HeroSales(state: state),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 _SummaryGrid(state: state, goTo: goTo),
-                const SizedBox(height: 24),
+                const SizedBox(height: 14),
 
                 // ── Quick actions ────────────────────────────────────────
                 _QuickActions(state: state, goTo: goTo),
-                const SizedBox(height: 24),
+                const SizedBox(height: 14),
 
                 // ── Recent Activity ──────────────────────────────────────
                 _SectionHead(title: 'Recent Activity', action: (state.billCount > 0 && state.roleCanAccess('sales')) ? 'View all' : null, onAction: () => goTo(NavId.sales)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 _RecentActivity(state: state, goTo: goTo),
               ],
             ),
@@ -136,7 +136,7 @@ class _SectionHead extends StatelessWidget {
             onTap: onAction,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              constraints: const BoxConstraints(minHeight: 44),
+              constraints: const BoxConstraints(minHeight: 36),
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
@@ -196,7 +196,7 @@ class _HeroSales extends StatelessWidget {
     final live = state.billCount > 0;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(14),
         child: Row(
           children: [
             Expanded(
@@ -212,7 +212,7 @@ class _HeroSales extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Flexible(child: Money(state.todaySales, style: BxText.valueHero.copyWith(fontSize: 32))),
+                      Flexible(child: Money(state.todaySales, style: BxText.valueHero.copyWith(fontSize: 26))),
                       const SizedBox(width: 10),
                       Text(
                         live ? '${state.billCount} bills' : 'no bills yet',
@@ -257,7 +257,7 @@ class _SummaryGrid extends StatelessWidget {
           crossAxisCount: cols,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          mainAxisExtent: 96,
+          mainAxisExtent: 86,
           children: [
             _MiniStat('Total Bills', '${state.billCount}', color: bx.muted),
             _MiniStat('Cash Received', money(cash), color: bx.muted),
@@ -353,7 +353,7 @@ class _QuickTile extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            height: 60,
+            height: 52,
             decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(Bx.radius)),
             alignment: Alignment.center,
             child: Icon(icon, color: bx.accent, size: 24),
@@ -380,7 +380,7 @@ class _RecentActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
-    final recent = state.sales.take(5).toList();
+    final recent = state.sales.take(3).toList();
     if (recent.isEmpty) {
       return const Card(
         child: Padding(
