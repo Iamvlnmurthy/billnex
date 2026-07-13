@@ -229,7 +229,7 @@ class _TopBar extends StatelessWidget {
             SizedBox(width: narrow ? 8 : 14),
             Expanded(
               child: InkWell(
-                onTap: state.switchBusiness,
+                onTap: () => _openBusinessDetails(context),
                 borderRadius: BorderRadius.circular(999),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -356,6 +356,22 @@ class _TopBar extends StatelessWidget {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Tapping the shop chip opens Business details for editing — it must NOT
+  /// switch/clear the business (that used to bounce back to onboarding and
+  /// look like a data reset).
+  void _openBusinessDetails(BuildContext context) {
+    if (state.bizKey == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BusinessSetupScreen(
+          state: state,
+          bizType: state.bizKey!,
+          existing: state.profile ?? BusinessProfile(bizType: state.bizKey!, shopName: state.shopName),
         ),
       ),
     );

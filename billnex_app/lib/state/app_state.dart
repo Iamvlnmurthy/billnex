@@ -433,13 +433,6 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void switchBusiness() {
-    _bizKey = null;
-    _cart.clear();
-    _store.saveBiz(null);
-    notifyListeners();
-  }
-
   // ---- feature toggles ----
   void setFlag(String capKey, bool value) {
     if (isLocked(capKey)) return;
