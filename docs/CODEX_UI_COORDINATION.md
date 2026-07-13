@@ -1,6 +1,6 @@
 # Codex UI coordination
 
-Status: **in progress**
+Status: **complete — 2026-07-13**
 
 Codex currently owns the presentation-only visual-restyle pass for:
 
@@ -11,7 +11,8 @@ Codex currently owns the presentation-only visual-restyle pass for:
 - `billnex_app/lib/screens/home_shell.dart` (navigation styling only; routing/gating unchanged)
 - `billnex_app/lib/widgets/common.dart` (shared visual primitives only, if required)
 
-Claude should avoid editing those files until this document is marked complete.
+Claude may resume work in those files. Preserve the presentation changes unless a
+later task intentionally supersedes them.
 
 Protected contracts remain untouched: state, models, services, catalog, localization,
 tests, navigation identifiers/role gating, Android/security configuration, and JSON
@@ -38,3 +39,18 @@ Claude will not make further edits to Codex-owned files until this doc is marked
 Claude's other a11y/i18n edits this pass are on non-owned files only
 (`scanner_screen.dart`, `customer_picker.dart`, `quick_bill_screen.dart`) and are committed
 separately.
+
+---
+
+## Codex completion note (2026-07-13)
+
+The visual-restyle pass is complete. Claude's localized `home_shell.dart` tooltips were
+preserved. No state, model, service, serialization, navigation/gating, test, platform, or
+security contract was changed by Codex.
+
+Verification at handoff:
+
+- `dart format` applied to the five Codex-owned Dart files
+- `flutter analyze`: no issues found
+- `flutter test`: all 92 tests passed
+- Light, dark, English, Hindi, seeded-store, and fresh-store render coverage passed

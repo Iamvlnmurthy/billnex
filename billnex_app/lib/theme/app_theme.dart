@@ -5,18 +5,18 @@ import 'package:flutter/material.dart';
 /// Deep Navy + Primary Blue, cool grey-blue surfaces, white cards with soft
 /// ambient shadow, Inter-style type, 8pt grid, green PAID / amber PENDING.
 class Bx {
-  // Primary blue (interactive) + deep navy-blue
-  static const primaryLight = Color(0xFF146CFF);
-  static const primaryDeep = Color(0xFF0055D1);
-  static const primaryDark = Color(0xFF5B8CFF);
+  // Premium Command Center palette: vivid cobalt on a sober navy foundation.
+  static const primaryLight = Color(0xFF1677FF);
+  static const primaryDeep = Color(0xFF075ED8);
+  static const primaryDark = Color(0xFF69A4FF);
 
-  static const radius = 16.0;
-  static const radiusSm = 8.0;
+  static const radius = 18.0;
+  static const radiusSm = 12.0;
 
   // Card ambient shadow from the spec.
   static const cardShadow = [
-    BoxShadow(color: Color(0x0A101828), blurRadius: 6, spreadRadius: -2, offset: Offset(0, 4)),
-    BoxShadow(color: Color(0x14101828), blurRadius: 16, spreadRadius: -4, offset: Offset(0, 12)),
+    BoxShadow(color: Color(0x0F0A2540), blurRadius: 8, spreadRadius: -3, offset: Offset(0, 4)),
+    BoxShadow(color: Color(0x1A0A2540), blurRadius: 24, spreadRadius: -8, offset: Offset(0, 16)),
   ];
 }
 
@@ -70,31 +70,31 @@ class BxColors extends ThemeExtension<BxColors> {
     warnBg: Color(0xFFFBEEDD),
     danger: Color(0xFFBA1A1A),
     dangerBg: Color(0xFFFDECEC),
-    surface2: Color(0xFFF0F3FF),
-    muted: Color(0xFF424655),
-    faint: Color(0xFF727687),
-    border: Color(0xFFC2C6D8),
+    surface2: Color(0xFFF1F6FD),
+    muted: Color(0xFF42526A),
+    faint: Color(0xFF718096),
+    border: Color(0xFFD7E2F0),
     trustOnline: Color(0xFF12B76A),
     cardShadow: Bx.cardShadow,
   );
 
   static const dark = BxColors(
-    brand: Color(0xFFB2C5FF),
-    brand2: Bx.primaryLight,
-    accent: Color(0xFF5B8CFF),
-    onAccent: Color(0xFF06122B),
-    pos: Color(0xFF3DD68C),
-    posBg: Color(0xFF13291F),
-    warn: Color(0xFFFFB68E),
-    warnBg: Color(0xFF2E2013),
-    danger: Color(0xFFFFB4AB),
-    dangerBg: Color(0xFF2C1513),
-    surface2: Color(0xFF141D30),
-    muted: Color(0xFFAAB3C5),
-    faint: Color(0xFF727687),
-    border: Color(0xFF2A3448),
-    trustOnline: Color(0xFF3DD68C),
-    cardShadow: [BoxShadow(color: Color(0x40000000), blurRadius: 18, spreadRadius: -6, offset: Offset(0, 10))],
+    brand: Color(0xFFEAF2FF),
+    brand2: Color(0xFF69A4FF),
+    accent: Color(0xFF3988FF),
+    onAccent: Colors.white,
+    pos: Color(0xFF35D07F),
+    posBg: Color(0xFF102F28),
+    warn: Color(0xFFFFC46B),
+    warnBg: Color(0xFF342817),
+    danger: Color(0xFFFF746C),
+    dangerBg: Color(0xFF351C22),
+    surface2: Color(0xFF10243D),
+    muted: Color(0xFFA9B8CC),
+    faint: Color(0xFF74869E),
+    border: Color(0xFF27415F),
+    trustOnline: Color(0xFF35D07F),
+    cardShadow: [BoxShadow(color: Color(0x66030B16), blurRadius: 28, spreadRadius: -10, offset: Offset(0, 18))],
   );
 
   @override
@@ -240,6 +240,31 @@ class AppTheme {
         ),
         margin: EdgeInsets.zero,
       ),
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.25),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: ext.surface2,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: ext.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: ext.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: ext.accent, width: 1.5),
+        ),
+      ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: scheme.primary,
@@ -260,8 +285,31 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: scheme.surface,
-        indicatorColor: ext.accent.withValues(alpha: 0.14),
-        labelTextStyle: WidgetStatePropertyAll(TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: ext.muted)),
+        elevation: 0,
+        indicatorColor: ext.accent.withValues(alpha: 0.16),
+        indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) =>
+              TextStyle(fontSize: 11.5, fontWeight: states.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w600, color: states.contains(WidgetState.selected) ? ext.accent : ext.muted),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        elevation: 2,
+        foregroundColor: scheme.onPrimary,
+        backgroundColor: scheme.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: ext.surface2,
+        selectedColor: ext.accent.withValues(alpha: 0.18),
+        side: BorderSide(color: ext.border),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+        labelStyle: TextStyle(color: ext.muted, fontWeight: FontWeight.w700),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: scheme.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       ),
       dividerTheme: DividerThemeData(color: ext.border, thickness: 1, space: 1),
       splashFactory: InkSparkle.splashFactory,
@@ -272,18 +320,18 @@ class AppTheme {
     const ext = BxColors.light;
     final scheme = ColorScheme.fromSeed(
       seedColor: Bx.primaryDeep,
-    ).copyWith(primary: Bx.primaryLight, onPrimary: Colors.white, surface: Colors.white, surfaceContainerLowest: const Color(0xFFF4F6FC), onSurface: const Color(0xFF111C2D), outline: ext.border);
+    ).copyWith(primary: Bx.primaryLight, onPrimary: Colors.white, surface: Colors.white, surfaceContainerLowest: const Color(0xFFF3F7FC), onSurface: const Color(0xFF102037), outline: ext.border);
     return _base(Brightness.light, ext, scheme);
   }
 
   static ThemeData dark() {
     const ext = BxColors.dark;
     final scheme = ColorScheme.fromSeed(seedColor: Bx.primaryLight, brightness: Brightness.dark).copyWith(
-      primary: const Color(0xFF4D82FF),
-      onPrimary: const Color(0xFF06122B),
-      surface: const Color(0xFF141D30),
-      surfaceContainerLowest: const Color(0xFF0B1220),
-      onSurface: const Color(0xFFECF0FF),
+      primary: const Color(0xFF3988FF),
+      onPrimary: Colors.white,
+      surface: const Color(0xFF0E2036),
+      surfaceContainerLowest: const Color(0xFF071426),
+      onSurface: const Color(0xFFF3F7FF),
       outline: ext.border,
     );
     return _base(Brightness.dark, ext, scheme);

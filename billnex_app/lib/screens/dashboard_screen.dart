@@ -28,7 +28,7 @@ class DashboardScreen extends StatelessWidget {
     final canReports = state.roleCanAccess('reports');
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+      padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
       children: [
         Center(
           child: ConstrainedBox(
@@ -38,12 +38,35 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 // ── Greeting ─────────────────────────────────────────────
                 Text(
-                  '${_greeting(l)}, $greetName!',
-                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, color: bx.muted),
+                  '${_greeting(l)}, $greetName',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: bx.muted),
                 ),
-                const SizedBox(height: 1),
-                Text('${state.shopName} ${l.dashboardWord}', style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    Expanded(child: Text('${state.shopName} ${l.dashboardWord}', style: BxText.pageTitle.copyWith(fontSize: 22))),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: bx.posBg,
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(color: bx.pos.withValues(alpha: 0.24)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check_circle, size: 14, color: bx.pos),
+                          const SizedBox(width: 5),
+                          Text(
+                            state.online ? l.online : l.offline,
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: state.online ? bx.pos : bx.warn),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
 
                 // ── Alert banners (only when actionable for this role) ───
                 if (state.lowStockCount > 0 && canInventory)
@@ -58,7 +81,7 @@ class DashboardScreen extends StatelessWidget {
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => Scaffold(
-                          appBar: AppBar(title: const Text('Backup & Restore')),
+                          appBar: AppBar(title: Text(l.backupRestoreTitle)),
                           body: BackupScreen(state: state),
                         ),
                       ),
@@ -67,27 +90,23 @@ class DashboardScreen extends StatelessWidget {
                 ],
                 if ((state.lowStockCount > 0 && canInventory) || state.backupDue) const SizedBox(height: 12),
 
-                // ── Primary CTA (only for roles that can bill) ───────────
-                if (canBill) ...[
-                  SizedBox(
-                    height: 50,
-                    child: FilledButton.icon(
-                      onPressed: () => goTo(NavId.billing),
-                      icon: const Icon(Icons.add, size: 20),
-                      label: Text(l.createNewBill, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                      style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                ],
-
                 // ── Today's Summary ──────────────────────────────────────
                 _SectionHead(title: l.todaysSummary, action: canReports ? l.details : null, onAction: () => goTo(NavId.reports)),
                 const SizedBox(height: 8),
                 _HeroSales(state: state),
                 const SizedBox(height: 8),
                 _SummaryGrid(state: state, goTo: goTo),
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
+
+                if (canBill) ...[
+                  FilledButton.icon(
+                    onPressed: () => goTo(NavId.billing),
+                    icon: const Icon(Icons.add_circle_outline_rounded, size: 20),
+                    label: Text(l.createNewBill),
+                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                  ),
+                  const SizedBox(height: 18),
+                ],
 
                 // ── Quick actions ────────────────────────────────────────
                 _QuickActions(state: state, goTo: goTo),
@@ -191,46 +210,100 @@ class _HeroSales extends StatelessWidget {
     final bx = context.bx;
     final l = L.of(context);
     final live = state.billCount > 0;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l.todaysSales,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.muted),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Flexible(child: Money(state.todaySales, style: BxText.valueHero.copyWith(fontSize: 26))),
-                      const SizedBox(width: 10),
-                      Text(
-                        live ? l.billsCount(state.billCount) : l.noBillsYet,
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: live ? bx.pos : bx.faint),
-                      ),
-                    ],
-                  ),
-                ],
+    final points = state.sales.take(8).map((sale) => sale.total.abs()).toList().reversed.toList();
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [Color(0xFF0A2A51), Color(0xFF0B3B75)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFF3988FF).withValues(alpha: 0.42)),
+        boxShadow: bx.cardShadow,
+      ),
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l.todaysSales,
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFFC6D8F0)),
+                ),
               ),
-            ),
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(14)),
-              child: Icon(Icons.payments_outlined, color: bx.accent, size: 26),
-            ),
-          ],
-        ),
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(12)),
+                child: const Icon(Icons.auto_graph_rounded, size: 20, color: Color(0xFF69A4FF)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Money(
+            state.todaySales,
+            style: BxText.valueHero.copyWith(fontSize: 34, color: Colors.white),
+            color: Colors.white,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            live ? l.billsCount(state.billCount) : l.noBillsYet,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: live ? const Color(0xFF45E195) : const Color(0xFF9CB2CD)),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 42,
+            width: double.infinity,
+            child: CustomPaint(painter: _SalesSparkline(points, const Color(0xFF55A1FF))),
+          ),
+        ],
       ),
     );
   }
+}
+
+class _SalesSparkline extends CustomPainter {
+  final List<double> values;
+  final Color color;
+  const _SalesSparkline(this.values, this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final source = values.length > 1 ? values : const <double>[0, 0, 0, 0, 0];
+    final high = source.reduce((a, b) => a > b ? a : b);
+    final low = source.reduce((a, b) => a < b ? a : b);
+    final span = (high - low).abs() < 0.01 ? 1.0 : high - low;
+    final line = Path();
+    for (var i = 0; i < source.length; i++) {
+      final x = size.width * i / (source.length - 1);
+      final y = size.height - 4 - ((source[i] - low) / span) * (size.height - 12);
+      if (i == 0) {
+        line.moveTo(x, y);
+      } else {
+        line.lineTo(x, y);
+      }
+    }
+    final area = Path.from(line)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+    canvas.drawPath(
+      area,
+      Paint()
+        ..shader = LinearGradient(colors: [color.withValues(alpha: 0.30), color.withValues(alpha: 0.01)], begin: Alignment.topCenter, end: Alignment.bottomCenter).createShader(Offset.zero & size),
+    );
+    canvas.drawPath(
+      line,
+      Paint()
+        ..color = color
+        ..strokeWidth = 2.4
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _SalesSparkline oldDelegate) => oldDelegate.values != values || oldDelegate.color != color;
 }
 
 /// Four stat cards: Total Bills, Cash, UPI, Credit Sales.
@@ -255,7 +328,7 @@ class _SummaryGrid extends StatelessWidget {
           crossAxisCount: cols,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          mainAxisExtent: 86,
+          mainAxisExtent: 92,
           children: [
             _MiniStat(l.totalBills, '${state.billCount}', color: bx.muted),
             _MiniStat(l.cashReceived2, money(cash), color: bx.muted),
@@ -281,7 +354,7 @@ class _MiniStat extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(Bx.radius),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(13),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,

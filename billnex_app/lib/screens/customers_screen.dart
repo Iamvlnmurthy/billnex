@@ -30,7 +30,7 @@ class CustomersScreen extends StatelessWidget {
       ),
       backgroundColor: Colors.transparent,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 100),
         children: [
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1180),
@@ -82,15 +82,15 @@ class CustomersScreen extends StatelessWidget {
         decoration: BoxDecoration(
           border: first ? null : Border(top: BorderSide(color: bx.border)),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         child: Row(
           children: [
             CircleAvatar(
-              radius: 20,
-              backgroundColor: bx.brand.withValues(alpha: 0.12),
+              radius: 21,
+              backgroundColor: bx.accent.withValues(alpha: 0.14),
               child: Text(
                 c.name.characters.first.toUpperCase(),
-                style: TextStyle(color: bx.brand, fontWeight: FontWeight.w800),
+                style: TextStyle(color: bx.accent, fontWeight: FontWeight.w800),
               ),
             ),
             const SizedBox(width: 12),
@@ -187,43 +187,68 @@ class CustomerDetailScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(title: Text(c.name), backgroundColor: Theme.of(context).colorScheme.surface),
           body: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
             children: [
               // balance header
-              Card(
+              Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(colors: [Color(0xFF0A2A51), Color(0xFF0B3B75)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: const Color(0xFF3988FF).withValues(alpha: 0.42)),
+                  boxShadow: bx.cardShadow,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(18),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        l.outstandingBalance,
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        money(bal),
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: bal > 0 ? bx.danger : bx.pos),
-                      ),
-                      const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.phone_outlined, size: 14, color: bx.muted),
-                          const SizedBox(width: 5),
-                          Text(c.mobile.isEmpty ? l.noMobile : c.mobile, style: TextStyle(fontSize: 13, color: bx.muted)),
-                          if (c.creditLimit > 0) ...[
-                            const SizedBox(width: 12),
-                            Icon(Icons.credit_score_outlined, size: 14, color: bx.muted),
-                            const SizedBox(width: 5),
-                            Text(l.limitLabel(money(c.creditLimit)), style: TextStyle(fontSize: 13, color: bx.muted)),
-                          ],
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(color: const Color(0xFF3988FF).withValues(alpha: 0.22), shape: BoxShape.circle),
+                            child: const Icon(Icons.storefront_rounded, color: Color(0xFF72AAFF), size: 25),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  c.name,
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(c.mobile.isEmpty ? l.noMobile : c.mobile, style: const TextStyle(fontSize: 12.5, color: Color(0xFFB9CCE3))),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right_rounded, color: Color(0xFFB9CCE3)),
                         ],
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
+                      Text(
+                        l.outstandingBalance,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFFB9CCE3)),
+                      ),
+                      const SizedBox(height: 4),
+                      Money(
+                        bal,
+                        style: BxText.valueHero.copyWith(fontSize: 32, color: Colors.white),
+                        color: bal > 0 ? const Color(0xFFFF746C) : const Color(0xFF45E195),
+                      ),
+                      if (c.creditLimit > 0) ...[const SizedBox(height: 4), Text(l.limitLabel(money(c.creditLimit)), style: const TextStyle(fontSize: 12.5, color: Color(0xFFB9CCE3)))],
+                      const SizedBox(height: 16),
                       Row(
                         children: [
                           Expanded(
-                            child: FilledButton.icon(onPressed: bal <= 0 ? null : () => _collect(context, c, bal), icon: const Icon(Icons.payments_outlined, size: 18), label: Text(l.collectPayment)),
+                            child: FilledButton.icon(
+                              onPressed: bal <= 0 ? null : () => _collect(context, c, bal),
+                              icon: const Icon(Icons.payments_outlined, size: 18),
+                              label: Text(l.collectPayment),
+                              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF1677FF), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
+                            ),
                           ),
                         ],
                       ),
@@ -232,13 +257,24 @@ class CustomerDetailScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.only(left: 2, bottom: 8),
-                child: Text(
-                  l.ledgerLabel,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: bx.surface2,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: bx.border),
+                ),
+                child: Container(
+                  alignment: Alignment.center,
+                  constraints: const BoxConstraints(minHeight: 42),
+                  decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(11)),
+                  child: Text(
+                    l.ledgerLabel,
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: bx.accent),
+                  ),
                 ),
               ),
+              const SizedBox(height: 12),
               if (entries.isEmpty)
                 Card(
                   child: Padding(
@@ -265,14 +301,14 @@ class CustomerDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         border: first ? null : Border(top: BorderSide(color: bx.border)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
       child: Row(
         children: [
           Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(color: (isCredit ? bx.pos : bx.brand).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(9)),
-            child: Icon(isCredit ? Icons.south_west : Icons.north_east, size: 17, color: isCredit ? bx.pos : bx.brand),
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(color: (isCredit ? bx.pos : bx.accent).withValues(alpha: 0.14), shape: BoxShape.circle),
+            child: Icon(isCredit ? Icons.south_west_rounded : Icons.receipt_long_outlined, size: 18, color: isCredit ? bx.pos : bx.accent),
           ),
           const SizedBox(width: 12),
           Expanded(

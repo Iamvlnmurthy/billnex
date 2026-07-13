@@ -107,30 +107,48 @@ class _HomeShellState extends State<HomeShell> {
         final wide = c.maxWidth >= 720;
         final tabs = _bottomTabs(order);
 
+        final dark = Theme.of(context).brightness == Brightness.dark;
+        final bx = context.bx;
         return Scaffold(
-          body: Column(
-            children: [
-              _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
-              _TrustBar(state: widget.state),
-              Expanded(
-                child: Row(
-                  children: [
-                    if (wide) _Rail(order: order, current: _current, onTap: _go),
-                    Expanded(
-                      child: Container(color: Theme.of(context).colorScheme.surfaceContainerLowest, child: _bodyFor(_current)),
-                    ),
-                  ],
+          body: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerLowest,
+              gradient: dark
+                  ? const LinearGradient(colors: [Color(0xFF071426), Color(0xFF0B1D32)], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+                  : const LinearGradient(colors: [Color(0xFFF8FBFF), Color(0xFFF1F6FD)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            ),
+            child: Column(
+              children: [
+                _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
+                _TrustBar(state: widget.state),
+                Expanded(
+                  child: Row(
+                    children: [
+                      if (wide) _Rail(order: order, current: _current, onTap: _go),
+                      Expanded(child: _bodyFor(_current)),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           bottomNavigationBar: wide
               ? null
-              : NavigationBar(
-                  selectedIndex: _mobileSelectedIndex(tabs),
-                  onDestinationSelected: (i) => _go(tabs[i]),
-                  height: 66,
-                  destinations: [for (final id in tabs) NavigationDestination(icon: Icon(kNavSpecs[id]!.icon), selectedIcon: Icon(kNavSpecs[id]!.activeIcon), label: navLabel(context, id))],
+              : DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    border: Border(top: BorderSide(color: bx.border)),
+                    boxShadow: const [BoxShadow(color: Color(0x26020A14), blurRadius: 20, offset: Offset(0, -6))],
+                  ),
+                  child: NavigationBar(
+                    selectedIndex: _mobileSelectedIndex(tabs),
+                    onDestinationSelected: (i) => _go(tabs[i]),
+                    height: 72,
+                    labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                    destinations: [
+                      for (final id in tabs) NavigationDestination(icon: Icon(kNavSpecs[id]!.icon, size: 22), selectedIcon: Icon(kNavSpecs[id]!.activeIcon, size: 23), label: navLabel(context, id)),
+                    ],
+                  ),
                 ),
         );
       },
@@ -190,10 +208,11 @@ class _TopBar extends StatelessWidget {
     final bx = context.bx;
     final narrow = MediaQuery.of(context).size.width < 460;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: narrow ? 12 : 18, vertical: 11),
+      padding: EdgeInsets.symmetric(horizontal: narrow ? 12 : 20, vertical: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.96),
         border: Border(bottom: BorderSide(color: bx.border)),
+        boxShadow: const [BoxShadow(color: Color(0x16020A14), blurRadius: 16, offset: Offset(0, 6))],
       ),
       child: SafeArea(
         bottom: false,
@@ -237,7 +256,7 @@ class _TopBar extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             PopupMenuButton<Role>(
-              tooltip: 'Switch role',
+              tooltip: L.of(context).switchRole,
               onSelected: state.setRole,
               itemBuilder: (ctx) => [
                 for (final r in Role.values)
@@ -270,7 +289,7 @@ class _TopBar extends StatelessWidget {
               ),
             ),
             PopupMenuButton<String>(
-              tooltip: 'Security & audit',
+              tooltip: L.of(context).securityAudit,
               icon: const Icon(Icons.verified_user_outlined),
               onSelected: (v) {
                 if (v == 'audit') _showAudit(context, state);
@@ -317,13 +336,13 @@ class _TopBar extends StatelessWidget {
                   ),
               ],
             ),
-            if (locale != null) IconButton(tooltip: 'Language', onPressed: () => showLanguagePicker(context, locale!), icon: const Icon(Icons.translate)),
+            if (locale != null) IconButton(tooltip: L.of(context).language, onPressed: () => showLanguagePicker(context, locale!), icon: const Icon(Icons.translate)),
             ValueListenableBuilder(
               valueListenable: themeMode,
               builder: (context, mode, _) {
                 final dark = Theme.of(context).brightness == Brightness.dark;
                 return IconButton(
-                  tooltip: 'Toggle theme',
+                  tooltip: L.of(context).toggleTheme,
                   onPressed: () => themeMode.value = dark ? ThemeMode.light : ThemeMode.dark,
                   icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
                 );

@@ -30,7 +30,7 @@ class PosScreen extends StatelessWidget {
         // Wide (tablet/desktop): products + cart side by side.
         if (wide) {
           return ListView(
-            padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
             children: [
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1180),
@@ -43,8 +43,8 @@ class PosScreen extends StatelessWidget {
                         Expanded(
                           child: _Catalog(state: state, items: items),
                         ),
-                        const SizedBox(width: 16),
-                        SizedBox(width: 380, child: _CartPanel(state: state)),
+                        const SizedBox(width: 18),
+                        SizedBox(width: 390, child: _CartPanel(state: state)),
                       ],
                     ),
                   ],
@@ -60,7 +60,7 @@ class PosScreen extends StatelessWidget {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(14, 18, 14, 16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
                 children: [
                   PageHeader(l.billingTitle, l.billingSubtitlePhone),
                   _Catalog(state: state, items: items),
@@ -86,10 +86,9 @@ class _MobileCartBar extends StatelessWidget {
     final l = L.of(context);
     final empty = state.cart.isEmpty;
     return Material(
-      elevation: 12,
       color: Theme.of(context).colorScheme.surface,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         child: Row(
           children: [
             Column(
@@ -97,7 +96,7 @@ class _MobileCartBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(l.itemCountLabel(qtyLabel(state.cartQty)), style: TextStyle(fontSize: 12, color: bx.muted)),
-                Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                Money(state.total, style: BxText.value.copyWith(fontSize: 21)),
               ],
             ),
             const Spacer(),
@@ -105,7 +104,7 @@ class _MobileCartBar extends StatelessWidget {
               onPressed: empty ? null : () => _openCart(context),
               icon: const Icon(Icons.shopping_cart_checkout, size: 18),
               label: Text(l.viewBill),
-              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13)),
+              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14)),
             ),
           ],
         ),
@@ -226,8 +225,9 @@ class _CatalogState extends State<_Catalog> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: bx.border),
+                  boxShadow: bx.cardShadow,
                 ),
                 child: TextField(
                   controller: _search,
@@ -264,7 +264,7 @@ class _CatalogState extends State<_Catalog> {
                   backgroundColor: bx.accent,
                   foregroundColor: bx.onAccent,
                   padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
                 child: const Icon(Icons.qr_code_scanner, size: 22),
               ),
@@ -286,7 +286,7 @@ class _CatalogState extends State<_Catalog> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: items.length,
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 220, mainAxisSpacing: 10, crossAxisSpacing: 10, mainAxisExtent: 130),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 220, mainAxisSpacing: 12, crossAxisSpacing: 12, mainAxisExtent: 158),
             itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => _add(context, items[i])),
           ),
       ],
@@ -307,47 +307,64 @@ class _ProductTile extends StatelessWidget {
       opacity: item.out ? 0.55 : 1,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(18),
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(color: item.out ? bx.danger.withValues(alpha: 0.5) : bx.border),
+            boxShadow: bx.cardShadow,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(color: bx.surface2, borderRadius: BorderRadius.circular(9)),
-                    child: Icon(Icons.inventory_2_outlined, size: 18, color: bx.brand),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                    decoration: BoxDecoration(color: qtyColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
-                    child: Text(
-                      item.stockTracked ? '${qtyLabel(item.qty)} ${item.unit}' : L.of(context).serviceLabel,
-                      style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: qtyColor),
+              Container(
+                height: 54,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [bx.accent.withValues(alpha: 0.16), bx.surface2], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.14), shape: BoxShape.circle),
+                      child: Icon(item.stockTracked ? Icons.inventory_2_outlined : Icons.design_services_outlined, size: 19, color: bx.accent),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                            decoration: BoxDecoration(color: qtyColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
+                            child: Text(
+                              item.stockTracked ? '${qtyLabel(item.qty)} ${item.unit}' : L.of(context).serviceLabel,
+                              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: qtyColor),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const Spacer(),
+              const SizedBox(height: 10),
               Text(
                 item.name,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 2),
+              const Spacer(),
               Row(
                 children: [
-                  Text(money(item.price), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+                  Text(money(item.price), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(
@@ -355,6 +372,13 @@ class _ProductTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 11, color: bx.muted),
                     ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(color: bx.accent, shape: BoxShape.circle),
+                    child: Icon(Icons.add, size: 18, color: bx.onAccent),
                   ),
                 ],
               ),
@@ -387,8 +411,15 @@ class _CartPanel extends StatelessWidget {
               children: [
                 Row(
                   children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(12)),
+                      child: Icon(Icons.shopping_cart_outlined, color: bx.accent, size: 20),
+                    ),
+                    const SizedBox(width: 10),
                     Expanded(
-                      child: Text(l.currentBill, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                      child: Text(l.currentBill, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                     ),
                     Badge2(l.qtyBadge(qtyLabel(state.cartQty))),
                   ],
@@ -434,8 +465,8 @@ class _CartPanel extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(l.total, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-                      Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                      Text(l.total, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                      Money(state.total, style: BxText.value.copyWith(fontSize: 22), color: bx.accent),
                     ],
                   ),
                 ),
@@ -471,7 +502,7 @@ class _CartPanel extends StatelessWidget {
                   onPressed: state.cart.isEmpty ? null : () => _charge(context, 'Cash'),
                   icon: const Icon(Icons.print_outlined, size: 18),
                   label: Text(state.cart.isEmpty ? l.addItemsToCharge : l.chargePrintAmt(money(state.total))),
-                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
+                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
                 ),
               ],
             ),
