@@ -94,3 +94,59 @@ where the mock genuinely diverges from the token cascade.
    green (state the pass count); (d) both light and dark render; (e) EN and HI both render.
 4. An honest fidelity note: where the implementation diverges from the reference and why
    (missing exact icons/photos, approximations, responsive gaps).
+
+---
+
+## Reference: "Variant 2 — Premium Command Center" (dark) — screen-specific notes
+
+The mock shows three screens in a **dark navy** premium style: **Dashboard** ("Business
+overview"), **Smart POS**, **Customer Ledger**. Visual language to reproduce:
+- Deep navy background (~`#0A1729`→`#0E2036` gradient) with a faint grid/mesh texture.
+- **Dark hero cards** (navy gradient, white numerals, blue accent, inline sparkline/area
+  chart) for the primary metric; **light/white content cards** stacked below on the same
+  dark canvas.
+- Brand blue accent (keep the existing `#146CFF` family — it already matches).
+- Wordmark "Bill**Nex**" (Nex in blue) + a green‑check **"Synced"** status pill + bell.
+- Circular colored icon badges on mini stat cards (Receivable/Payable/Stock value).
+- Segmented pill tabs (All/Grocery/Drinks; Overview/Transactions). Status text: Paid=green,
+  Unpaid/ due=red. Area/line charts ("Revenue pulse").
+- Product tiles with **photos** in POS; **Charge ₹total** primary button.
+
+### 🔶 Two spots where this reference collides with UNTOUCHABLES — handle deliberately, call out:
+
+1. **Bottom navigation = 5 tabs (Dashboard · Invoices · POS · Customers · More).**
+   BillNex's bar is **logic-driven**: `home_shell.dart` picks tabs via `_bottomTabs(order)`
+   from role/feature-flag gating, and labels come from `navLabel()`/`NavId`. You may fully
+   **restyle** the bar (icons, active pill, dark treatment) and you may change the *displayed*
+   tab set to match the mock — **but keep it derived from the existing role/feature-flag logic
+   and `NavId` routing; do NOT hardcode a fixed 5-tab list that shows tabs a role/flag should
+   hide, and do NOT rename `NavId` values or break `roleCanAccess`.** If you change tab
+   selection, describe exactly how in the report. ("Invoices" ≈ `NavId.sales`, "POS" ≈
+   `NavId.billing`/`quickbill`, "Customers" ≈ `NavId.customers`, "More" ≈ `NavId.menu`.)
+
+2. **New copy in the mock is user-facing → must be localized, not hardcoded.** Strings like
+   "Business overview", "Synced", "Revenue pulse", "Recent invoices", "View all", "Smart POS",
+   "Search or scan item", "Current bill", "Customer Ledger", "Credit limit", "Last payment",
+   "Recent transactions", "Record Payment", "Overview", "Transactions", "Charge {total}",
+   "Payment received", "vs yesterday", "Sales today" — add each as a key to **all three** ARBs
+   (en/hi/te) and use `l.<key>`. Reuse existing keys where they already exist (e.g. `currentBill`,
+   `total`, `subtotal`, `recentActivity`, `collectPayment`, `viewAll`, `salesInvoices`).
+
+### Data must stay real (do not fabricate)
+The mock's numbers (₹24,580, +18.4%, the chart, invoice rows, ledger transactions) are
+placeholders. Wire every value to **existing** `AppState` getters — `todaySales`,
+`paymentMix()`, `dayBook()`, `sales`, `totalReceivable`, `totalPayable`,
+`stockValueAtCost`, `balanceOf`, `ledgerFor(...)`, etc. If a chart needs a series, derive it
+from existing history; **do not** add fake data or new business logic to `app_state.dart`.
+If you add a chart package, add it to `pubspec.yaml` and keep it purely presentational.
+
+### Theme
+This is a **dark** design. Preferred: implement it in `AppTheme.dark()` and keep
+`AppTheme.light()` working (the app has a live light/dark toggle + tests that render dark).
+If the intent is to make dark the new default look, say so in the report — but **both themes
+must still render without overflow** (the smoke suite checks dark mode).
+
+### Product photos
+Optional. If used, add assets under `assets/` + `pubspec.yaml`, and keep an **icon fallback**
+for items without a photo (real shop catalogues won't have images). Never block billing on a
+missing image.
