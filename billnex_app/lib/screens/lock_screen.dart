@@ -67,35 +67,43 @@ class _LockScreenState extends State<LockScreen> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 320),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                width: 56, height: 56,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [bx.brand2, bx.brand]),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: const Icon(Icons.lock_outline, color: Colors.white, size: 26),
-              ),
-              const SizedBox(height: 18),
-              const Text('Enter PIN', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 4),
-              Text(_lockout > 0 ? 'Locked · try in ${_lockout}s' : (_error ?? 'BillNex is locked'),
-                  style: TextStyle(fontSize: 13, color: _error != null ? bx.danger : bx.muted)),
-              const SizedBox(height: 22),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                for (int i = 0; i < 4; i++)
-                  Container(
-                    width: 16, height: 16, margin: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: i < _entry.length ? bx.brand : Colors.transparent,
-                      border: Border.all(color: i < _entry.length ? bx.brand : bx.border, width: 2),
-                    ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [bx.brand2, bx.brand]),
+                    borderRadius: BorderRadius.circular(15),
                   ),
-              ]),
-              const SizedBox(height: 26),
-              _keypad(bx),
-            ]),
+                  child: const Icon(Icons.lock_outline, color: Colors.white, size: 26),
+                ),
+                const SizedBox(height: 18),
+                const Text('Enter PIN', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 4),
+                Text(_lockout > 0 ? 'Locked · try in ${_lockout}s' : (_error ?? 'BillNex is locked'), style: TextStyle(fontSize: 13, color: _error != null ? bx.danger : bx.muted)),
+                const SizedBox(height: 22),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (int i = 0; i < 4; i++)
+                      Container(
+                        width: 16,
+                        height: 16,
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: i < _entry.length ? bx.brand : Colors.transparent,
+                          border: Border.all(color: i < _entry.length ? bx.brand : bx.border, width: 2),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 26),
+                _keypad(bx),
+              ],
+            ),
           ),
         ),
       ),
@@ -104,30 +112,46 @@ class _LockScreenState extends State<LockScreen> {
 
   Widget _keypad(BxColors bx) {
     Widget key(String label, {Widget? child, VoidCallback? onTap}) => Padding(
-          padding: const EdgeInsets.all(8),
-          child: SizedBox(
-            width: 68, height: 68,
-            child: label.isEmpty && child == null
-                ? const SizedBox()
-                : Material(
-                    color: bx.surface2,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: _lockout > 0 ? null : (onTap ?? () => _press(label)),
-                      child: Center(child: child ?? Text(label, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700))),
-                    ),
+      padding: const EdgeInsets.all(8),
+      child: SizedBox(
+        width: 68,
+        height: 68,
+        child: label.isEmpty && child == null
+            ? const SizedBox()
+            : Material(
+                color: bx.surface2,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: _lockout > 0 ? null : (onTap ?? () => _press(label)),
+                  child: Center(
+                    child: child ?? Text(label, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
                   ),
-          ),
-        );
-    return Column(children: [
-      for (final row in [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']])
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [for (final d in row) key(d)]),
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        key(''),
-        key('0'),
-        key('x', child: Icon(Icons.backspace_outlined, color: bx.muted), onTap: _back),
-      ]),
-    ]);
+                ),
+              ),
+      ),
+    );
+    return Column(
+      children: [
+        for (final row in [
+          ['1', '2', '3'],
+          ['4', '5', '6'],
+          ['7', '8', '9'],
+        ])
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [for (final d in row) key(d)]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            key(''),
+            key('0'),
+            key(
+              'x',
+              child: Icon(Icons.backspace_outlined, color: bx.muted),
+              onTap: _back,
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

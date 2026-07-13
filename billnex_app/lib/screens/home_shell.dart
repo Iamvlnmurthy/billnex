@@ -85,49 +85,51 @@ class _HomeShellState extends State<HomeShell> {
     final order = _navOrder();
     if (!order.contains(_current)) _current = NavId.dash;
 
-    return LayoutBuilder(builder: (context, c) {
-      final wide = c.maxWidth >= 720;
-      // Mobile bottom nav caps at 5; overflow goes to a "More" sheet.
-      final showMore = !wide && order.length > 5;
-      final primary = showMore ? order.take(4).toList() : order;
-      final overflow = showMore ? order.skip(4).toList() : <NavId>[];
+    return LayoutBuilder(
+      builder: (context, c) {
+        final wide = c.maxWidth >= 720;
+        // Mobile bottom nav caps at 5; overflow goes to a "More" sheet.
+        final showMore = !wide && order.length > 5;
+        final primary = showMore ? order.take(4).toList() : order;
+        final overflow = showMore ? order.skip(4).toList() : <NavId>[];
 
-      return Scaffold(
-        body: Column(children: [
-          _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
-          _TrustBar(state: widget.state),
-          Expanded(
-            child: Row(children: [
-              if (wide) _Rail(order: order, current: _current, onTap: _go),
+        return Scaffold(
+          body: Column(
+            children: [
+              _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
+              _TrustBar(state: widget.state),
               Expanded(
-                child: Container(
-                  color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                  child: _bodyFor(_current),
+                child: Row(
+                  children: [
+                    if (wide) _Rail(order: order, current: _current, onTap: _go),
+                    Expanded(
+                      child: Container(color: Theme.of(context).colorScheme.surfaceContainerLowest, child: _bodyFor(_current)),
+                    ),
+                  ],
                 ),
               ),
-            ]),
+            ],
           ),
-        ]),
-        bottomNavigationBar: wide
-            ? null
-            : NavigationBar(
-                selectedIndex: _mobileSelectedIndex(primary, overflow),
-                onDestinationSelected: (i) {
-                  if (showMore && i == primary.length) {
-                    _openMore(context, overflow);
-                  } else {
-                    _go(primary[i]);
-                  }
-                },
-                height: 66,
-                destinations: [
-                  for (final id in primary)
-                    NavigationDestination(icon: Icon(kNavSpecs[id]!.icon), selectedIcon: Icon(kNavSpecs[id]!.activeIcon), label: navLabel(context, id)),
-                  if (showMore) const NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
-                ],
-              ),
-      );
-    });
+          bottomNavigationBar: wide
+              ? null
+              : NavigationBar(
+                  selectedIndex: _mobileSelectedIndex(primary, overflow),
+                  onDestinationSelected: (i) {
+                    if (showMore && i == primary.length) {
+                      _openMore(context, overflow);
+                    } else {
+                      _go(primary[i]);
+                    }
+                  },
+                  height: 66,
+                  destinations: [
+                    for (final id in primary) NavigationDestination(icon: Icon(kNavSpecs[id]!.icon), selectedIcon: Icon(kNavSpecs[id]!.activeIcon), label: navLabel(context, id)),
+                    if (showMore) const NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
+                  ],
+                ),
+        );
+      },
+    );
   }
 
   int _mobileSelectedIndex(List<NavId> primary, List<NavId> overflow) {
@@ -142,18 +144,21 @@ class _HomeShellState extends State<HomeShell> {
       context: context,
       showDragHandle: true,
       builder: (ctx) => SafeArea(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          for (final id in overflow)
-            ListTile(
-              leading: Icon(kNavSpecs[id]!.icon),
-              title: Text(kNavSpecs[id]!.label),
-              selected: _current == id,
-              onTap: () {
-                Navigator.pop(ctx);
-                _go(id);
-              },
-            ),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final id in overflow)
+              ListTile(
+                leading: Icon(kNavSpecs[id]!.icon),
+                title: Text(kNavSpecs[id]!.label),
+                selected: _current == id,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _go(id);
+                },
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -166,19 +171,28 @@ Future<void> showLanguagePicker(BuildContext context, ValueNotifier<Locale?> loc
     context: context,
     showDragHandle: true,
     builder: (ctx) => SafeArea(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Padding(padding: const EdgeInsets.all(16), child: Align(alignment: Alignment.centerLeft, child: Text(L.of(ctx).language, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)))),
-        for (final (name, code) in langs)
-          ListTile(
-            leading: const Icon(Icons.translate),
-            title: Text(name),
-            trailing: (locale.value?.languageCode == code) ? const Icon(Icons.check) : null,
-            onTap: () {
-              locale.value = code == null ? null : Locale(code);
-              Navigator.pop(ctx);
-            },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(L.of(ctx).language, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            ),
           ),
-      ]),
+          for (final (name, code) in langs)
+            ListTile(
+              leading: const Icon(Icons.translate),
+              title: Text(name),
+              trailing: (locale.value?.languageCode == code) ? const Icon(Icons.check) : null,
+              onTap: () {
+                locale.value = code == null ? null : Locale(code);
+                Navigator.pop(ctx);
+              },
+            ),
+        ],
+      ),
     ),
   );
 }
@@ -202,83 +216,140 @@ class _TopBar extends StatelessWidget {
       ),
       child: SafeArea(
         bottom: false,
-        child: Row(children: [
-          _logo(context, bx, compact: narrow),
-          SizedBox(width: narrow ? 8 : 14),
-          Expanded(
-            child: InkWell(
-              onTap: state.switchBusiness,
-              borderRadius: BorderRadius.circular(999),
+        child: Row(
+          children: [
+            _logo(context, bx, compact: narrow),
+            SizedBox(width: narrow ? 8 : 14),
+            Expanded(
+              child: InkWell(
+                onTap: state.switchBusiness,
+                borderRadius: BorderRadius.circular(999),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: bx.surface2,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: bx.border),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(color: bx.brand, shape: BoxShape.circle),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          '${state.shopName} · ${state.business!.edition}',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.expand_more, size: 16, color: bx.muted),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+            PopupMenuButton<Role>(
+              tooltip: 'Switch role',
+              onSelected: state.setRole,
+              itemBuilder: (ctx) => [
+                for (final r in Role.values)
+                  PopupMenuItem(
+                    value: r,
+                    child: Row(
+                      children: [
+                        if (state.role == r) Icon(Icons.check, size: 16, color: bx.accent) else const SizedBox(width: 16),
+                        const SizedBox(width: 8),
+                        Text(r.label),
+                      ],
+                    ),
+                  ),
+              ],
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: narrow ? 8 : 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: bx.surface2,
                   borderRadius: BorderRadius.circular(999),
                   border: Border.all(color: bx.border),
                 ),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Container(width: 8, height: 8, decoration: BoxDecoration(color: bx.brand, shape: BoxShape.circle)),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text('${state.shopName} · ${state.business!.edition}',
-                        overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(Icons.expand_more, size: 16, color: bx.muted),
-                ]),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.badge_outlined, size: 15, color: bx.muted),
+                    if (!narrow) ...[const SizedBox(width: 6), Text(state.role.label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700))],
+                    Icon(Icons.expand_more, size: 15, color: bx.muted),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 6),
-          PopupMenuButton<Role>(
-            tooltip: 'Switch role',
-            onSelected: state.setRole,
-            itemBuilder: (ctx) => [for (final r in Role.values) PopupMenuItem(value: r, child: Row(children: [if (state.role == r) Icon(Icons.check, size: 16, color: bx.accent) else const SizedBox(width: 16), const SizedBox(width: 8), Text(r.label)]))],
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: narrow ? 8 : 10, vertical: 6),
-              decoration: BoxDecoration(color: bx.surface2, borderRadius: BorderRadius.circular(999), border: Border.all(color: bx.border)),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(Icons.badge_outlined, size: 15, color: bx.muted),
-                if (!narrow) ...[
-                  const SizedBox(width: 6),
-                  Text(state.role.label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
-                ],
-                Icon(Icons.expand_more, size: 15, color: bx.muted),
-              ]),
+            PopupMenuButton<String>(
+              tooltip: 'Security & audit',
+              icon: const Icon(Icons.verified_user_outlined),
+              onSelected: (v) {
+                if (v == 'audit') _showAudit(context, state);
+                if (v == 'pin' && auth != null) _managePin(context, auth!);
+                if (v == 'backup') {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => Scaffold(
+                        appBar: AppBar(title: const Text('Backup & Restore')),
+                        body: BackupScreen(state: state),
+                      ),
+                    ),
+                  );
+                }
+                if (v == 'profile' && state.bizKey != null) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => BusinessSetupScreen(
+                        state: state,
+                        bizType: state.bizKey!,
+                        existing: state.profile ?? BusinessProfile(bizType: state.bizKey!, shopName: state.shopName),
+                      ),
+                    ),
+                  );
+                }
+              },
+              itemBuilder: (ctx) => [
+                const PopupMenuItem(
+                  value: 'profile',
+                  child: ListTile(dense: true, leading: Icon(Icons.store_outlined), title: Text('Business details')),
+                ),
+                const PopupMenuItem(
+                  value: 'backup',
+                  child: ListTile(dense: true, leading: Icon(Icons.backup_outlined), title: Text('Backup & Restore')),
+                ),
+                const PopupMenuItem(
+                  value: 'audit',
+                  child: ListTile(dense: true, leading: Icon(Icons.history), title: Text('Audit log')),
+                ),
+                if (auth != null)
+                  const PopupMenuItem(
+                    value: 'pin',
+                    child: ListTile(dense: true, leading: Icon(Icons.pin_outlined), title: Text('App-lock PIN')),
+                  ),
+              ],
             ),
-          ),
-          PopupMenuButton<String>(
-            tooltip: 'Security & audit',
-            icon: const Icon(Icons.verified_user_outlined),
-            onSelected: (v) {
-              if (v == 'audit') _showAudit(context, state);
-              if (v == 'pin' && auth != null) _managePin(context, auth!);
-              if (v == 'backup') Navigator.of(context).push(MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state))));
-              if (v == 'profile' && state.bizKey != null) {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => BusinessSetupScreen(state: state, bizType: state.bizKey!, existing: state.profile ?? BusinessProfile(bizType: state.bizKey!, shopName: state.shopName))));
-              }
-            },
-            itemBuilder: (ctx) => [
-              const PopupMenuItem(value: 'profile', child: ListTile(dense: true, leading: Icon(Icons.store_outlined), title: Text('Business details'))),
-              const PopupMenuItem(value: 'backup', child: ListTile(dense: true, leading: Icon(Icons.backup_outlined), title: Text('Backup & Restore'))),
-              const PopupMenuItem(value: 'audit', child: ListTile(dense: true, leading: Icon(Icons.history), title: Text('Audit log'))),
-              if (auth != null) const PopupMenuItem(value: 'pin', child: ListTile(dense: true, leading: Icon(Icons.pin_outlined), title: Text('App-lock PIN'))),
-            ],
-          ),
-          if (locale != null)
-            IconButton(tooltip: 'Language', onPressed: () => showLanguagePicker(context, locale!), icon: const Icon(Icons.translate)),
-          ValueListenableBuilder(
-            valueListenable: themeMode,
-            builder: (context, mode, _) {
-              final dark = Theme.of(context).brightness == Brightness.dark;
-              return IconButton(
-                tooltip: 'Toggle theme',
-                onPressed: () => themeMode.value = dark ? ThemeMode.light : ThemeMode.dark,
-                icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
-              );
-            },
-          ),
-        ]),
+            if (locale != null) IconButton(tooltip: 'Language', onPressed: () => showLanguagePicker(context, locale!), icon: const Icon(Icons.translate)),
+            ValueListenableBuilder(
+              valueListenable: themeMode,
+              builder: (context, mode, _) {
+                final dark = Theme.of(context).brightness == Brightness.dark;
+                return IconButton(
+                  tooltip: 'Toggle theme',
+                  onPressed: () => themeMode.value = dark ? ThemeMode.light : ThemeMode.dark,
+                  icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -288,46 +359,50 @@ class _TopBar extends StatelessWidget {
     if (!context.mounted) return;
     final controller = TextEditingController();
     try {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(hasPin ? 'Change app-lock PIN' : 'Set app-lock PIN', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 4),
-          const Text('A 4-digit PIN locks BillNex on launch. Stored hashed in the device keystore.', style: TextStyle(fontSize: 12.5)),
-          const SizedBox(height: 14),
-          TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            obscureText: true,
-            maxLength: 4,
-            decoration: const InputDecoration(labelText: '4-digit PIN', border: OutlineInputBorder(), counterText: ''),
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (ctx) => Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(hasPin ? 'Change app-lock PIN' : 'Set app-lock PIN', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 4),
+              const Text('A 4-digit PIN locks BillNex on launch. Stored hashed in the device keystore.', style: TextStyle(fontSize: 12.5)),
+              const SizedBox(height: 14),
+              TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                maxLength: 4,
+                decoration: const InputDecoration(labelText: '4-digit PIN', border: OutlineInputBorder(), counterText: ''),
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: () async {
+                  if (controller.text.length == 4) {
+                    await auth.setPin(controller.text);
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  }
+                },
+                style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                child: Text(hasPin ? 'Update PIN' : 'Enable app-lock'),
+              ),
+              if (hasPin)
+                TextButton(
+                  onPressed: () async {
+                    await auth.clearPin();
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                  child: const Text('Remove PIN'),
+                ),
+            ],
           ),
-          const SizedBox(height: 12),
-          FilledButton(
-            onPressed: () async {
-              if (controller.text.length == 4) {
-                await auth.setPin(controller.text);
-                if (ctx.mounted) Navigator.pop(ctx);
-              }
-            },
-            style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-            child: Text(hasPin ? 'Update PIN' : 'Enable app-lock'),
-          ),
-          if (hasPin)
-            TextButton(
-              onPressed: () async {
-                await auth.clearPin();
-                if (ctx.mounted) Navigator.pop(ctx);
-              },
-              child: const Text('Remove PIN'),
-            ),
-        ]),
-      ),
-    );
+        ),
+      );
     } finally {
       controller.dispose();
     }
@@ -344,47 +419,75 @@ class _TopBar extends StatelessWidget {
         return SafeArea(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.7),
-            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              const Padding(padding: EdgeInsets.fromLTRB(16, 0, 16, 8), child: Text('Audit log', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800))),
-              if (log.isEmpty)
-                Padding(padding: const EdgeInsets.all(28), child: Center(child: Text('No audited actions yet', style: TextStyle(color: bx.muted))))
-              else
-                Flexible(child: ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: log.length,
-                  separatorBuilder: (_, i) => Divider(height: 1, color: bx.border),
-                  itemBuilder: (ctx, i) => ListTile(
-                    dense: true,
-                    leading: Icon(Icons.history, size: 18, color: bx.muted),
-                    title: Text(log[i].action, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-                    subtitle: Text('${log[i].actor} · ${log[i].ref} · ${log[i].timeLabel}', style: const TextStyle(fontSize: 11.5)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Text('Audit log', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                ),
+                if (log.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Center(
+                      child: Text('No audited actions yet', style: TextStyle(color: bx.muted)),
+                    ),
+                  )
+                else
+                  Flexible(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: log.length,
+                      separatorBuilder: (_, i) => Divider(height: 1, color: bx.border),
+                      itemBuilder: (ctx, i) => ListTile(
+                        dense: true,
+                        leading: Icon(Icons.history, size: 18, color: bx.muted),
+                        title: Text(log[i].action, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+                        subtitle: Text('${log[i].actor} · ${log[i].ref} · ${log[i].timeLabel}', style: const TextStyle(fontSize: 11.5)),
+                      ),
+                    ),
                   ),
-                )),
-            ]),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _logo(BuildContext context, BxColors bx, {bool compact = false}) => Row(mainAxisSize: MainAxisSize.min, children: [
-        Container(
-          width: 32, height: 32,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [bx.brand2, bx.brand], begin: Alignment.topLeft, end: Alignment.bottomRight),
-            borderRadius: BorderRadius.circular(9),
-          ),
-          alignment: Alignment.center,
-          child: const Icon(Icons.account_balance_wallet, color: Colors.white, size: 17),
+  Widget _logo(BuildContext context, BxColors bx, {bool compact = false}) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [bx.brand2, bx.brand], begin: Alignment.topLeft, end: Alignment.bottomRight),
+          borderRadius: BorderRadius.circular(9),
         ),
-        if (!compact) ...[
-          const SizedBox(width: 9),
-          Text.rich(TextSpan(children: [
-            const TextSpan(text: 'Bill', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5)),
-            TextSpan(text: 'Nex', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: bx.accent, letterSpacing: -0.5)),
-          ])),
-        ],
-      ]);
+        alignment: Alignment.center,
+        child: const Icon(Icons.account_balance_wallet, color: Colors.white, size: 17),
+      ),
+      if (!compact) ...[
+        const SizedBox(width: 9),
+        Text.rich(
+          TextSpan(
+            children: [
+              const TextSpan(
+                text: 'Bill',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5),
+              ),
+              TextSpan(
+                text: 'Nex',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: bx.accent, letterSpacing: -0.5),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ],
+  );
 }
 
 class _TrustBar extends StatelessWidget {
@@ -394,10 +497,13 @@ class _TrustBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
-    Widget seg(String label, String value) => Row(mainAxisSize: MainAxisSize.min, children: [
-          Text('$label ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
-          Text(value, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
-        ]);
+    Widget seg(String label, String value) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('$label ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
+        Text(value, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+      ],
+    );
     return Container(
       decoration: BoxDecoration(
         color: bx.surface2,
@@ -406,48 +512,75 @@ class _TrustBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(children: [
-          // online/offline toggle
-          InkWell(
-            onTap: () => state.setOnline(!state.online),
-            borderRadius: BorderRadius.circular(999),
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 40),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(color: (state.online ? bx.trustOnline : bx.warn).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Container(width: 8, height: 8, decoration: BoxDecoration(color: state.online ? bx.trustOnline : bx.warn, shape: BoxShape.circle)),
-                const SizedBox(width: 7),
-                Text(state.online ? L.of(context).online : L.of(context).offline, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: state.online ? bx.trustOnline : bx.warn)),
-              ]),
+        child: Row(
+          children: [
+            // online/offline toggle
+            InkWell(
+              onTap: () => state.setOnline(!state.online),
+              borderRadius: BorderRadius.circular(999),
+              child: Container(
+                constraints: const BoxConstraints(minHeight: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: (state.online ? bx.trustOnline : bx.warn).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(color: state.online ? bx.trustOnline : bx.warn, shape: BoxShape.circle),
+                    ),
+                    const SizedBox(width: 7),
+                    Text(
+                      state.online ? L.of(context).online : L.of(context).offline,
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: state.online ? bx.trustOnline : bx.warn),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          seg(L.of(context).queue, '${state.queueCount}'),
-          if (state.queueCount > 0) ...[
-            const SizedBox(width: 8),
-            TextButton(onPressed: state.syncNow, style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10), minimumSize: const Size(0, 40)), child: const Text('Sync now', style: TextStyle(fontSize: 12.5))),
+            const SizedBox(width: 16),
+            seg(L.of(context).queue, '${state.queueCount}'),
+            if (state.queueCount > 0) ...[
+              const SizedBox(width: 8),
+              TextButton(
+                onPressed: state.syncNow,
+                style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10), minimumSize: const Size(0, 40)),
+                child: const Text('Sync now', style: TextStyle(fontSize: 12.5)),
+              ),
+            ],
+            const SizedBox(width: 16),
+            InkWell(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => Scaffold(
+                    appBar: AppBar(title: const Text('Backup & Restore')),
+                    body: BackupScreen(state: state),
+                  ),
+                ),
+              ),
+              borderRadius: BorderRadius.circular(6),
+              child: Container(
+                constraints: const BoxConstraints(minHeight: 40),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (state.backupDue) ...[Icon(Icons.warning_amber_rounded, size: 13, color: bx.warn), const SizedBox(width: 4)],
+                    Text('Backup ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
+                    Text(
+                      state.backupDue ? 'due' : (state.lastBackupMs == null ? 'none' : 'saved'),
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: state.backupDue ? bx.warn : null),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            seg('Active features', '${state.activeCount}'),
           ],
-          const SizedBox(width: 16),
-          InkWell(
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state)))),
-            borderRadius: BorderRadius.circular(6),
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 40),
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                if (state.backupDue) ...[Icon(Icons.warning_amber_rounded, size: 13, color: bx.warn), const SizedBox(width: 4)],
-                Text('Backup ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
-                Text(state.backupDue ? 'due' : (state.lastBackupMs == null ? 'none' : 'saved'),
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: state.backupDue ? bx.warn : null)),
-              ]),
-            ),
-          ),
-          const SizedBox(width: 16),
-          seg('Active features', '${state.activeCount}'),
-        ]),
+        ),
       ),
     );
   }
@@ -470,13 +603,15 @@ class _Rail extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(vertical: 14),
       child: SingleChildScrollView(
-        child: Column(children: [
-          for (final id in order)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: _RailBtn(spec: kNavSpecs[id]!, label: navLabel(context, id), on: current == id, onTap: () => onTap(id)),
-            ),
-        ]),
+        child: Column(
+          children: [
+            for (final id in order)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: _RailBtn(spec: kNavSpecs[id]!, label: navLabel(context, id), on: current == id, onTap: () => onTap(id)),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -498,15 +633,20 @@ class _RailBtn extends StatelessWidget {
       child: Container(
         width: 68,
         padding: const EdgeInsets.symmetric(vertical: 9),
-        decoration: BoxDecoration(
-          color: on ? bx.accent.withValues(alpha: 0.12) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+        decoration: BoxDecoration(color: on ? bx.accent.withValues(alpha: 0.12) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+        child: Column(
+          children: [
+            Icon(on ? spec.activeIcon : spec.icon, size: 22, color: on ? bx.accent : bx.muted),
+            const SizedBox(height: 5),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: on ? bx.accent : bx.muted),
+            ),
+          ],
         ),
-        child: Column(children: [
-          Icon(on ? spec.activeIcon : spec.icon, size: 22, color: on ? bx.accent : bx.muted),
-          const SizedBox(height: 5),
-          Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: on ? bx.accent : bx.muted)),
-        ]),
       ),
     );
   }

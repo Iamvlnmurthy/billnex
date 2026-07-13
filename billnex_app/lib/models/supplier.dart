@@ -9,13 +9,8 @@ class Supplier {
   const Supplier({required this.id, required this.name, this.phone = '', this.gstin, this.creditDays = 0});
 
   Map<String, dynamic> toJson() => {'id': id, 'n': name, 'p': phone, 'g': gstin, 'd': creditDays};
-  factory Supplier.fromJson(Map<String, dynamic> j) => Supplier(
-        id: j['id'] as String,
-        name: j['n'] as String,
-        phone: (j['p'] ?? '') as String,
-        gstin: j['g'] as String?,
-        creditDays: (j['d'] as num?)?.toInt() ?? 0,
-      );
+  factory Supplier.fromJson(Map<String, dynamic> j) =>
+      Supplier(id: j['id'] as String, name: j['n'] as String, phone: (j['p'] ?? '') as String, gstin: j['g'] as String?, creditDays: (j['d'] as num?)?.toInt() ?? 0);
 }
 
 class PurchaseLine {
@@ -26,8 +21,7 @@ class PurchaseLine {
   double get amount => qty * rate;
 
   Map<String, dynamic> toJson() => {'s': sku, 'q': qty, 'r': rate};
-  factory PurchaseLine.fromJson(Map<String, dynamic> j) =>
-      PurchaseLine(j['s'] as String, (j['q'] as num).toDouble(), (j['r'] as num).toDouble());
+  factory PurchaseLine.fromJson(Map<String, dynamic> j) => PurchaseLine(j['s'] as String, (j['q'] as num).toDouble(), (j['r'] as num).toDouble());
 }
 
 /// A recorded purchase (PRD BNX-0177 purchase invoice) — increases stock and
@@ -62,28 +56,28 @@ class Purchase {
   }
 
   Map<String, dynamic> toJson() => {
-        'no': purchaseNo,
-        't': epochMs,
-        'sid': supplierId,
-        'ref': supplierRef,
-        'l': lines.map((e) => e.toJson()).toList(),
-        's': subtotal,
-        'g': gst,
-        'tot': total,
-        'paid': paid,
-      };
+    'no': purchaseNo,
+    't': epochMs,
+    'sid': supplierId,
+    'ref': supplierRef,
+    'l': lines.map((e) => e.toJson()).toList(),
+    's': subtotal,
+    'g': gst,
+    'tot': total,
+    'paid': paid,
+  };
 
   factory Purchase.fromJson(Map<String, dynamic> j) => Purchase(
-        purchaseNo: j['no'] as String,
-        epochMs: (j['t'] as num).toInt(),
-        supplierId: j['sid'] as String,
-        supplierRef: (j['ref'] ?? '') as String,
-        lines: (j['l'] as List).map((e) => PurchaseLine.fromJson(e as Map<String, dynamic>)).toList(),
-        subtotal: (j['s'] as num).toDouble(),
-        gst: (j['g'] as num).toDouble(),
-        total: (j['tot'] as num).toDouble(),
-        paid: j['paid'] == true,
-      );
+    purchaseNo: j['no'] as String,
+    epochMs: (j['t'] as num).toInt(),
+    supplierId: j['sid'] as String,
+    supplierRef: (j['ref'] ?? '') as String,
+    lines: (j['l'] as List).map((e) => PurchaseLine.fromJson(e as Map<String, dynamic>)).toList(),
+    subtotal: (j['s'] as num).toDouble(),
+    gst: (j['g'] as num).toDouble(),
+    total: (j['tot'] as num).toDouble(),
+    paid: j['paid'] == true,
+  );
 }
 
 /// Supplier payable movement. [debit] = we owe more; [credit] = we paid.
@@ -101,11 +95,11 @@ class PayableEntry {
 
   Map<String, dynamic> toJson() => {'s': supplierId, 't': epochMs, 'r': ref, 'd': debit, 'c': credit, 'm': mode};
   factory PayableEntry.fromJson(Map<String, dynamic> j) => PayableEntry(
-        supplierId: j['s'] as String,
-        epochMs: (j['t'] as num).toInt(),
-        ref: j['r'] as String,
-        debit: (j['d'] as num?)?.toDouble() ?? 0,
-        credit: (j['c'] as num?)?.toDouble() ?? 0,
-        mode: j['m'] as String?,
-      );
+    supplierId: j['s'] as String,
+    epochMs: (j['t'] as num).toInt(),
+    ref: j['r'] as String,
+    debit: (j['d'] as num?)?.toDouble() ?? 0,
+    credit: (j['c'] as num?)?.toDouble() ?? 0,
+    mode: j['m'] as String?,
+  );
 }

@@ -9,6 +9,11 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+# The codebase uses a deliberately dense, wide style; keep the formatter's
+# page width wide so `dart format` (enforced in CI) preserves it.
+formatter:
+  page_width: 200
+
 analyzer:
   language:
     strict-casts: true

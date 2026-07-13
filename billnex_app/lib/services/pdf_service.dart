@@ -12,27 +12,27 @@ import 'billing.dart';
 /// (80mm / 58mm) with the same layout model as the on-screen receipt.
 class PdfService {
   static PdfColor _accent(String id) => switch (id) {
-        'classic' => const PdfColor.fromInt(0xFF0F766E),
-        'minimal' => const PdfColor.fromInt(0xFF111111),
-        'modern' => const PdfColor.fromInt(0xFFD97706),
-        'bilingual' => const PdfColor.fromInt(0xFF4338CA),
-        'wholesale' => const PdfColor.fromInt(0xFF0369A1),
-        'service' => const PdfColor.fromInt(0xFF7C3AED),
-        'quotation' => const PdfColor.fromInt(0xFF0D9488),
-        'delivery' => const PdfColor.fromInt(0xFF475569),
-        _ => const PdfColor.fromInt(0xFF0F766E),
-      };
+    'classic' => const PdfColor.fromInt(0xFF0F766E),
+    'minimal' => const PdfColor.fromInt(0xFF111111),
+    'modern' => const PdfColor.fromInt(0xFFD97706),
+    'bilingual' => const PdfColor.fromInt(0xFF4338CA),
+    'wholesale' => const PdfColor.fromInt(0xFF0369A1),
+    'service' => const PdfColor.fromInt(0xFF7C3AED),
+    'quotation' => const PdfColor.fromInt(0xFF0D9488),
+    'delivery' => const PdfColor.fromInt(0xFF475569),
+    _ => const PdfColor.fromInt(0xFF0F766E),
+  };
 
   static String _title(String id) => switch (id) {
-        'minimal' => 'Invoice',
-        'bilingual' => 'TAX INVOICE / कर बिल',
-        'wholesale' => 'WHOLESALE INVOICE',
-        'service' => 'SERVICE INVOICE',
-        'quotation' => 'QUOTATION',
-        'delivery' => 'DELIVERY CHALLAN',
-        'modern' => 'INVOICE',
-        _ => 'TAX INVOICE',
-      };
+    'minimal' => 'Invoice',
+    'bilingual' => 'TAX INVOICE / कर बिल',
+    'wholesale' => 'WHOLESALE INVOICE',
+    'service' => 'SERVICE INVOICE',
+    'quotation' => 'QUOTATION',
+    'delivery' => 'DELIVERY CHALLAN',
+    'modern' => 'INVOICE',
+    _ => 'TAX INVOICE',
+  };
 
   static String _rupee(num n) {
     final s = n.round().toString();
@@ -49,10 +49,10 @@ class PdfService {
   }
 
   static String _sellerLine(Sale sale) => [
-        if ((sale.sellerGstin ?? '').trim().isNotEmpty) 'GSTIN ${sale.sellerGstin!.trim()}',
-        if ((sale.sellerAddress ?? '').trim().isNotEmpty) sale.sellerAddress!.trim(),
-        if ((sale.sellerPhone ?? '').trim().isNotEmpty) 'Ph ${sale.sellerPhone!.trim()}',
-      ].join(' · ');
+    if ((sale.sellerGstin ?? '').trim().isNotEmpty) 'GSTIN ${sale.sellerGstin!.trim()}',
+    if ((sale.sellerAddress ?? '').trim().isNotEmpty) sale.sellerAddress!.trim(),
+    if ((sale.sellerPhone ?? '').trim().isNotEmpty) 'Ph ${sale.sellerPhone!.trim()}',
+  ].join(' · ');
 
   // Bundled Inter faces — loaded once and reused. No network dependency, so
   // reprint/share works fully offline (previously used PdfGoogleFonts, which
@@ -70,19 +70,16 @@ class PdfService {
     final theme = await _theme();
 
     if (tpl.size == PaperSize.a4) {
-      doc.addPage(pw.Page(
-        theme: theme,
-        pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.all(32),
-        build: (c) => _a4Body(sale, tpl),
-      ));
+      doc.addPage(pw.Page(theme: theme, pageFormat: PdfPageFormat.a4, margin: const pw.EdgeInsets.all(32), build: (c) => _a4Body(sale, tpl)));
     } else {
       final width = tpl.size == PaperSize.mm58 ? 58 * PdfPageFormat.mm : 80 * PdfPageFormat.mm;
-      doc.addPage(pw.Page(
-        theme: theme,
-        pageFormat: PdfPageFormat(width, double.infinity, marginAll: 6 * PdfPageFormat.mm),
-        build: (c) => tpl.id == 'kot' ? _kotBody(sale) : _thermalBody(sale),
-      ));
+      doc.addPage(
+        pw.Page(
+          theme: theme,
+          pageFormat: PdfPageFormat(width, double.infinity, marginAll: 6 * PdfPageFormat.mm),
+          build: (c) => tpl.id == 'kot' ? _kotBody(sale) : _thermalBody(sale),
+        ),
+      );
     }
     return doc;
   }
@@ -111,47 +108,75 @@ class PdfService {
     required List<({String name, double qty, double value})> items,
   }) async {
     final doc = pw.Document(theme: await _theme());
-    doc.addPage(pw.MultiPage(
-      pageFormat: PdfPageFormat.a4,
-      margin: const pw.EdgeInsets.all(32),
-      build: (c) => [
-        pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-          pw.Text(businessName, style: const pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColor.fromInt(0xFF0055D1))),
-          pw.Text('Business Report', style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700)),
-        ]),
-        pw.Divider(color: const PdfColor.fromInt(0xFF146CFF), thickness: 1.5),
-        pw.SizedBox(height: 12),
-        pw.Text('Summary', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
-        pw.SizedBox(height: 6),
-        pw.Wrap(spacing: 24, runSpacing: 8, children: summary.entries.map((e) => pw.Container(
-          width: 150,
-          child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-            pw.Text(e.key, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
-            pw.Text(e.value, style: const pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold)),
-          ]),
-        )).toList()),
-        pw.SizedBox(height: 16),
-        pw.Text('Payment mix', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
-        pw.SizedBox(height: 6),
-        pw.Table(border: pw.TableBorder.all(color: PdfColors.grey300), children: [
-          for (final e in paymentMix.entries)
-            pw.TableRow(children: [_cell(e.key), _cell(_rupee(e.value), right: true)]),
-        ]),
-        pw.SizedBox(height: 16),
-        pw.Text('Item-wise sales', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
-        pw.SizedBox(height: 6),
-        pw.Table(border: pw.TableBorder.all(color: PdfColors.grey300), children: [
-          pw.TableRow(decoration: const pw.BoxDecoration(color: PdfColors.grey200), children: [_cell('Item'), _cell('Qty', right: true), _cell('Value', right: true)]),
-          for (final r in items) pw.TableRow(children: [_cell(r.name), _cell(qtyLabel(r.qty), right: true), _cell(_rupee(r.value), right: true)]),
-        ]),
-      ],
-    ));
+    doc.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(32),
+        build: (c) => [
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text(
+                businessName,
+                style: const pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColor.fromInt(0xFF0055D1)),
+              ),
+              pw.Text('Business Report', style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700)),
+            ],
+          ),
+          pw.Divider(color: const PdfColor.fromInt(0xFF146CFF), thickness: 1.5),
+          pw.SizedBox(height: 12),
+          pw.Text('Summary', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 6),
+          pw.Wrap(
+            spacing: 24,
+            runSpacing: 8,
+            children: summary.entries
+                .map(
+                  (e) => pw.Container(
+                    width: 150,
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(e.key, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
+                        pw.Text(e.value, style: const pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          pw.SizedBox(height: 16),
+          pw.Text('Payment mix', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 6),
+          pw.Table(
+            border: pw.TableBorder.all(color: PdfColors.grey300),
+            children: [
+              for (final e in paymentMix.entries) pw.TableRow(children: [_cell(e.key), _cell(_rupee(e.value), right: true)]),
+            ],
+          ),
+          pw.SizedBox(height: 16),
+          pw.Text('Item-wise sales', style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 6),
+          pw.Table(
+            border: pw.TableBorder.all(color: PdfColors.grey300),
+            children: [
+              pw.TableRow(
+                decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                children: [_cell('Item'), _cell('Qty', right: true), _cell('Value', right: true)],
+              ),
+              for (final r in items) pw.TableRow(children: [_cell(r.name), _cell(qtyLabel(r.qty), right: true), _cell(_rupee(r.value), right: true)]),
+            ],
+          ),
+        ],
+      ),
+    );
     await Printing.sharePdf(bytes: await doc.save(), filename: 'BillNex-Report.pdf');
   }
 
   static pw.Widget _cell(String s, {bool right = false}) => pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      child: pw.Text(s, textAlign: right ? pw.TextAlign.right : pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)));
+    padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+    child: pw.Text(s, textAlign: right ? pw.TextAlign.right : pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)),
+  );
 
   static Future<void> shareSale(Sale sale) async {
     final doc = await build(sale);
@@ -165,169 +190,223 @@ class PdfService {
     final bilingual = tpl.id == 'bilingual';
 
     pw.Widget header() {
-      final left = pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-        pw.Text(sale.businessName,
-            style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: modern ? PdfColors.white : accent)),
-        if (_sellerLine(sale).isNotEmpty)
-          pw.Text(_sellerLine(sale),
-              style: pw.TextStyle(fontSize: 9, color: modern ? PdfColors.white : PdfColors.grey700)),
-      ]);
-      final right = pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.end, children: [
-        pw.Text(_title(tpl.id),
-            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, letterSpacing: 1, color: modern ? PdfColors.white : PdfColors.black)),
-        pw.Text('${sale.invoiceNo} · ${sale.dateLabel}',
-            style: pw.TextStyle(fontSize: 9, color: modern ? PdfColors.white : PdfColors.grey700)),
-      ]);
+      final left = pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(
+            sale.businessName,
+            style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: modern ? PdfColors.white : accent),
+          ),
+          if (_sellerLine(sale).isNotEmpty) pw.Text(_sellerLine(sale), style: pw.TextStyle(fontSize: 9, color: modern ? PdfColors.white : PdfColors.grey700)),
+        ],
+      );
+      final right = pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.end,
+        children: [
+          pw.Text(
+            _title(tpl.id),
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, letterSpacing: 1, color: modern ? PdfColors.white : PdfColors.black),
+          ),
+          pw.Text('${sale.invoiceNo} · ${sale.dateLabel}', style: pw.TextStyle(fontSize: 9, color: modern ? PdfColors.white : PdfColors.grey700)),
+        ],
+      );
       final row = pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [left, right]);
       if (modern) {
         return pw.Container(color: accent, padding: const pw.EdgeInsets.all(16), child: row);
       }
       return pw.Container(
         padding: const pw.EdgeInsets.only(bottom: 10),
-        decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: accent, width: 2))),
+        decoration: pw.BoxDecoration(
+          border: pw.Border(bottom: pw.BorderSide(color: accent, width: 2)),
+        ),
         child: row,
       );
     }
 
     final band = _band(tpl.id);
 
-    return pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
-      header(),
-      if (band != null)
-        pw.Container(
-          color: PdfColors.grey100,
-          padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          margin: const pw.EdgeInsets.only(top: 8),
-          child: pw.Text(band, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey800)),
-        ),
-      pw.SizedBox(height: 14),
-      pw.Table(
-        border: const pw.TableBorder(bottom: pw.BorderSide(color: PdfColors.grey300)),
-        columnWidths: {0: const pw.FlexColumnWidth(4), 1: const pw.FlexColumnWidth(), 2: const pw.FlexColumnWidth(1.4)},
-        children: [
-          pw.TableRow(
-            decoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey400))),
-            children: [
-              _th(bilingual ? 'Item / वस्तु' : 'Description'),
-              _th('Qty', align: pw.TextAlign.center),
-              _th(bilingual ? 'Amount / राशि' : 'Amount', align: pw.TextAlign.right),
-            ],
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+      children: [
+        header(),
+        if (band != null)
+          pw.Container(
+            color: PdfColors.grey100,
+            padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            margin: const pw.EdgeInsets.only(top: 8),
+            child: pw.Text(band, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey800)),
           ),
-          for (final l in sale.lines)
-            pw.TableRow(children: [
-              _td(l.name),
-              _td(qtyLabel(l.qty), align: pw.TextAlign.center),
-              _td(_rupee(l.amount), align: pw.TextAlign.right),
-            ]),
-        ],
-      ),
-      pw.SizedBox(height: 12),
-      pw.Align(
-        alignment: pw.Alignment.centerRight,
-        child: pw.SizedBox(
-          width: 180,
-          child: pw.Column(children: [
-            _kv('Taxable', _rupee(sale.subtotal)),
-            if (sale.discount > 0) _kv('Discount', '- ${_rupee(sale.discount)}'),
-            _kv('CGST', _rupee(sale.cgst)),
-            _kv('SGST', _rupee(sale.sgst)),
-            if (sale.roundOff != 0) _kv('Round off', _rupee(sale.roundOff)),
-            pw.Container(
-              margin: const pw.EdgeInsets.only(top: 4),
-              padding: const pw.EdgeInsets.only(top: 6),
-              decoration: pw.BoxDecoration(border: pw.Border(top: pw.BorderSide(color: accent, width: 1.5))),
-              child: pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text(tpl.id == 'quotation' ? 'Est.' : 'Total',
-                    style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, color: accent)),
-                pw.Text(_rupee(sale.total),
-                    style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, color: accent)),
-              ]),
+        pw.SizedBox(height: 14),
+        pw.Table(
+          border: const pw.TableBorder(bottom: pw.BorderSide(color: PdfColors.grey300)),
+          columnWidths: {0: const pw.FlexColumnWidth(4), 1: const pw.FlexColumnWidth(), 2: const pw.FlexColumnWidth(1.4)},
+          children: [
+            pw.TableRow(
+              decoration: const pw.BoxDecoration(
+                border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey400)),
+              ),
+              children: [
+                _th(bilingual ? 'Item / वस्तु' : 'Description'),
+                _th('Qty', align: pw.TextAlign.center),
+                _th(bilingual ? 'Amount / राशि' : 'Amount', align: pw.TextAlign.right),
+              ],
             ),
-          ]),
+            for (final l in sale.lines)
+              pw.TableRow(
+                children: [
+                  _td(l.name),
+                  _td(qtyLabel(l.qty), align: pw.TextAlign.center),
+                  _td(_rupee(l.amount), align: pw.TextAlign.right),
+                ],
+              ),
+          ],
         ),
-      ),
-      pw.Spacer(),
-      pw.Divider(color: PdfColors.grey300),
-      pw.Text(
-        tpl.id == 'quotation' ? 'Thank you — reply to confirm this order.' : 'Thank you for your business · Generated by BillNex',
-        style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600),
-      ),
-    ]);
+        pw.SizedBox(height: 12),
+        pw.Align(
+          alignment: pw.Alignment.centerRight,
+          child: pw.SizedBox(
+            width: 180,
+            child: pw.Column(
+              children: [
+                _kv('Taxable', _rupee(sale.subtotal)),
+                if (sale.discount > 0) _kv('Discount', '- ${_rupee(sale.discount)}'),
+                _kv('CGST', _rupee(sale.cgst)),
+                _kv('SGST', _rupee(sale.sgst)),
+                if (sale.roundOff != 0) _kv('Round off', _rupee(sale.roundOff)),
+                pw.Container(
+                  margin: const pw.EdgeInsets.only(top: 4),
+                  padding: const pw.EdgeInsets.only(top: 6),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border(top: pw.BorderSide(color: accent, width: 1.5)),
+                  ),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        tpl.id == 'quotation' ? 'Est.' : 'Total',
+                        style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, color: accent),
+                      ),
+                      pw.Text(
+                        _rupee(sale.total),
+                        style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, color: accent),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        pw.Spacer(),
+        pw.Divider(color: PdfColors.grey300),
+        pw.Text(
+          tpl.id == 'quotation' ? 'Thank you — reply to confirm this order.' : 'Thank you for your business · Generated by BillNex',
+          style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600),
+        ),
+      ],
+    );
   }
 
   static String? _band(String id) => switch (id) {
-        'service' => 'Device: Redmi 13C · IMEI 3548…921 · Technician: Suresh · Warranty: 90 days',
-        'wholesale' => 'Buyer: Sri Traders · Credit 30 days · Route R-04 · Scheme: 10+1',
-        'quotation' => 'Valid till 25 Jul 2026 · Prices subject to stock · Not a tax invoice',
-        'delivery' => 'Dispatch to: MG Road branch · Vehicle TS09 AB 1234 · Invoice to follow',
-        _ => null,
-      };
+    'service' => 'Device: Redmi 13C · IMEI 3548…921 · Technician: Suresh · Warranty: 90 days',
+    'wholesale' => 'Buyer: Sri Traders · Credit 30 days · Route R-04 · Scheme: 10+1',
+    'quotation' => 'Valid till 25 Jul 2026 · Prices subject to stock · Not a tax invoice',
+    'delivery' => 'Dispatch to: MG Road branch · Vehicle TS09 AB 1234 · Invoice to follow',
+    _ => null,
+  };
 
   // -------------------------------------------------------------- thermal
   static pw.Widget _thermalBody(Sale sale) {
-    return pw.Column(children: [
-      pw.Text(sale.businessName, style: const pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-      if ((sale.sellerGstin ?? '').isNotEmpty) pw.Text('GSTIN ${sale.sellerGstin}', style: const pw.TextStyle(fontSize: 7)),
-      if ((sale.sellerPhone ?? '').isNotEmpty) pw.Text('Ph ${sale.sellerPhone}', style: const pw.TextStyle(fontSize: 7)),
-      _dash(),
-      pw.Text('${sale.invoiceNo}  ${sale.dateLabel}', style: const pw.TextStyle(fontSize: 7)),
-      _dash(),
-      for (final l in sale.lines)
-        pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-          pw.Expanded(child: pw.Text(l.name, style: const pw.TextStyle(fontSize: 8))),
-          pw.Text(' ${qtyLabel(l.qty)} ', style: const pw.TextStyle(fontSize: 8)),
-          pw.Text(_rupee(l.amount), style: const pw.TextStyle(fontSize: 8)),
-        ]),
-      _dash(),
-      _thKv('Taxable', _rupee(sale.subtotal)),
-      if (sale.discount > 0) _thKv('Discount', '- ${_rupee(sale.discount)}'),
-      _thKv('CGST', _rupee(sale.cgst)),
-      _thKv('SGST', _rupee(sale.sgst)),
-      if (sale.roundOff != 0) _thKv('Round off', _rupee(sale.roundOff)),
-      pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-        pw.Text('TOTAL', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-        pw.Text(_rupee(sale.total), style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-      ]),
-      _dash(),
-      pw.SizedBox(height: 4),
-      pw.BarcodeWidget(barcode: pw.Barcode.qrCode(), data: 'upi://pay?pa=billnex@upi&am=${sale.total}', width: 54, height: 54),
-      pw.SizedBox(height: 4),
-      pw.Text('Scan to pay · Thank you!', style: const pw.TextStyle(fontSize: 7)),
-    ]);
+    return pw.Column(
+      children: [
+        pw.Text(sale.businessName, style: const pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+        if ((sale.sellerGstin ?? '').isNotEmpty) pw.Text('GSTIN ${sale.sellerGstin}', style: const pw.TextStyle(fontSize: 7)),
+        if ((sale.sellerPhone ?? '').isNotEmpty) pw.Text('Ph ${sale.sellerPhone}', style: const pw.TextStyle(fontSize: 7)),
+        _dash(),
+        pw.Text('${sale.invoiceNo}  ${sale.dateLabel}', style: const pw.TextStyle(fontSize: 7)),
+        _dash(),
+        for (final l in sale.lines)
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Expanded(child: pw.Text(l.name, style: const pw.TextStyle(fontSize: 8))),
+              pw.Text(' ${qtyLabel(l.qty)} ', style: const pw.TextStyle(fontSize: 8)),
+              pw.Text(_rupee(l.amount), style: const pw.TextStyle(fontSize: 8)),
+            ],
+          ),
+        _dash(),
+        _thKv('Taxable', _rupee(sale.subtotal)),
+        if (sale.discount > 0) _thKv('Discount', '- ${_rupee(sale.discount)}'),
+        _thKv('CGST', _rupee(sale.cgst)),
+        _thKv('SGST', _rupee(sale.sgst)),
+        if (sale.roundOff != 0) _thKv('Round off', _rupee(sale.roundOff)),
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.Text('TOTAL', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+            pw.Text(_rupee(sale.total), style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+          ],
+        ),
+        _dash(),
+        pw.SizedBox(height: 4),
+        pw.BarcodeWidget(barcode: pw.Barcode.qrCode(), data: 'upi://pay?pa=billnex@upi&am=${sale.total}', width: 54, height: 54),
+        pw.SizedBox(height: 4),
+        pw.Text('Scan to pay · Thank you!', style: const pw.TextStyle(fontSize: 7)),
+      ],
+    );
   }
 
   static pw.Widget _kotBody(Sale sale) {
-    return pw.Column(children: [
-      pw.Text('KITCHEN — KOT', style: const pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-      pw.Text('${sale.invoiceNo} · ${sale.dateLabel}', style: const pw.TextStyle(fontSize: 8)),
-      pw.Container(height: 2, color: PdfColors.black, margin: const pw.EdgeInsets.symmetric(vertical: 6)),
-      for (final l in sale.lines)
-        pw.Row(children: [
-          pw.Text('${qtyLabel(l.qty)} x  ', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-          pw.Expanded(child: pw.Text(l.name, style: const pw.TextStyle(fontSize: 11))),
-        ]),
-      pw.Container(height: 2, color: PdfColors.black, margin: const pw.EdgeInsets.symmetric(vertical: 6)),
-      pw.Text('** NO PRICE — KITCHEN COPY **', style: const pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
-    ]);
+    return pw.Column(
+      children: [
+        pw.Text('KITCHEN — KOT', style: const pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+        pw.Text('${sale.invoiceNo} · ${sale.dateLabel}', style: const pw.TextStyle(fontSize: 8)),
+        pw.Container(height: 2, color: PdfColors.black, margin: const pw.EdgeInsets.symmetric(vertical: 6)),
+        for (final l in sale.lines)
+          pw.Row(
+            children: [
+              pw.Text('${qtyLabel(l.qty)} x  ', style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+              pw.Expanded(child: pw.Text(l.name, style: const pw.TextStyle(fontSize: 11))),
+            ],
+          ),
+        pw.Container(height: 2, color: PdfColors.black, margin: const pw.EdgeInsets.symmetric(vertical: 6)),
+        pw.Text('** NO PRICE — KITCHEN COPY **', style: const pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
+      ],
+    );
   }
 
   // ---- small helpers ----
   static pw.Widget _th(String s, {pw.TextAlign align = pw.TextAlign.left}) => pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 4),
-      child: pw.Text(s, textAlign: align, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700)));
+    padding: const pw.EdgeInsets.only(bottom: 4),
+    child: pw.Text(
+      s,
+      textAlign: align,
+      style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+    ),
+  );
   static pw.Widget _td(String s, {pw.TextAlign align = pw.TextAlign.left}) => pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 3), child: pw.Text(s, textAlign: align, style: const pw.TextStyle(fontSize: 10)));
+    padding: const pw.EdgeInsets.symmetric(vertical: 3),
+    child: pw.Text(s, textAlign: align, style: const pw.TextStyle(fontSize: 10)),
+  );
   static pw.Widget _kv(String k, String v) => pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 1),
-      child: pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+    padding: const pw.EdgeInsets.symmetric(vertical: 1),
+    child: pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
         pw.Text(k, style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
         pw.Text(v, style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
-      ]));
-  static pw.Widget _thKv(String k, String v) => pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-        pw.Text(k, style: const pw.TextStyle(fontSize: 8)),
-        pw.Text(v, style: const pw.TextStyle(fontSize: 8)),
-      ]);
+      ],
+    ),
+  );
+  static pw.Widget _thKv(String k, String v) => pw.Row(
+    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+    children: [
+      pw.Text(k, style: const pw.TextStyle(fontSize: 8)),
+      pw.Text(v, style: const pw.TextStyle(fontSize: 8)),
+    ],
+  );
   static pw.Widget _dash() => pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 4),
-      child: pw.Text('------------------------------', style: const pw.TextStyle(fontSize: 8), maxLines: 1, overflow: pw.TextOverflow.clip));
+    padding: const pw.EdgeInsets.symmetric(vertical: 4),
+    child: pw.Text('------------------------------', style: const pw.TextStyle(fontSize: 8), maxLines: 1, overflow: pw.TextOverflow.clip),
+  );
 }

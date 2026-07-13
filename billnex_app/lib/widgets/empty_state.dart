@@ -52,28 +52,32 @@ class EmptyState extends StatelessWidget {
   final String subtitle;
   final Widget? action;
   final double illustrationSize;
-  const EmptyState({
-    required this.illustration,
-    required this.title,
-    required this.subtitle,
-    this.action,
-    this.illustrationSize = 150,
-    super.key,
-  });
+  const EmptyState({required this.illustration, required this.title, required this.subtitle, this.action, this.illustrationSize = 150, super.key});
 
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        BxIllustration(illustration, size: illustrationSize),
-        const SizedBox(height: 18),
-        Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 6),
-        Text(subtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 13.5, color: bx.muted, height: 1.45)),
-        if (action != null) ...[const SizedBox(height: 18), action!],
-      ]),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          BxIllustration(illustration, size: illustrationSize),
+          const SizedBox(height: 18),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13.5, color: bx.muted, height: 1.45),
+          ),
+          if (action != null) ...[const SizedBox(height: 18), action!],
+        ],
+      ),
     );
   }
 }

@@ -20,9 +20,7 @@ class DriveBackupFile {
 /// Setup (one-time, operator): a Google Cloud OAuth client + Drive API enabled —
 /// see docs/GOOGLE_DRIVE.md. Pass the web/desktop clientId where required.
 class GoogleDriveBackup {
-  GoogleDriveBackup({String? clientId, String? serverClientId})
-      : clientId = (clientId?.isEmpty ?? true) ? null : clientId,
-        serverClientId = (serverClientId?.isEmpty ?? true) ? null : serverClientId;
+  GoogleDriveBackup({String? clientId, String? serverClientId}) : clientId = (clientId?.isEmpty ?? true) ? null : clientId, serverClientId = (serverClientId?.isEmpty ?? true) ? null : serverClientId;
   final String? clientId;
   final String? serverClientId;
 
@@ -81,15 +79,8 @@ class GoogleDriveBackup {
   Future<List<DriveBackupFile>> list() async {
     final api = await _api();
     if (api == null) return const [];
-    final res = await api.files.list(
-      spaces: 'appDataFolder',
-      $fields: 'files(id,name,modifiedTime)',
-      orderBy: 'modifiedTime desc',
-      pageSize: 20,
-    );
-    return (res.files ?? [])
-        .map((f) => DriveBackupFile(f.id ?? '', f.name ?? 'backup.json', f.modifiedTime))
-        .toList();
+    final res = await api.files.list(spaces: 'appDataFolder', $fields: 'files(id,name,modifiedTime)', orderBy: 'modifiedTime desc', pageSize: 20);
+    return (res.files ?? []).map((f) => DriveBackupFile(f.id ?? '', f.name ?? 'backup.json', f.modifiedTime)).toList();
   }
 
   /// Download a backup and restore it (replaces current data).

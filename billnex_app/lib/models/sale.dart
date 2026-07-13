@@ -9,13 +9,8 @@ class SaleLine {
   double get amount => price * qty;
 
   Map<String, dynamic> toJson() => {'n': name, 'q': qty, 'p': price, 'g': gstRate, 'd': discount};
-  factory SaleLine.fromJson(Map<String, dynamic> j) => SaleLine(
-        j['n'] as String,
-        (j['q'] as num).toDouble(),
-        (j['p'] as num).toDouble(),
-        gstRate: (j['g'] as num?)?.toDouble() ?? 5,
-        discount: (j['d'] as num?)?.toDouble() ?? 0,
-      );
+  factory SaleLine.fromJson(Map<String, dynamic> j) =>
+      SaleLine(j['n'] as String, (j['q'] as num).toDouble(), (j['p'] as num).toDouble(), gstRate: (j['g'] as num?)?.toDouble() ?? 5, discount: (j['d'] as num?)?.toDouble() ?? 0);
 }
 
 /// An immutable posted sale (PRD: no silent deletion; reversal via document).
@@ -77,38 +72,38 @@ class Sale {
   double get itemCount => lines.fold(0.0, (a, l) => a + l.qty);
 
   Map<String, dynamic> toJson() => {
-        'no': invoiceNo,
-        't': epochMs,
-        'b': businessName,
-        'tpl': templateId,
-        'l': lines.map((e) => e.toJson()).toList(),
-        's': subtotal,
-        'g': gst,
-        'tot': total,
-        'disc': discount,
-        'ro': roundOff,
-        'ti': taxInclusive,
-        'pm': paymentMode,
-        'sg': sellerGstin,
-        'sp': sellerPhone,
-        'sa': sellerAddress,
-      };
+    'no': invoiceNo,
+    't': epochMs,
+    'b': businessName,
+    'tpl': templateId,
+    'l': lines.map((e) => e.toJson()).toList(),
+    's': subtotal,
+    'g': gst,
+    'tot': total,
+    'disc': discount,
+    'ro': roundOff,
+    'ti': taxInclusive,
+    'pm': paymentMode,
+    'sg': sellerGstin,
+    'sp': sellerPhone,
+    'sa': sellerAddress,
+  };
 
   factory Sale.fromJson(Map<String, dynamic> j) => Sale(
-        invoiceNo: j['no'] as String,
-        epochMs: (j['t'] as num).toInt(),
-        businessName: j['b'] as String,
-        templateId: j['tpl'] as String,
-        lines: (j['l'] as List).map((e) => SaleLine.fromJson(e as Map<String, dynamic>)).toList(),
-        subtotal: (j['s'] as num).toDouble(),
-        gst: (j['g'] as num).toDouble(),
-        total: (j['tot'] as num).toDouble(),
-        discount: (j['disc'] as num?)?.toDouble() ?? 0,
-        roundOff: (j['ro'] as num?)?.toDouble() ?? 0,
-        taxInclusive: j['ti'] != false,
-        paymentMode: j['pm'] as String,
-        sellerGstin: j['sg'] as String?,
-        sellerPhone: j['sp'] as String?,
-        sellerAddress: j['sa'] as String?,
-      );
+    invoiceNo: j['no'] as String,
+    epochMs: (j['t'] as num).toInt(),
+    businessName: j['b'] as String,
+    templateId: j['tpl'] as String,
+    lines: (j['l'] as List).map((e) => SaleLine.fromJson(e as Map<String, dynamic>)).toList(),
+    subtotal: (j['s'] as num).toDouble(),
+    gst: (j['g'] as num).toDouble(),
+    total: (j['tot'] as num).toDouble(),
+    discount: (j['disc'] as num?)?.toDouble() ?? 0,
+    roundOff: (j['ro'] as num?)?.toDouble() ?? 0,
+    taxInclusive: j['ti'] != false,
+    paymentMode: j['pm'] as String,
+    sellerGstin: j['sg'] as String?,
+    sellerPhone: j['sp'] as String?,
+    sellerAddress: j['sa'] as String?,
+  );
 }

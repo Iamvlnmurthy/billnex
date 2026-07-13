@@ -54,11 +54,7 @@ class BillTotals {
 
 double _r2(double v) => (v * 100).round() / 100;
 
-BillTotals computeBill({
-  required List<BillInput> lines,
-  required bool taxInclusive,
-  double billDiscount = 0,
-}) {
+BillTotals computeBill({required List<BillInput> lines, required bool taxInclusive, double billDiscount = 0}) {
   if (lines.isEmpty) return BillTotals.empty;
 
   double gross = 0, lineDiscTotal = 0;
@@ -107,14 +103,5 @@ BillTotals computeBill({
   final total = raw.roundToDouble();
   final roundOff = _r2(total - raw);
 
-  return BillTotals(
-    gross: _r2(gross),
-    lineDiscountTotal: _r2(lineDiscTotal),
-    billDiscount: _r2(bd),
-    taxable: _r2(finalTaxable),
-    tax: _r2(finalTax),
-    roundOff: roundOff,
-    total: total,
-    byRate: byRate,
-  );
+  return BillTotals(gross: _r2(gross), lineDiscountTotal: _r2(lineDiscTotal), billDiscount: _r2(bd), taxable: _r2(finalTaxable), tax: _r2(finalTax), roundOff: roundOff, total: total, byRate: byRate);
 }

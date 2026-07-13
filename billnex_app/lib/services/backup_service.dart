@@ -14,21 +14,13 @@ class BackupService {
     return 'billnex-backup-${d.year}${_two(d.month)}${_two(d.day)}-${_two(d.hour)}${_two(d.minute)}.json';
   }
 
-  static Uint8List _bytes(AppState s, int nowMs) => Uint8List.fromList(
-        utf8.encode(const JsonEncoder.withIndent('  ').convert(s.exportData(nowMs: nowMs))),
-      );
+  static Uint8List _bytes(AppState s, int nowMs) => Uint8List.fromList(utf8.encode(const JsonEncoder.withIndent('  ').convert(s.exportData(nowMs: nowMs))));
 
   /// Save the backup to a location the merchant chooses (device / PC / a
   /// Drive-synced folder). Returns true if a file was written.
   static Future<bool> saveToFile(AppState s) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    final path = await FilePicker.platform.saveFile(
-      dialogTitle: 'Save BillNex backup',
-      fileName: fileName(now),
-      bytes: _bytes(s, now),
-      type: FileType.custom,
-      allowedExtensions: const ['json'],
-    );
+    final path = await FilePicker.platform.saveFile(dialogTitle: 'Save BillNex backup', fileName: fileName(now), bytes: _bytes(s, now), type: FileType.custom, allowedExtensions: const ['json']);
     if (path != null) {
       s.markBackedUp(now);
       return true;
@@ -39,12 +31,7 @@ class BackupService {
   /// Pick a backup file and restore it (replaces all current data).
   /// Returns true on success; throws [FormatException] for a non-BillNex file.
   static Future<bool> restoreFromFile(AppState s) async {
-    final res = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Choose a BillNex backup',
-      type: FileType.custom,
-      allowedExtensions: const ['json'],
-      withData: true,
-    );
+    final res = await FilePicker.platform.pickFiles(dialogTitle: 'Choose a BillNex backup', type: FileType.custom, allowedExtensions: const ['json'], withData: true);
     final bytes = res?.files.single.bytes;
     if (bytes == null) return false;
     final map = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;

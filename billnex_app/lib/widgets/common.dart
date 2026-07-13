@@ -43,16 +43,19 @@ class Pill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(icon != null ? 6 : 9, 3, 9, 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ignore: use_null_aware_elements
+          if (icon != null) Icon(icon, size: 12, color: color),
+          if (icon != null) const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+          ),
+        ],
       ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        // ignore: use_null_aware_elements
-        if (icon != null) Icon(icon, size: 12, color: color),
-        if (icon != null) const SizedBox(width: 4),
-        Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
-      ]),
     );
   }
 }
@@ -70,7 +73,10 @@ class Badge2 extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: bx.border),
       ),
-      child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: bx.muted)),
+      child: Text(
+        label,
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: bx.muted),
+      ),
     );
   }
 }
@@ -86,16 +92,22 @@ class PageHeader extends StatelessWidget {
     final bx = context.bx;
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
-            const SizedBox(height: 4),
-            Text(subtitle, style: TextStyle(fontSize: 14, color: bx.muted, height: 1.4)),
-          ]),
-        ),
-        ?trailing,
-      ]),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+                const SizedBox(height: 4),
+                Text(subtitle, style: TextStyle(fontSize: 14, color: bx.muted, height: 1.4)),
+              ],
+            ),
+          ),
+          ?trailing,
+        ],
+      ),
     );
   }
 }

@@ -23,8 +23,7 @@ class CartLine {
   CartLine({required this.sku, required this.name, required this.unit, required this.price, this.gstRate = 5, this.qty = 1, this.lineDiscount = 0});
   double get amount => price * qty;
   double get net => (amount - lineDiscount).clamp(0, double.infinity);
-  factory CartLine.of(StockItem it, [double qty = 1]) =>
-      CartLine(sku: it.sku, name: it.name, unit: it.unit, price: it.price, gstRate: it.gstRate, qty: qty);
+  factory CartLine.of(StockItem it, [double qty = 1]) => CartLine(sku: it.sku, name: it.name, unit: it.unit, price: it.price, gstRate: it.gstRate, qty: qty);
 }
 
 /// Central app state — the "Foundation" spine: preset engine + feature flags +
@@ -37,9 +36,7 @@ class AppState extends ChangeNotifier {
   /// remote backend can be passed in without changing any business logic.
   final Persistence _store;
   final SyncService _sync;
-  AppState({Persistence? persistence, SyncService? sync})
-      : _store = persistence ?? Store(),
-        _sync = sync ?? const NoopSyncService();
+  AppState({Persistence? persistence, SyncService? sync}) : _store = persistence ?? Store(), _sync = sync ?? const NoopSyncService();
 
   // ---- lifecycle ----
   bool _ready = false;
@@ -58,10 +55,8 @@ class AppState extends ChangeNotifier {
   List<Purchase> get purchases => List.unmodifiable(_purchases.reversed);
   double payableOf(String supplierId) => _payables.where((e) => e.supplierId == supplierId).fold(0.0, (a, e) => a + e.delta);
   double get totalPayable => _suppliers.fold(0.0, (a, s) => a + payableOf(s.id));
-  List<PayableEntry> payableLedger(String supplierId) =>
-      _payables.where((e) => e.supplierId == supplierId).toList()..sort((a, b) => a.epochMs.compareTo(b.epochMs));
-  List<Purchase> purchasesFor(String supplierId) =>
-      _purchases.where((p) => p.supplierId == supplierId).toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
+  List<PayableEntry> payableLedger(String supplierId) => _payables.where((e) => e.supplierId == supplierId).toList()..sort((a, b) => a.epochMs.compareTo(b.epochMs));
+  List<Purchase> purchasesFor(String supplierId) => _purchases.where((p) => p.supplierId == supplierId).toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
 
   /// Duplicate-invoice guard (PRD BNX-0183).
   bool isDuplicatePurchase(String supplierId, String supplierRef) =>
@@ -170,8 +165,7 @@ class AppState extends ChangeNotifier {
   List<StockItem> get lowStockItems => stockItems.where((i) => i.low).toList();
   int get lowStockCount => _stock.values.where((i) => i.low).length;
   double stockOf(String sku) => _stock[sku]?.qty ?? 0;
-  List<StockMovement> movementsFor(String sku) =>
-      _moves.where((m) => m.sku == sku).toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
+  List<StockMovement> movementsFor(String sku) => _moves.where((m) => m.sku == sku).toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
 
   /// Restore persisted session (preset, flags, templates, sales) at startup.
   Future<void> init() async {
@@ -285,10 +279,10 @@ class AppState extends ChangeNotifier {
 
   /// The correct, fully-computed bill (per-item GST, discounts, round-off).
   BillTotals get bill => computeBill(
-        lines: _cart.map((l) => BillInput(price: l.price, qty: l.qty, gstRate: l.gstRate, lineDiscount: l.lineDiscount)).toList(),
-        taxInclusive: taxInclusive,
-        billDiscount: _billDiscount,
-      );
+    lines: _cart.map((l) => BillInput(price: l.price, qty: l.qty, gstRate: l.gstRate, lineDiscount: l.lineDiscount)).toList(),
+    taxInclusive: taxInclusive,
+    billDiscount: _billDiscount,
+  );
 
   double get subtotal => bill.taxable;
   double get gst => bill.tax;
@@ -325,14 +319,7 @@ class AppState extends ChangeNotifier {
     for (var i = 0; i < prods.length; i++) {
       final p = prods[i];
       final qty = ((i * 13 + 8) % 42) + 3.0; // deterministic spread, some low
-      final item = StockItem(
-        sku: p.name,
-        name: p.name,
-        unit: p.unit,
-        price: p.price,
-        cost: (p.price * 0.78).roundToDouble(),
-        qty: qty,
-      );
+      final item = StockItem(sku: p.name, name: p.name, unit: p.unit, price: p.price, cost: (p.price * 0.78).roundToDouble(), qty: qty);
       if (withBatch && i < 4) {
         item.batches.add(Batch('B${1000 + i}', nowMs + Duration(days: 30 + i * 40).inMilliseconds, qty));
       }
@@ -347,15 +334,40 @@ class AppState extends ChangeNotifier {
   bool productExists(String name) => _stock.containsKey(name.trim());
 
   /// True if a barcode is already assigned to a different product.
-  bool barcodeInUse(String code, {String? exceptSku}) =>
-      code.trim().isNotEmpty && _stock.values.any((i) => i.barcode == code.trim() && i.sku != exceptSku);
+  bool barcodeInUse(String code, {String? exceptSku}) => code.trim().isNotEmpty && _stock.values.any((i) => i.barcode == code.trim() && i.sku != exceptSku);
 
   /// Adds a product. Returns null (adding nothing) if the name is already taken,
   /// so the caller can warn instead of silently overwriting the original item.
-  StockItem? addStockItem({required String name, required String unit, required double price, double cost = 0, double qty = 0, double reorder = 10, double gstRate = 5, String? barcode, String? category, String? hsn, bool stockTracked = true, int nowMs = 0}) {
+  StockItem? addStockItem({
+    required String name,
+    required String unit,
+    required double price,
+    double cost = 0,
+    double qty = 0,
+    double reorder = 10,
+    double gstRate = 5,
+    String? barcode,
+    String? category,
+    String? hsn,
+    bool stockTracked = true,
+    int nowMs = 0,
+  }) {
     final key = name.trim();
     if (_stock.containsKey(key)) return null; // never overwrite an existing SKU
-    final item = StockItem(sku: key, name: key, unit: unit, price: price, cost: cost, qty: qty, reorderLevel: reorder, gstRate: gstRate, barcode: barcode, category: category, hsn: hsn, stockTracked: stockTracked);
+    final item = StockItem(
+      sku: key,
+      name: key,
+      unit: unit,
+      price: price,
+      cost: cost,
+      qty: qty,
+      reorderLevel: reorder,
+      gstRate: gstRate,
+      barcode: barcode,
+      category: category,
+      hsn: hsn,
+      stockTracked: stockTracked,
+    );
     _stock[item.sku] = item;
     if (qty != 0) _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.opening, delta: qty, ref: 'OPENING'));
     _store.saveStock(_stock.values.toList());
@@ -366,7 +378,20 @@ class AppState extends ChangeNotifier {
 
   /// Edit a product's master fields (name/price/unit/cost/reorder). Quantity is
   /// only changed via adjustments so the ledger stays truthful.
-  void editStockItem(String sku, {String? name, String? unit, double? price, double? cost, double? reorder, double? gstRate, String? barcode, String? category, String? hsn, bool? stockTracked, int nowMs = 0}) {
+  void editStockItem(
+    String sku, {
+    String? name,
+    String? unit,
+    double? price,
+    double? cost,
+    double? reorder,
+    double? gstRate,
+    String? barcode,
+    String? category,
+    String? hsn,
+    bool? stockTracked,
+    int nowMs = 0,
+  }) {
     final item = _stock[sku];
     if (item == null) return;
     if (name != null && name.trim().isNotEmpty) item.name = name.trim();
@@ -558,13 +583,7 @@ class AppState extends ChangeNotifier {
     }
     // Credit sale posts to the customer's ledger as a debit (BNX-0128).
     if (paymentMode == 'Credit' && customer != null) {
-      _ledger.add(LedgerEntry(
-        customerId: customer.id,
-        epochMs: nowMs,
-        kind: LedgerKind.creditSale,
-        ref: invoiceNo,
-        debit: sale.total,
-      ));
+      _ledger.add(LedgerEntry(customerId: customer.id, epochMs: nowMs, kind: LedgerKind.creditSale, ref: invoiceNo, debit: sale.total));
       _store.saveLedger(_ledger);
     }
     _cart.clear();
@@ -638,7 +657,13 @@ class AppState extends ChangeNotifier {
   // Suppliers & purchasing
   // -----------------------------------------------------------------------
   Supplier addSupplier({required String name, String phone = '', String? gstin, int creditDays = 0, int nowMs = 0}) {
-    final s = Supplier(id: 'S${nowMs == 0 ? _suppliers.length + 1 : nowMs}', name: name.trim(), phone: phone.trim(), gstin: (gstin?.trim().isEmpty ?? true) ? null : gstin!.trim(), creditDays: creditDays);
+    final s = Supplier(
+      id: 'S${nowMs == 0 ? _suppliers.length + 1 : nowMs}',
+      name: name.trim(),
+      phone: phone.trim(),
+      gstin: (gstin?.trim().isEmpty ?? true) ? null : gstin!.trim(),
+      creditDays: creditDays,
+    );
     _suppliers.add(s);
     _store.saveSuppliers(_suppliers);
     notifyListeners();
@@ -656,27 +681,17 @@ class AppState extends ChangeNotifier {
     return tax.roundToDouble();
   }
 
-  double purchaseTotal(List<PurchaseLine> lines) =>
-      lines.fold<double>(0, (a, l) => a + l.amount) + purchaseTax(lines);
+  double purchaseTotal(List<PurchaseLine> lines) => lines.fold<double>(0, (a, l) => a + l.amount) + purchaseTax(lines);
 
   /// Record a purchase: increases stock (movement per line) and creates a
   /// payable if not paid immediately (PRD BNX-0177/0178).
-  Purchase recordPurchase({
-    required Supplier supplier,
-    required List<PurchaseLine> lines,
-    required String supplierRef,
-    required bool paid,
-    int nowMs = 0,
-  }) {
+  Purchase recordPurchase({required Supplier supplier, required List<PurchaseLine> lines, required String supplierRef, required bool paid, int nowMs = 0}) {
     _purSeq += 1;
     final subtotal = lines.fold<double>(0, (a, l) => a + l.amount);
     final gst = purchaseTax(lines);
     final total = subtotal + gst;
     final purchaseNo = '#PUR-$_purSeq';
-    final purchase = Purchase(
-      purchaseNo: purchaseNo, epochMs: nowMs, supplierId: supplier.id, supplierRef: supplierRef.trim(),
-      lines: lines, subtotal: subtotal, gst: gst, total: total, paid: paid,
-    );
+    final purchase = Purchase(purchaseNo: purchaseNo, epochMs: nowMs, supplierId: supplier.id, supplierRef: supplierRef.trim(), lines: lines, subtotal: subtotal, gst: gst, total: total, paid: paid);
     _purchases.add(purchase);
     // stock-in
     for (final l in lines) {
@@ -715,31 +730,21 @@ class AppState extends ChangeNotifier {
     return entry;
   }
 
-  List<LedgerEntry> ledgerFor(String customerId) =>
-      _ledger.where((e) => e.customerId == customerId).toList()..sort((a, b) => a.epochMs.compareTo(b.epochMs));
+  List<LedgerEntry> ledgerFor(String customerId) => _ledger.where((e) => e.customerId == customerId).toList()..sort((a, b) => a.epochMs.compareTo(b.epochMs));
 
-  double balanceOf(String customerId) =>
-      _ledger.where((e) => e.customerId == customerId).fold(0.0, (a, e) => a + e.delta);
+  double balanceOf(String customerId) => _ledger.where((e) => e.customerId == customerId).fold(0.0, (a, e) => a + e.delta);
 
   double get totalReceivable => _customers.fold(0.0, (a, c) => a + balanceOf(c.id));
   int get overdueCount => _customers.where((c) => balanceOf(c.id) > 0).length;
 
-  bool overLimit(Customer c, double addAmount) =>
-      c.creditLimit > 0 && (balanceOf(c.id) + addAmount) > c.creditLimit;
+  bool overLimit(Customer c, double addAmount) => c.creditLimit > 0 && (balanceOf(c.id) + addAmount) > c.creditLimit;
 
   /// Record a payment against a customer's outstanding (BNX-0129). The amount
   /// is capped at the current balance so a collection can't push it negative.
   LedgerEntry collect({required Customer customer, required double amount, required String mode, int nowMs = 0}) {
     _rcptSeq += 1;
     final capped = amount.clamp(0, balanceOf(customer.id)).toDouble();
-    final entry = LedgerEntry(
-      customerId: customer.id,
-      epochMs: nowMs,
-      kind: LedgerKind.collection,
-      ref: '#RCPT-$_rcptSeq',
-      credit: capped,
-      mode: mode,
-    );
+    final entry = LedgerEntry(customerId: customer.id, epochMs: nowMs, kind: LedgerKind.collection, ref: '#RCPT-$_rcptSeq', credit: capped, mode: mode);
     _ledger.add(entry);
     _store.saveLedger(_ledger);
     _store.saveRcptSeq(_rcptSeq);
@@ -807,29 +812,29 @@ class AppState extends ChangeNotifier {
 
   /// Complete snapshot of every entity + settings for this business.
   Map<String, dynamic> exportData({int nowMs = 0}) => {
-        'app': 'BillNex',
-        'backupVersion': backupVersion,
-        'exportedAt': nowMs,
-        'business': _bizKey,
-        'edition': business?.edition,
-        'profile': _profile?.toJson(),
-        'flags': _flags,
-        'template': _template,
-        'posTemplate': _posTemplate,
-        'seq': _seq,
-        'rcptSeq': _rcptSeq,
-        'purSeq': _purSeq,
-        'sales': _sales.map((e) => e.toJson()).toList(),
-        'customers': _customers.map((e) => e.toJson()).toList(),
-        'ledger': _ledger.map((e) => e.toJson()).toList(),
-        'stock': _stock.values.map((e) => e.toJson()).toList(),
-        'moves': _moves.map((e) => e.toJson()).toList(),
-        'suppliers': _suppliers.map((e) => e.toJson()).toList(),
-        'purchases': _purchases.map((e) => e.toJson()).toList(),
-        'payables': _payables.map((e) => e.toJson()).toList(),
-        'appointments': _appts.map((e) => e.toJson()).toList(),
-        'audit': _audit.map((e) => e.toJson()).toList(),
-      };
+    'app': 'BillNex',
+    'backupVersion': backupVersion,
+    'exportedAt': nowMs,
+    'business': _bizKey,
+    'edition': business?.edition,
+    'profile': _profile?.toJson(),
+    'flags': _flags,
+    'template': _template,
+    'posTemplate': _posTemplate,
+    'seq': _seq,
+    'rcptSeq': _rcptSeq,
+    'purSeq': _purSeq,
+    'sales': _sales.map((e) => e.toJson()).toList(),
+    'customers': _customers.map((e) => e.toJson()).toList(),
+    'ledger': _ledger.map((e) => e.toJson()).toList(),
+    'stock': _stock.values.map((e) => e.toJson()).toList(),
+    'moves': _moves.map((e) => e.toJson()).toList(),
+    'suppliers': _suppliers.map((e) => e.toJson()).toList(),
+    'purchases': _purchases.map((e) => e.toJson()).toList(),
+    'payables': _payables.map((e) => e.toJson()).toList(),
+    'appointments': _appts.map((e) => e.toJson()).toList(),
+    'audit': _audit.map((e) => e.toJson()).toList(),
+  };
 
   int? _lastBackupMs;
   int? get lastBackupMs => _lastBackupMs;
@@ -840,8 +845,7 @@ class AppState extends ChangeNotifier {
 
   /// True when there is posted data not covered by the last backup — drives the
   /// gentle "back up your data" reminder (data-safety, no server).
-  bool get backupDue =>
-      billCount > 0 && (_lastBackupMs == null || _sales.any((s) => s.epochMs > _lastBackupMs!));
+  bool get backupDue => billCount > 0 && (_lastBackupMs == null || _sales.any((s) => s.epochMs > _lastBackupMs!));
 
   /// Replace all in-memory + persisted data with a backup snapshot (restore).
   /// Throws [FormatException] if the payload isn't a BillNex backup.
@@ -861,19 +865,38 @@ class AppState extends ChangeNotifier {
     _rcptSeq = (d['rcptSeq'] as num?)?.toInt() ?? _rcptSeq;
     _purSeq = (d['purSeq'] as num?)?.toInt() ?? _purSeq;
 
-    List<Map<String, dynamic>> rows(String k) =>
-        ((d[k] as List?) ?? const []).cast<Map<String, dynamic>>();
+    List<Map<String, dynamic>> rows(String k) => ((d[k] as List?) ?? const []).cast<Map<String, dynamic>>();
 
-    _sales..clear()..addAll(rows('sales').map(Sale.fromJson));
-    _customers..clear()..addAll(rows('customers').map(Customer.fromJson));
-    _ledger..clear()..addAll(rows('ledger').map(LedgerEntry.fromJson));
-    _stock..clear()..addEntries(rows('stock').map(StockItem.fromJson).map((s) => MapEntry(s.sku, s)));
-    _moves..clear()..addAll(rows('moves').map(StockMovement.fromJson));
-    _suppliers..clear()..addAll(rows('suppliers').map(Supplier.fromJson));
-    _purchases..clear()..addAll(rows('purchases').map(Purchase.fromJson));
-    _payables..clear()..addAll(rows('payables').map(PayableEntry.fromJson));
-    _appts..clear()..addAll(rows('appointments').map(Appointment.fromJson));
-    _audit..clear()..addAll(rows('audit').map(AuditEvent.fromJson));
+    _sales
+      ..clear()
+      ..addAll(rows('sales').map(Sale.fromJson));
+    _customers
+      ..clear()
+      ..addAll(rows('customers').map(Customer.fromJson));
+    _ledger
+      ..clear()
+      ..addAll(rows('ledger').map(LedgerEntry.fromJson));
+    _stock
+      ..clear()
+      ..addEntries(rows('stock').map(StockItem.fromJson).map((s) => MapEntry(s.sku, s)));
+    _moves
+      ..clear()
+      ..addAll(rows('moves').map(StockMovement.fromJson));
+    _suppliers
+      ..clear()
+      ..addAll(rows('suppliers').map(Supplier.fromJson));
+    _purchases
+      ..clear()
+      ..addAll(rows('purchases').map(Purchase.fromJson));
+    _payables
+      ..clear()
+      ..addAll(rows('payables').map(PayableEntry.fromJson));
+    _appts
+      ..clear()
+      ..addAll(rows('appointments').map(Appointment.fromJson));
+    _audit
+      ..clear()
+      ..addAll(rows('audit').map(AuditEvent.fromJson));
 
     // Persist the restored state.
     _persistSession();

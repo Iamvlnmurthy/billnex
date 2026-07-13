@@ -117,35 +117,37 @@ class _BillNexAppState extends State<BillNexApp> {
         return ValueListenableBuilder<Locale?>(
           valueListenable: _locale,
           builder: (context, locale, _) => MaterialApp(
-          title: 'BillNex',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light(),
-          darkTheme: AppTheme.dark(),
-          themeMode: mode,
-          locale: locale,
-          localizationsDelegates: L.localizationsDelegates,
-          supportedLocales: L.supportedLocales,
-          home: _locked
-              ? LockScreen(auth: widget.auth, onUnlocked: () => setState(() => _locked = false))
-              : AnimatedBuilder(
-                  animation: _state,
-                  builder: (context, _) {
-                    if (!_state.onboarded && !_splashSeen) {
-                      return SplashScreen(onGetStarted: () => setState(() => _splashSeen = true));
-                    }
-                    if (!_state.onboarded) {
-                      return Scaffold(
-                        body: SafeArea(
-                          child: Column(children: [
-                            _MiniTopBar(themeMode: _themeMode),
-                            Expanded(child: OnboardingScreen(state: _state)),
-                          ]),
-                        ),
-                      );
-                    }
-                    return HomeShell(state: _state, themeMode: _themeMode, locale: _locale, auth: widget.auth, initialTab: widget.initialTab);
-                  },
-                ),
+            title: 'BillNex',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
+            themeMode: mode,
+            locale: locale,
+            localizationsDelegates: L.localizationsDelegates,
+            supportedLocales: L.supportedLocales,
+            home: _locked
+                ? LockScreen(auth: widget.auth, onUnlocked: () => setState(() => _locked = false))
+                : AnimatedBuilder(
+                    animation: _state,
+                    builder: (context, _) {
+                      if (!_state.onboarded && !_splashSeen) {
+                        return SplashScreen(onGetStarted: () => setState(() => _splashSeen = true));
+                      }
+                      if (!_state.onboarded) {
+                        return Scaffold(
+                          body: SafeArea(
+                            child: Column(
+                              children: [
+                                _MiniTopBar(themeMode: _themeMode),
+                                Expanded(child: OnboardingScreen(state: _state)),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      return HomeShell(state: _state, themeMode: _themeMode, locale: _locale, auth: widget.auth, initialTab: widget.initialTab);
+                    },
+                  ),
           ),
         );
       },
@@ -161,31 +163,47 @@ class _MiniTopBar extends StatelessWidget {
     final bx = context.bx;
     return Padding(
       padding: const EdgeInsets.fromLTRB(18, 12, 12, 0),
-      child: Row(children: [
-        Container(
-          width: 32, height: 32,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [bx.brand, bx.brand2], begin: Alignment.topLeft, end: Alignment.bottomRight),
-            borderRadius: BorderRadius.circular(9),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [bx.brand, bx.brand2], begin: Alignment.topLeft, end: Alignment.bottomRight),
+              borderRadius: BorderRadius.circular(9),
+            ),
+            alignment: Alignment.center,
+            child: const Text(
+              'B',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
+            ),
           ),
-          alignment: Alignment.center,
-          child: const Text('B', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
-        ),
-        const SizedBox(width: 9),
-        Text.rich(TextSpan(children: [
-          const TextSpan(text: 'Bill', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5)),
-          TextSpan(text: 'Nex', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: bx.accent, letterSpacing: -0.5)),
-        ])),
-        const Spacer(),
-        IconButton(
-          tooltip: 'Toggle theme',
-          onPressed: () {
-            final dark = Theme.of(context).brightness == Brightness.dark;
-            themeMode.value = dark ? ThemeMode.light : ThemeMode.dark;
-          },
-          icon: Icon(Theme.of(context).brightness == Brightness.dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
-        ),
-      ]),
+          const SizedBox(width: 9),
+          Text.rich(
+            TextSpan(
+              children: [
+                const TextSpan(
+                  text: 'Bill',
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5),
+                ),
+                TextSpan(
+                  text: 'Nex',
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: bx.accent, letterSpacing: -0.5),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            tooltip: 'Toggle theme',
+            onPressed: () {
+              final dark = Theme.of(context).brightness == Brightness.dark;
+              themeMode.value = dark ? ThemeMode.light : ThemeMode.dark;
+            },
+            icon: Icon(Theme.of(context).brightness == Brightness.dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+          ),
+        ],
+      ),
     );
   }
 }

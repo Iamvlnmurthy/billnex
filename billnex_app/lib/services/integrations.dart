@@ -12,14 +12,7 @@ class UpiService {
     String? note,
     String? txnRef,
   }) {
-    final params = <String, String>{
-      'pa': payeeVpa,
-      'pn': payeeName,
-      'am': amount.toStringAsFixed(2),
-      'cu': 'INR',
-      'tr': ?txnRef,
-      'tn': ?note,
-    };
+    final params = <String, String>{'pa': payeeVpa, 'pn': payeeName, 'am': amount.toStringAsFixed(2), 'cu': 'INR', 'tr': ?txnRef, 'tn': ?note};
     final query = params.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&');
     return 'upi://pay?$query';
   }
@@ -35,8 +28,7 @@ class WhatsAppService {
     return 'https://wa.me/$digits?text=${Uri.encodeComponent(message)}';
   }
 
-  static String defaultMessage(Sale sale) =>
-      'Thank you! Invoice ${sale.invoiceNo} · Total ₹${sale.total.toStringAsFixed(2)} from ${sale.businessName}.';
+  static String defaultMessage(Sale sale) => 'Thank you! Invoice ${sale.invoiceNo} · Total ₹${sale.total.toStringAsFixed(2)} from ${sale.businessName}.';
 }
 
 /// GST e-invoice (IRP) payload builder (PRD BNX-0111). Produces the JSON body
@@ -56,22 +48,9 @@ class EInvoiceService {
     return {
       'Version': '1.1',
       'TranDtls': {'TaxSch': 'GST', 'SupTyp': buyerGstin == null ? 'B2C' : 'B2B'},
-      'DocDtls': {
-        'Typ': 'INV',
-        'No': sale.invoiceNo.replaceAll('#', ''),
-        'Dt': _ddmmyyyy(sale.epochMs),
-      },
-      'SellerDtls': {
-        'Gstin': sellerGstin,
-        'LglNm': sellerLegalName,
-        'Stcd': sellerStateCode,
-      },
-      'BuyerDtls': {
-        'Gstin': buyerGstin ?? 'URP',
-        'LglNm': buyerLegalName,
-        'Pos': buyerStateCode,
-        'Stcd': buyerStateCode,
-      },
+      'DocDtls': {'Typ': 'INV', 'No': sale.invoiceNo.replaceAll('#', ''), 'Dt': _ddmmyyyy(sale.epochMs)},
+      'SellerDtls': {'Gstin': sellerGstin, 'LglNm': sellerLegalName, 'Stcd': sellerStateCode},
+      'BuyerDtls': {'Gstin': buyerGstin ?? 'URP', 'LglNm': buyerLegalName, 'Pos': buyerStateCode, 'Stcd': buyerStateCode},
       'ItemList': [
         for (var i = 0; i < sale.lines.length; i++)
           {
@@ -86,14 +65,9 @@ class EInvoiceService {
             'AssAmt': sale.lines[i].amount,
             'GstRt': 5.0,
             'TotItemVal': sale.lines[i].amount,
-          }
+          },
       ],
-      'ValDtls': {
-        'AssVal': sale.subtotal,
-        'CgstVal': _r(sale.gst / 2),
-        'SgstVal': _r(sale.gst / 2),
-        'TotInvVal': sale.total,
-      },
+      'ValDtls': {'AssVal': sale.subtotal, 'CgstVal': _r(sale.gst / 2), 'SgstVal': _r(sale.gst / 2), 'TotInvVal': sale.total},
     };
   }
 

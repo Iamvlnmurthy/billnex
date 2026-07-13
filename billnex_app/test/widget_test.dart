@@ -27,6 +27,7 @@ class _FakeSync implements SyncService {
     pushedCount += events.length;
     return SyncResult(accepted: events.length);
   }
+
   @override
   Future<List<OutboxEvent>> pull({int sinceRev = 0}) async => const [];
 }
@@ -51,18 +52,13 @@ void main() {
       expect(b.total, 118);
     });
     test('mixed rates aggregate by rate', () {
-      final b = computeBill(lines: const [
-        BillInput(price: 100, qty: 1, gstRate: 5),
-        BillInput(price: 100, qty: 1, gstRate: 12),
-      ], taxInclusive: false);
+      final b = computeBill(lines: const [BillInput(price: 100, qty: 1, gstRate: 5), BillInput(price: 100, qty: 1, gstRate: 12)], taxInclusive: false);
       expect(b.byRate[5]!.tax, 5);
       expect(b.byRate[12]!.tax, 12);
       expect(b.tax, 17);
     });
     test('discounts reduce taxable; total is rounded', () {
-      final b = computeBill(
-        lines: const [BillInput(price: 100, qty: 1, gstRate: 18, lineDiscount: 10)],
-        taxInclusive: false, billDiscount: 5);
+      final b = computeBill(lines: const [BillInput(price: 100, qty: 1, gstRate: 18, lineDiscount: 10)], taxInclusive: false, billDiscount: 5);
       expect(b.taxable, 85);
       expect(b.discountTotal, 15);
       expect(b.total, b.total.roundToDouble());
@@ -76,13 +72,7 @@ void main() {
   testWidgets('Onboarding renders the business-type picker', (WidgetTester tester) async {
     final state = AppState();
     await state.init();
-    await tester.pumpWidget(BillNexApp(
-      state: state,
-      themeMode: ValueNotifier(ThemeMode.light),
-      locale: ValueNotifier(null),
-      store: Store(),
-      auth: AuthService(),
-    ));
+    await tester.pumpWidget(BillNexApp(state: state, themeMode: ValueNotifier(ThemeMode.light), locale: ValueNotifier(null), store: Store(), auth: AuthService()));
     await tester.pumpAndSettle();
     // First run shows the Get Started splash; tap through to the picker.
     expect(find.text('Get Started'), findsOneWidget);
@@ -112,8 +102,7 @@ void main() {
     s.applyPreset('pharmacy');
     final biz = businessByKey('pharmacy');
     for (final cap in kCapabilities) {
-      expect(s.isOn(cap.key), biz.on.contains(cap.key),
-          reason: '${cap.key} should match preset membership');
+      expect(s.isOn(cap.key), biz.on.contains(cap.key), reason: '${cap.key} should match preset membership');
     }
     expect(s.activeCount, biz.on.length);
   });
@@ -218,13 +207,7 @@ void main() {
     final sup = s.addSupplier(name: 'Metro', phone: '9', nowMs: 1);
     final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 5, nowMs: 1)!;
     final before = s.stockOf(item.sku);
-    final pur = s.recordPurchase(
-      supplier: sup,
-      lines: [PurchaseLine(item.sku, 20, 30)],
-      supplierRef: 'INV-1',
-      paid: false,
-      nowMs: 1720000000000,
-    );
+    final pur = s.recordPurchase(supplier: sup, lines: [PurchaseLine(item.sku, 20, 30)], supplierRef: 'INV-1', paid: false, nowMs: 1720000000000);
     expect(s.stockOf(item.sku), before + 20); // stocked-in
     expect(s.payableOf(sup.id), pur.total); // payable created
     expect(s.isDuplicatePurchase(sup.id, 'INV-1'), true); // duplicate guard
@@ -324,7 +307,8 @@ void main() {
     final s = AppState(sync: fake);
     s.applyPreset('kirana');
     s.setOnline(false); // queue while offline
-    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1)!; s.addProduct(s.stockItems.first);
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 100, nowMs: 1)!;
+    s.addProduct(s.stockItems.first);
     s.postSale(paymentMode: 'Cash', nowMs: 1);
     expect(s.queueCount, greaterThanOrEqualTo(1));
 
@@ -362,8 +346,7 @@ void main() {
   });
 
   test('UPI intent builds a valid pay deep link', () {
-    final uri = Uri.parse(UpiService.buildIntent(
-      payeeVpa: 'billnex@upi', payeeName: 'Kirana Store', amount: 1302.5, txnRef: 'INV-2048', note: 'Bill'));
+    final uri = Uri.parse(UpiService.buildIntent(payeeVpa: 'billnex@upi', payeeName: 'Kirana Store', amount: 1302.5, txnRef: 'INV-2048', note: 'Bill'));
     expect(uri.scheme, 'upi');
     expect(uri.queryParameters['pa'], 'billnex@upi');
     expect(uri.queryParameters['am'], '1302.50');
@@ -378,10 +361,7 @@ void main() {
   });
 
   test('e-invoice payload has correct GST split and doc no', () {
-    const sale = Sale(
-      invoiceNo: '#INV-9', epochMs: 1720000000000, businessName: 'Shop',
-      templateId: 'classic', lines: [SaleLine('A', 2, 50)],
-      subtotal: 100, gst: 6, total: 106, paymentMode: 'Cash');
+    const sale = Sale(invoiceNo: '#INV-9', epochMs: 1720000000000, businessName: 'Shop', templateId: 'classic', lines: [SaleLine('A', 2, 50)], subtotal: 100, gst: 6, total: 106, paymentMode: 'Cash');
     final p = EInvoiceService.buildPayload(sale: sale, sellerGstin: '36ABCDE1234F1Z5', sellerLegalName: 'Shop', sellerStateCode: '36');
     expect(p['DocDtls']['No'], 'INV-9');
     expect(p['ValDtls']['CgstVal'], 3.0);
@@ -392,9 +372,15 @@ void main() {
 
   test('Sale JSON round-trips', () {
     const sale = Sale(
-      invoiceNo: '#INV-9', epochMs: 1720000000000, businessName: 'Test Shop',
-      templateId: 'classic', lines: [SaleLine('A', 2, 50)],
-      subtotal: 100, gst: 5, total: 105, paymentMode: 'Cash',
+      invoiceNo: '#INV-9',
+      epochMs: 1720000000000,
+      businessName: 'Test Shop',
+      templateId: 'classic',
+      lines: [SaleLine('A', 2, 50)],
+      subtotal: 100,
+      gst: 5,
+      total: 105,
+      paymentMode: 'Cash',
     );
     final back = Sale.fromJson(sale.toJson());
     expect(back.invoiceNo, sale.invoiceNo);
@@ -429,7 +415,7 @@ void main() {
   test('services (untracked) can be billed without stock', () {
     final s = AppState();
     s.applyPreset('salon');
-    final cut = s.addStockItem(name: 'Haircut', unit: 'service', price: 200, qty: 0, stockTracked: false, nowMs: 1)!;
+    final cut = s.addStockItem(name: 'Haircut', unit: 'service', price: 200, stockTracked: false, nowMs: 1)!;
     expect(s.addProduct(cut), true);
     expect(s.addProduct(cut), true); // no stock limit for services
     expect(s.cartQty, 2);
@@ -460,8 +446,8 @@ void main() {
   test('purchase GST uses each item\'s own slab', () {
     final s = AppState();
     s.applyPreset('kirana');
-    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 0, gstRate: 5, nowMs: 1);
-    s.addStockItem(name: 'AC', unit: 'pc', price: 30000, qty: 0, gstRate: 28, nowMs: 2);
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, nowMs: 1);
+    s.addStockItem(name: 'AC', unit: 'pc', price: 30000, gstRate: 28, nowMs: 2);
     final lines = [const PurchaseLine('Rice', 10, 40), const PurchaseLine('AC', 1, 20000)];
     // 400×5% + 20000×28% = 20 + 5600 = 5620
     expect(s.purchaseTax(lines), 5620);

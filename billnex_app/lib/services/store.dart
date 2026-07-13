@@ -76,8 +76,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveFlags(Map<String, bool> flags) async =>
-      (await _prefs).setString(_kFlags, jsonEncode(flags));
+  Future<void> saveFlags(Map<String, bool> flags) async => (await _prefs).setString(_kFlags, jsonEncode(flags));
 
   @override
   Future<String?> loadTemplate() async => (await _prefs).getString(_kTemplate);
@@ -103,8 +102,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveSales(List<Sale> sales) async =>
-      (await _prefs).setString(_kSales, jsonEncode(sales.map((e) => e.toJson()).toList()));
+  Future<void> saveSales(List<Sale> sales) async => (await _prefs).setString(_kSales, jsonEncode(sales.map((e) => e.toJson()).toList()));
 
   @override
   Future<String?> loadTheme() async => (await _prefs).getString(_kTheme);
@@ -135,8 +133,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveCustomers(List<Customer> list) async =>
-      (await _prefs).setString(_kCustomers, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> saveCustomers(List<Customer> list) async => (await _prefs).setString(_kCustomers, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<List<LedgerEntry>> loadLedger() async {
@@ -146,8 +143,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveLedger(List<LedgerEntry> list) async =>
-      (await _prefs).setString(_kLedger, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> saveLedger(List<LedgerEntry> list) async => (await _prefs).setString(_kLedger, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<List<StockItem>?> loadStock() async {
@@ -157,8 +153,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveStock(List<StockItem> list) async =>
-      (await _prefs).setString(_kStock, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> saveStock(List<StockItem> list) async => (await _prefs).setString(_kStock, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<List<StockMovement>> loadMoves() async {
@@ -168,8 +163,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveMoves(List<StockMovement> list) async =>
-      (await _prefs).setString(_kMoves, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> saveMoves(List<StockMovement> list) async => (await _prefs).setString(_kMoves, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<int> loadPurSeq() async => (await _prefs).getInt(_kPurSeq) ?? 300;
@@ -184,8 +178,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveSuppliers(List<Supplier> list) async =>
-      (await _prefs).setString(_kSuppliers, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> saveSuppliers(List<Supplier> list) async => (await _prefs).setString(_kSuppliers, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<List<Purchase>> loadPurchases() async {
@@ -195,8 +188,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> savePurchases(List<Purchase> list) async =>
-      (await _prefs).setString(_kPurchases, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> savePurchases(List<Purchase> list) async => (await _prefs).setString(_kPurchases, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<List<PayableEntry>> loadPayables() async {
@@ -206,8 +198,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> savePayables(List<PayableEntry> list) async =>
-      (await _prefs).setString(_kPayables, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> savePayables(List<PayableEntry> list) async => (await _prefs).setString(_kPayables, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<List<OutboxEvent>> loadOutbox() async {
@@ -217,8 +208,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveOutbox(List<OutboxEvent> list) async =>
-      (await _prefs).setString(_kOutbox, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> saveOutbox(List<OutboxEvent> list) async => (await _prefs).setString(_kOutbox, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<List<AuditEvent>> loadAudit() async {
@@ -228,8 +218,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveAudit(List<AuditEvent> list) async =>
-      (await _prefs).setString(_kAudit, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> saveAudit(List<AuditEvent> list) async => (await _prefs).setString(_kAudit, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<List<Appointment>> loadAppointments() async {
@@ -239,8 +228,7 @@ class Store implements Persistence {
   }
 
   @override
-  Future<void> saveAppointments(List<Appointment> list) async =>
-      (await _prefs).setString(_kAppts, jsonEncode(list.map((e) => e.toJson()).toList()));
+  Future<void> saveAppointments(List<Appointment> list) async => (await _prefs).setString(_kAppts, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<void> reset() async {

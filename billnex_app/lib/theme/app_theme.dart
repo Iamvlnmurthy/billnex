@@ -115,25 +115,24 @@ class BxColors extends ThemeExtension<BxColors> {
     Color? border,
     Color? trustOnline,
     List<BoxShadow>? cardShadow,
-  }) =>
-      BxColors(
-        brand: brand ?? this.brand,
-        brand2: brand2 ?? this.brand2,
-        accent: accent ?? this.accent,
-        onAccent: onAccent ?? this.onAccent,
-        pos: pos ?? this.pos,
-        posBg: posBg ?? this.posBg,
-        warn: warn ?? this.warn,
-        warnBg: warnBg ?? this.warnBg,
-        danger: danger ?? this.danger,
-        dangerBg: dangerBg ?? this.dangerBg,
-        surface2: surface2 ?? this.surface2,
-        muted: muted ?? this.muted,
-        faint: faint ?? this.faint,
-        border: border ?? this.border,
-        trustOnline: trustOnline ?? this.trustOnline,
-        cardShadow: cardShadow ?? this.cardShadow,
-      );
+  }) => BxColors(
+    brand: brand ?? this.brand,
+    brand2: brand2 ?? this.brand2,
+    accent: accent ?? this.accent,
+    onAccent: onAccent ?? this.onAccent,
+    pos: pos ?? this.pos,
+    posBg: posBg ?? this.posBg,
+    warn: warn ?? this.warn,
+    warnBg: warnBg ?? this.warnBg,
+    danger: danger ?? this.danger,
+    dangerBg: dangerBg ?? this.dangerBg,
+    surface2: surface2 ?? this.surface2,
+    muted: muted ?? this.muted,
+    faint: faint ?? this.faint,
+    border: border ?? this.border,
+    trustOnline: trustOnline ?? this.trustOnline,
+    cardShadow: cardShadow ?? this.cardShadow,
+  );
 
   @override
   BxColors lerp(BxColors? other, double t) {
@@ -213,14 +212,9 @@ class AppTheme {
 
   static ThemeData light() {
     const ext = BxColors.light;
-    final scheme = ColorScheme.fromSeed(seedColor: Bx.primaryDeep).copyWith(
-      primary: Bx.primaryLight,
-      onPrimary: Colors.white,
-      surface: Colors.white,
-      surfaceContainerLowest: const Color(0xFFF4F6FC),
-      onSurface: const Color(0xFF111C2D),
-      outline: ext.border,
-    );
+    final scheme = ColorScheme.fromSeed(
+      seedColor: Bx.primaryDeep,
+    ).copyWith(primary: Bx.primaryLight, onPrimary: Colors.white, surface: Colors.white, surfaceContainerLowest: const Color(0xFFF4F6FC), onSurface: const Color(0xFF111C2D), outline: ext.border);
     return _base(Brightness.light, ext, scheme);
   }
 

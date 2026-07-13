@@ -5,10 +5,10 @@ enum Priority { must, should, could }
 
 extension PriorityLabel on Priority {
   String get label => switch (this) {
-        Priority.must => 'Must',
-        Priority.should => 'Should',
-        Priority.could => 'Could',
-      };
+    Priority.must => 'Must',
+    Priority.should => 'Should',
+    Priority.could => 'Could',
+  };
 }
 
 /// A single toggleable capability (maps to one or more PRD Feature IDs).
@@ -19,14 +19,7 @@ class Capability {
   final Priority priority;
   final String desc;
   final bool pro; // requires a higher plan unless the preset includes it
-  const Capability({
-    required this.key,
-    required this.name,
-    required this.category,
-    required this.priority,
-    required this.desc,
-    this.pro = false,
-  });
+  const Capability({required this.key, required this.name, required this.category, required this.priority, required this.desc, this.pro = false});
 }
 
 class FeatureCategory {
@@ -46,14 +39,7 @@ class BusinessType {
   /// Capability keys auto-enabled by this preset
   /// (mirrors the 03_Business_Feature_Matrix workbook sheet).
   final List<String> on;
-  const BusinessType({
-    required this.key,
-    required this.name,
-    required this.edition,
-    required this.icon,
-    required this.tag,
-    required this.on,
-  });
+  const BusinessType({required this.key, required this.name, required this.edition, required this.icon, required this.tag, required this.on});
 }
 
 class Product {
@@ -67,10 +53,10 @@ enum PaperSize { a4, mm80, mm58 }
 
 extension PaperLabel on PaperSize {
   String get label => switch (this) {
-        PaperSize.a4 => 'A4',
-        PaperSize.mm80 => '80mm',
-        PaperSize.mm58 => '58mm',
-      };
+    PaperSize.a4 => 'A4',
+    PaperSize.mm80 => '80mm',
+    PaperSize.mm58 => '58mm',
+  };
 }
 
 class InvoiceTemplate {
@@ -134,30 +120,102 @@ Capability capabilityByKey(String key) => kCapabilities.firstWhere((c) => c.key 
 // BUSINESS TYPES  (preset -> auto-enabled capabilities)
 // ---------------------------------------------------------------------------
 const List<BusinessType> kBusinessTypes = [
-  BusinessType(key: 'kirana', name: 'Kirana / General Store', edition: 'Retail Standard', icon: Icons.storefront_outlined, tag: 'Fast counter B2C + khata credit',
-      on: ['fastPOS', 'barcodeScan', 'weightScale', 'multiUnit', 'gstInvoice', 'consent', 'creditLedger', 'batchExpiry', 'label', 'delivery']),
-  BusinessType(key: 'supermarket', name: 'Supermarket / Mini-Mart', edition: 'Retail Pro', icon: Icons.shopping_cart_outlined, tag: 'High-volume multi-counter POS',
-      on: ['fastPOS', 'barcodeScan', 'weightScale', 'multiUnit', 'gstInvoice', 'consent', 'variantMatrix', 'label', 'loyalty', 'delivery', 'multiStore']),
-  BusinessType(key: 'pharmacy', name: 'Pharmacy / Medical', edition: 'Vertical Pro', icon: Icons.local_pharmacy_outlined, tag: 'Batch, expiry, MRP, rack',
-      on: ['fastPOS', 'barcodeScan', 'gstInvoice', 'consent', 'creditLedger', 'batchExpiry', 'label', 'multiUnit']),
-  BusinessType(key: 'restaurant', name: 'Restaurant / QSR', edition: 'Vertical Pro', icon: Icons.restaurant_outlined, tag: 'Table, KOT, kitchen, delivery',
-      on: ['fastPOS', 'gstInvoice', 'consent', 'kot', 'production', 'delivery', 'loyalty']),
-  BusinessType(key: 'bakery', name: 'Cafe / Bakery / Sweets', edition: 'Vertical Standard', icon: Icons.cake_outlined, tag: 'Weighted + production batches',
-      on: ['fastPOS', 'weightScale', 'gstInvoice', 'consent', 'batchExpiry', 'label', 'production', 'multiUnit']),
-  BusinessType(key: 'hardware', name: 'Hardware / Electrical', edition: 'Retail Pro', icon: Icons.handyman_outlined, tag: 'Counter + quotation + credit',
-      on: ['fastPOS', 'barcodeScan', 'multiUnit', 'gstInvoice', 'consent', 'creditLedger', 'quotation', 'variantMatrix', 'wholesale']),
-  BusinessType(key: 'fashion', name: 'Apparel / Footwear', edition: 'Vertical Standard', icon: Icons.checkroom_outlined, tag: 'Variant retail + exchanges',
-      on: ['fastPOS', 'barcodeScan', 'gstInvoice', 'consent', 'variantMatrix', 'label', 'loyalty']),
-  BusinessType(key: 'jewellery', name: 'Jewellery Store', edition: 'Vertical Enterprise', icon: Icons.diamond_outlined, tag: 'Weight, purity, making-charge',
-      on: ['fastPOS', 'gstInvoice', 'consent', 'weightScale', 'serialImei', 'label', 'creditLedger']),
-  BusinessType(key: 'electronics', name: 'Mobile / Electronics', edition: 'Vertical Pro', icon: Icons.smartphone_outlined, tag: 'Serial/IMEI + warranty',
-      on: ['fastPOS', 'barcodeScan', 'gstInvoice', 'consent', 'serialImei', 'variantMatrix', 'creditLedger', 'recurring']),
-  BusinessType(key: 'salon', name: 'Salon / Spa / Beauty', edition: 'Vertical Standard', icon: Icons.content_cut_outlined, tag: 'Appointments + service billing',
-      on: ['fastPOS', 'gstInvoice', 'consent', 'appointments', 'membership', 'loyalty']),
-  BusinessType(key: 'wholesale', name: 'Wholesale / Distribution', edition: 'Business Pro', icon: Icons.local_shipping_outlined, tag: 'B2B, route sales, credit',
-      on: ['fastPOS', 'barcodeScan', 'gstInvoice', 'consent', 'creditLedger', 'multiUnit', 'wholesale', 'delivery', 'multiStore', 'quotation']),
-  BusinessType(key: 'clinic', name: 'Clinic / Diagnostic', edition: 'Vertical Pro', icon: Icons.medical_services_outlined, tag: 'Patient, service, package billing',
-      on: ['fastPOS', 'gstInvoice', 'consent', 'appointments', 'creditLedger', 'membership']),
+  BusinessType(
+    key: 'kirana',
+    name: 'Kirana / General Store',
+    edition: 'Retail Standard',
+    icon: Icons.storefront_outlined,
+    tag: 'Fast counter B2C + khata credit',
+    on: ['fastPOS', 'barcodeScan', 'weightScale', 'multiUnit', 'gstInvoice', 'consent', 'creditLedger', 'batchExpiry', 'label', 'delivery'],
+  ),
+  BusinessType(
+    key: 'supermarket',
+    name: 'Supermarket / Mini-Mart',
+    edition: 'Retail Pro',
+    icon: Icons.shopping_cart_outlined,
+    tag: 'High-volume multi-counter POS',
+    on: ['fastPOS', 'barcodeScan', 'weightScale', 'multiUnit', 'gstInvoice', 'consent', 'variantMatrix', 'label', 'loyalty', 'delivery', 'multiStore'],
+  ),
+  BusinessType(
+    key: 'pharmacy',
+    name: 'Pharmacy / Medical',
+    edition: 'Vertical Pro',
+    icon: Icons.local_pharmacy_outlined,
+    tag: 'Batch, expiry, MRP, rack',
+    on: ['fastPOS', 'barcodeScan', 'gstInvoice', 'consent', 'creditLedger', 'batchExpiry', 'label', 'multiUnit'],
+  ),
+  BusinessType(
+    key: 'restaurant',
+    name: 'Restaurant / QSR',
+    edition: 'Vertical Pro',
+    icon: Icons.restaurant_outlined,
+    tag: 'Table, KOT, kitchen, delivery',
+    on: ['fastPOS', 'gstInvoice', 'consent', 'kot', 'production', 'delivery', 'loyalty'],
+  ),
+  BusinessType(
+    key: 'bakery',
+    name: 'Cafe / Bakery / Sweets',
+    edition: 'Vertical Standard',
+    icon: Icons.cake_outlined,
+    tag: 'Weighted + production batches',
+    on: ['fastPOS', 'weightScale', 'gstInvoice', 'consent', 'batchExpiry', 'label', 'production', 'multiUnit'],
+  ),
+  BusinessType(
+    key: 'hardware',
+    name: 'Hardware / Electrical',
+    edition: 'Retail Pro',
+    icon: Icons.handyman_outlined,
+    tag: 'Counter + quotation + credit',
+    on: ['fastPOS', 'barcodeScan', 'multiUnit', 'gstInvoice', 'consent', 'creditLedger', 'quotation', 'variantMatrix', 'wholesale'],
+  ),
+  BusinessType(
+    key: 'fashion',
+    name: 'Apparel / Footwear',
+    edition: 'Vertical Standard',
+    icon: Icons.checkroom_outlined,
+    tag: 'Variant retail + exchanges',
+    on: ['fastPOS', 'barcodeScan', 'gstInvoice', 'consent', 'variantMatrix', 'label', 'loyalty'],
+  ),
+  BusinessType(
+    key: 'jewellery',
+    name: 'Jewellery Store',
+    edition: 'Vertical Enterprise',
+    icon: Icons.diamond_outlined,
+    tag: 'Weight, purity, making-charge',
+    on: ['fastPOS', 'gstInvoice', 'consent', 'weightScale', 'serialImei', 'label', 'creditLedger'],
+  ),
+  BusinessType(
+    key: 'electronics',
+    name: 'Mobile / Electronics',
+    edition: 'Vertical Pro',
+    icon: Icons.smartphone_outlined,
+    tag: 'Serial/IMEI + warranty',
+    on: ['fastPOS', 'barcodeScan', 'gstInvoice', 'consent', 'serialImei', 'variantMatrix', 'creditLedger', 'recurring'],
+  ),
+  BusinessType(
+    key: 'salon',
+    name: 'Salon / Spa / Beauty',
+    edition: 'Vertical Standard',
+    icon: Icons.content_cut_outlined,
+    tag: 'Appointments + service billing',
+    on: ['fastPOS', 'gstInvoice', 'consent', 'appointments', 'membership', 'loyalty'],
+  ),
+  BusinessType(
+    key: 'wholesale',
+    name: 'Wholesale / Distribution',
+    edition: 'Business Pro',
+    icon: Icons.local_shipping_outlined,
+    tag: 'B2B, route sales, credit',
+    on: ['fastPOS', 'barcodeScan', 'gstInvoice', 'consent', 'creditLedger', 'multiUnit', 'wholesale', 'delivery', 'multiStore', 'quotation'],
+  ),
+  BusinessType(
+    key: 'clinic',
+    name: 'Clinic / Diagnostic',
+    edition: 'Vertical Pro',
+    icon: Icons.medical_services_outlined,
+    tag: 'Patient, service, package billing',
+    on: ['fastPOS', 'gstInvoice', 'consent', 'appointments', 'creditLedger', 'membership'],
+  ),
 ];
 
 BusinessType businessByKey(String key) => kBusinessTypes.firstWhere((b) => b.key == key);
@@ -184,43 +242,86 @@ const Map<String, String> kBizIconSlug = {
 // ---------------------------------------------------------------------------
 const Map<String, List<Product>> kProducts = {
   '_default': [
-    Product('Item A', 'Piece', 120), Product('Item B', 'Piece', 60), Product('Item C', 'kg', 85),
-    Product('Item D', 'Pack', 240), Product('Item E', 'Piece', 35), Product('Item F', 'Litre', 180),
+    Product('Item A', 'Piece', 120),
+    Product('Item B', 'Piece', 60),
+    Product('Item C', 'kg', 85),
+    Product('Item D', 'Pack', 240),
+    Product('Item E', 'Piece', 35),
+    Product('Item F', 'Litre', 180),
   ],
   'kirana': [
-    Product('Toor Dal', 'kg', 145), Product('Sunflower Oil', 'Litre', 180), Product('Basmati Rice', 'kg', 95),
-    Product('Sugar', 'kg', 44), Product('Parle-G', 'Pack', 10), Product('Tea Powder', '250g', 130),
-    Product('Wheat Atta', 'kg', 42), Product('Detergent', 'Pack', 95), Product('Milk', 'Litre', 56),
+    Product('Toor Dal', 'kg', 145),
+    Product('Sunflower Oil', 'Litre', 180),
+    Product('Basmati Rice', 'kg', 95),
+    Product('Sugar', 'kg', 44),
+    Product('Parle-G', 'Pack', 10),
+    Product('Tea Powder', '250g', 130),
+    Product('Wheat Atta', 'kg', 42),
+    Product('Detergent', 'Pack', 95),
+    Product('Milk', 'Litre', 56),
   ],
   'pharmacy': [
-    Product('Paracetamol 500', 'Strip', 22), Product('Amoxicillin 250', 'Strip', 68), Product('Cough Syrup', 'Bottle', 95),
-    Product('ORS Sachet', 'Piece', 18), Product('Vitamin C', 'Strip', 45), Product('Bandage Roll', 'Piece', 30),
-    Product('Antacid', 'Strip', 28), Product('Hand Sanitizer', 'Bottle', 75), Product('Thermometer', 'Piece', 180),
+    Product('Paracetamol 500', 'Strip', 22),
+    Product('Amoxicillin 250', 'Strip', 68),
+    Product('Cough Syrup', 'Bottle', 95),
+    Product('ORS Sachet', 'Piece', 18),
+    Product('Vitamin C', 'Strip', 45),
+    Product('Bandage Roll', 'Piece', 30),
+    Product('Antacid', 'Strip', 28),
+    Product('Hand Sanitizer', 'Bottle', 75),
+    Product('Thermometer', 'Piece', 180),
   ],
   'restaurant': [
-    Product('Masala Dosa', 'Plate', 90), Product('Paneer Butter Masala', 'Plate', 220), Product('Veg Biryani', 'Plate', 180),
-    Product('Butter Naan', 'Piece', 35), Product('Cold Coffee', 'Glass', 120), Product('Gulab Jamun', 'Plate', 70),
-    Product('Filter Coffee', 'Cup', 40), Product('Chicken 65', 'Plate', 240), Product('Fresh Lime', 'Glass', 50),
+    Product('Masala Dosa', 'Plate', 90),
+    Product('Paneer Butter Masala', 'Plate', 220),
+    Product('Veg Biryani', 'Plate', 180),
+    Product('Butter Naan', 'Piece', 35),
+    Product('Cold Coffee', 'Glass', 120),
+    Product('Gulab Jamun', 'Plate', 70),
+    Product('Filter Coffee', 'Cup', 40),
+    Product('Chicken 65', 'Plate', 240),
+    Product('Fresh Lime', 'Glass', 50),
   ],
   'fashion': [
-    Product('Cotton Shirt M', 'Piece', 899), Product('Denim Jeans 32', 'Piece', 1499), Product('Kurti L', 'Piece', 1199),
-    Product('Sneakers 9', 'Pair', 2499), Product('Silk Saree', 'Piece', 3499), Product('T-Shirt S', 'Piece', 499),
-    Product('Leather Belt', 'Piece', 699), Product('Socks Pack', 'Pack', 299), Product('Cap', 'Piece', 349),
+    Product('Cotton Shirt M', 'Piece', 899),
+    Product('Denim Jeans 32', 'Piece', 1499),
+    Product('Kurti L', 'Piece', 1199),
+    Product('Sneakers 9', 'Pair', 2499),
+    Product('Silk Saree', 'Piece', 3499),
+    Product('T-Shirt S', 'Piece', 499),
+    Product('Leather Belt', 'Piece', 699),
+    Product('Socks Pack', 'Pack', 299),
+    Product('Cap', 'Piece', 349),
   ],
   'jewellery': [
-    Product('Gold Ring 22K', '4.2g', 31500), Product('Gold Chain 22K', '12g', 90000), Product('Silver Anklet', '28g', 2800),
-    Product('Diamond Pendant', 'Piece', 45000), Product('Gold Bangle', '15g', 112000), Product('Silver Coin 10g', 'Piece', 950),
-    Product('Nose Pin 18K', '1.1g', 6800), Product('Ear Studs 22K', '3g', 22500),
+    Product('Gold Ring 22K', '4.2g', 31500),
+    Product('Gold Chain 22K', '12g', 90000),
+    Product('Silver Anklet', '28g', 2800),
+    Product('Diamond Pendant', 'Piece', 45000),
+    Product('Gold Bangle', '15g', 112000),
+    Product('Silver Coin 10g', 'Piece', 950),
+    Product('Nose Pin 18K', '1.1g', 6800),
+    Product('Ear Studs 22K', '3g', 22500),
   ],
   'electronics': [
-    Product('Redmi 13C', 'Piece', 9999), Product('USB-C Cable', 'Piece', 249), Product('65W Charger', 'Piece', 1299),
-    Product('Bluetooth Buds', 'Pair', 1999), Product('Screen Guard', 'Piece', 199), Product('Power Bank 10K', 'Piece', 1499),
-    Product('Smart Watch', 'Piece', 2999), Product('Phone Case', 'Piece', 349),
+    Product('Redmi 13C', 'Piece', 9999),
+    Product('USB-C Cable', 'Piece', 249),
+    Product('65W Charger', 'Piece', 1299),
+    Product('Bluetooth Buds', 'Pair', 1999),
+    Product('Screen Guard', 'Piece', 199),
+    Product('Power Bank 10K', 'Piece', 1499),
+    Product('Smart Watch', 'Piece', 2999),
+    Product('Phone Case', 'Piece', 349),
   ],
   'salon': [
-    Product('Haircut - Men', 'Service', 250), Product('Hair Spa', 'Service', 1200), Product('Facial - Gold', 'Service', 1800),
-    Product('Threading', 'Service', 80), Product('Beard Trim', 'Service', 150), Product('Hair Color', 'Service', 2200),
-    Product('Manicure', 'Service', 600), Product('Head Massage', 'Service', 400),
+    Product('Haircut - Men', 'Service', 250),
+    Product('Hair Spa', 'Service', 1200),
+    Product('Facial - Gold', 'Service', 1800),
+    Product('Threading', 'Service', 80),
+    Product('Beard Trim', 'Service', 150),
+    Product('Hair Color', 'Service', 2200),
+    Product('Manicure', 'Service', 600),
+    Product('Head Massage', 'Service', 400),
   ],
 };
 
@@ -247,14 +348,13 @@ InvoiceTemplate templateById(String id) => kTemplates.firstWhere((t) => t.id == 
 
 /// Default print template chosen by a preset.
 String defaultTemplateFor(String bizKey) => switch (bizKey) {
-      'restaurant' => 'modern',
-      'wholesale' => 'wholesale',
-      'electronics' => 'service',
-      'clinic' => 'service',
-      'jewellery' => 'classic',
-      _ => 'classic',
-    };
+  'restaurant' => 'modern',
+  'wholesale' => 'wholesale',
+  'electronics' => 'service',
+  'clinic' => 'service',
+  'jewellery' => 'classic',
+  _ => 'classic',
+};
 
 /// Default POS live-receipt template chosen by a preset.
-String defaultPosTemplateFor(String bizKey) =>
-    (bizKey == 'kirana' || bizKey == 'pharmacy' || bizKey == 'bakery') ? 'thermal58' : 'thermal80';
+String defaultPosTemplateFor(String bizKey) => (bizKey == 'kirana' || bizKey == 'pharmacy' || bizKey == 'bakery') ? 'thermal58' : 'thermal80';

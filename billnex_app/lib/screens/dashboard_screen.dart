@@ -31,76 +31,78 @@ class DashboardScreen extends StatelessWidget {
         Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1180),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              // ── Greeting ─────────────────────────────────────────────
-              Text('${_greeting()}, $greetName!',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: bx.muted)),
-              const SizedBox(height: 2),
-              Text('${state.shopName} Dashboard',
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
-              const SizedBox(height: 18),
-
-              // ── Alert banners (only when actionable for this role) ───
-              if (state.lowStockCount > 0 && canInventory)
-                _AlertBanner(
-                  icon: Icons.warning_amber_rounded,
-                  color: bx.warn,
-                  bg: bx.warnBg,
-                  text: '${state.lowStockCount} ${state.lowStockCount == 1 ? 'product' : 'products'} low in stock',
-                  onTap: () => goTo(NavId.inventory),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ── Greeting ─────────────────────────────────────────────
+                Text(
+                  '${_greeting()}, $greetName!',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: bx.muted),
                 ),
-              if (state.backupDue) ...[
-                if (state.lowStockCount > 0 && canInventory) const SizedBox(height: 10),
-                _AlertBanner(
-                  icon: Icons.cloud_off_rounded,
-                  color: bx.danger,
-                  bg: bx.dangerBg,
-                  text: 'Backup due — protect your data',
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => Scaffold(appBar: AppBar(title: const Text('Backup & Restore')), body: BackupScreen(state: state)))),
-                ),
-              ],
-              if ((state.lowStockCount > 0 && canInventory) || state.backupDue) const SizedBox(height: 18),
+                const SizedBox(height: 2),
+                Text('${state.shopName} Dashboard', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
+                const SizedBox(height: 18),
 
-              // ── Primary CTA (only for roles that can bill) ───────────
-              if (canBill) ...[
-                SizedBox(
-                  height: 56,
-                  child: FilledButton.icon(
-                    onPressed: () => goTo(NavId.billing),
-                    icon: const Icon(Icons.add, size: 22),
-                    label: const Text('Create New Bill', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                    style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                // ── Alert banners (only when actionable for this role) ───
+                if (state.lowStockCount > 0 && canInventory)
+                  _AlertBanner(
+                    icon: Icons.warning_amber_rounded,
+                    color: bx.warn,
+                    bg: bx.warnBg,
+                    text: '${state.lowStockCount} ${state.lowStockCount == 1 ? 'product' : 'products'} low in stock',
+                    onTap: () => goTo(NavId.inventory),
                   ),
-                ),
+                if (state.backupDue) ...[
+                  if (state.lowStockCount > 0 && canInventory) const SizedBox(height: 10),
+                  _AlertBanner(
+                    icon: Icons.cloud_off_rounded,
+                    color: bx.danger,
+                    bg: bx.dangerBg,
+                    text: 'Backup due — protect your data',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => Scaffold(
+                          appBar: AppBar(title: const Text('Backup & Restore')),
+                          body: BackupScreen(state: state),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                if ((state.lowStockCount > 0 && canInventory) || state.backupDue) const SizedBox(height: 18),
+
+                // ── Primary CTA (only for roles that can bill) ───────────
+                if (canBill) ...[
+                  SizedBox(
+                    height: 56,
+                    child: FilledButton.icon(
+                      onPressed: () => goTo(NavId.billing),
+                      icon: const Icon(Icons.add, size: 22),
+                      label: const Text('Create New Bill', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                // ── Today's Summary ──────────────────────────────────────
+                _SectionHead(title: "Today's Summary", action: canReports ? 'Details' : null, onAction: () => goTo(NavId.reports)),
+                const SizedBox(height: 12),
+                _HeroSales(state: state),
+                const SizedBox(height: 12),
+                _SummaryGrid(state: state, goTo: goTo),
                 const SizedBox(height: 24),
+
+                // ── Quick actions ────────────────────────────────────────
+                _QuickActions(state: state, goTo: goTo),
+                const SizedBox(height: 24),
+
+                // ── Recent Activity ──────────────────────────────────────
+                _SectionHead(title: 'Recent Activity', action: (state.billCount > 0 && state.roleCanAccess('sales')) ? 'View all' : null, onAction: () => goTo(NavId.sales)),
+                const SizedBox(height: 12),
+                _RecentActivity(state: state, goTo: goTo),
               ],
-
-              // ── Today's Summary ──────────────────────────────────────
-              _SectionHead(
-                title: "Today's Summary",
-                action: canReports ? 'Details' : null,
-                onAction: () => goTo(NavId.reports),
-              ),
-              const SizedBox(height: 12),
-              _HeroSales(state: state),
-              const SizedBox(height: 12),
-              _SummaryGrid(state: state, goTo: goTo),
-              const SizedBox(height: 24),
-
-              // ── Quick actions ────────────────────────────────────────
-              _QuickActions(state: state, goTo: goTo),
-              const SizedBox(height: 24),
-
-              // ── Recent Activity ──────────────────────────────────────
-              _SectionHead(
-                title: 'Recent Activity',
-                action: (state.billCount > 0 && state.roleCanAccess('sales')) ? 'View all' : null,
-                onAction: () => goTo(NavId.sales),
-              ),
-              const SizedBox(height: 12),
-              _RecentActivity(state: state, goTo: goTo),
-            ]),
+            ),
           ),
         ),
       ],
@@ -124,20 +126,27 @@ class _SectionHead extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
-    return Row(children: [
-      Expanded(child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3))),
-      if (action != null)
-        InkWell(
-          onTap: onAction,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 44),
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(action!, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: bx.accent)),
-          ),
+    return Row(
+      children: [
+        Expanded(
+          child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
         ),
-    ]);
+        if (action != null)
+          InkWell(
+            onTap: onAction,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 44),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                action!,
+                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: bx.accent),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
 
@@ -159,12 +168,19 @@ class _AlertBanner extends StatelessWidget {
           border: Border.all(color: color.withValues(alpha: 0.28)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        child: Row(children: [
-          Icon(icon, size: 20, color: color),
-          const SizedBox(width: 11),
-          Expanded(child: Text(text, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: color))),
-          Icon(Icons.chevron_right, size: 18, color: color.withValues(alpha: 0.7)),
-        ]),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: color),
+            const SizedBox(width: 11),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: color),
+              ),
+            ),
+            Icon(Icons.chevron_right, size: 18, color: color.withValues(alpha: 0.7)),
+          ],
+        ),
       ),
     );
   }
@@ -181,30 +197,46 @@ class _HeroSales extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(18),
-        child: Row(children: [
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text("TODAY'S SALES",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.muted)),
-              const SizedBox(height: 8),
-              Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-                Flexible(
-                  child: Text(money(state.todaySales),
-                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -1),
-                      overflow: TextOverflow.ellipsis),
-                ),
-                const SizedBox(width: 10),
-                Text(live ? '${state.billCount} bills' : 'no bills yet',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: live ? bx.pos : bx.faint)),
-              ]),
-            ]),
-          ),
-          Container(
-            width: 52, height: 52,
-            decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(14)),
-            child: Icon(Icons.payments_outlined, color: bx.accent, size: 26),
-          ),
-        ]),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "TODAY'S SALES",
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.muted),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          money(state.todaySales),
+                          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -1),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        live ? '${state.billCount} bills' : 'no bills yet',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: live ? bx.pos : bx.faint),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(14)),
+              child: Icon(Icons.payments_outlined, color: bx.accent, size: 26),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -222,25 +254,25 @@ class _SummaryGrid extends StatelessWidget {
     final cash = mix['Cash'] ?? 0;
     final upi = (mix['UPI'] ?? 0) + (mix['Card'] ?? 0);
     final credit = mix['Credit'] ?? 0;
-    return LayoutBuilder(builder: (context, c) {
-      final cols = c.maxWidth > 720 ? 4 : 2;
-      return GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: cols,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        mainAxisExtent: 96,
-        children: [
-          _MiniStat('Total Bills', '${state.billCount}', color: bx.muted),
-          _MiniStat('Cash Received', money(cash), color: bx.muted),
-          _MiniStat('UPI / Card', money(upi), color: bx.muted),
-          _MiniStat('Credit Sales', money(credit),
-              color: credit > 0 ? bx.danger : bx.muted,
-              onTap: state.isOn('creditLedger') ? () => goTo(NavId.customers) : null),
-        ],
-      );
-    });
+    return LayoutBuilder(
+      builder: (context, c) {
+        final cols = c.maxWidth > 720 ? 4 : 2;
+        return GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: cols,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          mainAxisExtent: 96,
+          children: [
+            _MiniStat('Total Bills', '${state.billCount}', color: bx.muted),
+            _MiniStat('Cash Received', money(cash), color: bx.muted),
+            _MiniStat('UPI / Card', money(upi), color: bx.muted),
+            _MiniStat('Credit Sales', money(credit), color: credit > 0 ? bx.danger : bx.muted, onTap: state.isOn('creditLedger') ? () => goTo(NavId.customers) : null),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -258,14 +290,29 @@ class _MiniStat extends StatelessWidget {
         borderRadius: BorderRadius.circular(Bx.radius),
         child: Padding(
           padding: const EdgeInsets.all(14),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-            Row(children: [
-              Expanded(child: Text(label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: bx.muted), overflow: TextOverflow.ellipsis)),
-              if (onTap != null) Icon(Icons.chevron_right, size: 15, color: bx.faint),
-            ]),
-            const SizedBox(height: 6),
-            Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: color == bx.danger ? bx.danger : null)),
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: bx.muted),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (onTap != null) Icon(Icons.chevron_right, size: 15, color: bx.faint),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                value,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: color == bx.danger ? bx.danger : null),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -292,10 +339,7 @@ class _QuickActions extends StatelessWidget {
     if (actions.isEmpty) return const SizedBox.shrink();
     return Row(
       children: [
-        for (var i = 0; i < actions.length; i++) ...[
-          if (i > 0) const SizedBox(width: 12),
-          Expanded(child: _QuickTile(actions[i].icon, actions[i].label, actions[i].onTap)),
-        ],
+        for (var i = 0; i < actions.length; i++) ...[if (i > 0) const SizedBox(width: 12), Expanded(child: _QuickTile(actions[i].icon, actions[i].label, actions[i].onTap))],
       ],
     );
   }
@@ -312,17 +356,24 @@ class _QuickTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(Bx.radius),
-      child: Column(children: [
-        Container(
-          height: 60,
-          decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(Bx.radius)),
-          alignment: Alignment.center,
-          child: Icon(icon, color: bx.accent, size: 24),
-        ),
-        const SizedBox(height: 7),
-        Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-      ]),
+      child: Column(
+        children: [
+          Container(
+            height: 60,
+            decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(Bx.radius)),
+            alignment: Alignment.center,
+            child: Icon(icon, color: bx.accent, size: 24),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -351,13 +402,17 @@ class _RecentActivity extends StatelessWidget {
     }
     final canSales = state.roleCanAccess('sales');
     return Card(
-      child: Column(children: [
-        for (var i = 0; i < recent.length; i++)
-          Container(
-            decoration: BoxDecoration(border: i == 0 ? null : Border(top: BorderSide(color: bx.border))),
-            child: _ActivityRow(sale: recent[i], onTap: canSales ? () => goTo(NavId.sales) : null),
-          ),
-      ]),
+      child: Column(
+        children: [
+          for (var i = 0; i < recent.length; i++)
+            Container(
+              decoration: BoxDecoration(
+                border: i == 0 ? null : Border(top: BorderSide(color: bx.border)),
+              ),
+              child: _ActivityRow(sale: recent[i], onTap: canSales ? () => goTo(NavId.sales) : null),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -373,27 +428,29 @@ class _ActivityRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-      child: Row(children: [
-        Container(
-          width: 38, height: 38,
-          decoration: BoxDecoration(
-            color: (pending ? bx.warn : bx.pos).withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(11),
-          ),
-          child: Icon(pending ? Icons.schedule : Icons.receipt_long, size: 19, color: pending ? bx.warn : bx.pos),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(color: (pending ? bx.warn : bx.pos).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(11)),
+              child: Icon(pending ? Icons.schedule : Icons.receipt_long, size: 19, color: pending ? bx.warn : bx.pos),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Bill ${sale.invoiceNo}', style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 2),
+                  Text('${sale.timeLabel} · ${money(sale.total)} · ${sale.paymentMode}', style: TextStyle(fontSize: 12, color: bx.muted)),
+                ],
+              ),
+            ),
+            _StatusChip(pending: pending),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Bill ${sale.invoiceNo}', style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 2),
-            Text('${sale.timeLabel} · ${money(sale.total)} · ${sale.paymentMode}',
-                style: TextStyle(fontSize: 12, color: bx.muted)),
-          ]),
-        ),
-        _StatusChip(pending: pending),
-      ]),
       ),
     );
   }
@@ -409,8 +466,10 @@ class _StatusChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
       decoration: BoxDecoration(color: c.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(6)),
-      child: Text(pending ? 'PENDING' : 'PAID',
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.3, color: c)),
+      child: Text(
+        pending ? 'PENDING' : 'PAID',
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.3, color: c),
+      ),
     );
   }
 }

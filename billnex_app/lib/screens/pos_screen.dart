@@ -21,44 +21,55 @@ class PosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = state.stockItems;
-    return LayoutBuilder(builder: (context, c) {
-      final wide = c.maxWidth > 900;
+    return LayoutBuilder(
+      builder: (context, c) {
+        final wide = c.maxWidth > 900;
 
-      // Wide (tablet/desktop): products + cart side by side.
-      if (wide) {
-        return ListView(
-          padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+        // Wide (tablet/desktop): products + cart side by side.
+        if (wide) {
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+            children: [
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1180),
+                child: Column(
+                  children: [
+                    const PageHeader('Billing', 'Search or scan · live receipt updates as you go.'),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _Catalog(state: state, items: items),
+                        ),
+                        const SizedBox(width: 16),
+                        SizedBox(width: 380, child: _CartPanel(state: state)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }
+
+        // Phone: products scroll; a sticky bottom bar shows the total and opens
+        // the cart. Core billing stays in view.
+        return Column(
           children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1180),
-              child: Column(children: [
-                const PageHeader('Billing', 'Search or scan · live receipt updates as you go.'),
-                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Expanded(child: _Catalog(state: state, items: items)),
-                  const SizedBox(width: 16),
-                  SizedBox(width: 380, child: _CartPanel(state: state)),
-                ]),
-              ]),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(14, 18, 14, 16),
+                children: [
+                  const PageHeader('Billing', 'Search or scan to add items.'),
+                  _Catalog(state: state, items: items),
+                ],
+              ),
             ),
+            _MobileCartBar(state: state),
           ],
         );
-      }
-
-      // Phone: products scroll; a sticky bottom bar shows the total and opens
-      // the cart. Core billing stays in view.
-      return Column(children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(14, 18, 14, 16),
-            children: [
-              const PageHeader('Billing', 'Search or scan to add items.'),
-              _Catalog(state: state, items: items),
-            ],
-          ),
-        ),
-        _MobileCartBar(state: state),
-      ]);
-    });
+      },
+    );
   }
 }
 
@@ -75,12 +86,17 @@ class _MobileCartBar extends StatelessWidget {
       elevation: 12,
       color: Theme.of(context).colorScheme.surface,
       child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
-          child: Row(children: [
-            Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-              Text('${state.cartQty} item${state.cartQty == 1 ? '' : 's'}', style: TextStyle(fontSize: 12, color: bx.muted)),
-              Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-            ]),
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        child: Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${state.cartQty} item${state.cartQty == 1 ? '' : 's'}', style: TextStyle(fontSize: 12, color: bx.muted)),
+                Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+              ],
+            ),
             const Spacer(),
             FilledButton.icon(
               onPressed: empty ? null : () => _openCart(context),
@@ -88,8 +104,9 @@ class _MobileCartBar extends StatelessWidget {
               label: const Text('View bill'),
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13)),
             ),
-          ]),
+          ],
         ),
+      ),
     );
   }
 
@@ -169,7 +186,11 @@ class _CatalogState extends State<_Catalog> {
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Enter barcode / SKU'),
-          content: TextField(controller: c, autofocus: true, decoration: const InputDecoration(hintText: 'Barcode or product code', border: OutlineInputBorder())),
+          content: TextField(
+            controller: c,
+            autofocus: true,
+            decoration: const InputDecoration(hintText: 'Barcode or product code', border: OutlineInputBorder()),
+          ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
             FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Add')),
@@ -189,70 +210,80 @@ class _CatalogState extends State<_Catalog> {
         ? all
         : all.where((i) {
             final q = _q.toLowerCase();
-            return i.name.toLowerCase().contains(q) ||
-                (i.barcode?.toLowerCase().contains(q) ?? false) ||
-                i.sku.toLowerCase().contains(q);
+            return i.name.toLowerCase().contains(q) || (i.barcode?.toLowerCase().contains(q) ?? false) || i.sku.toLowerCase().contains(q);
           }).toList();
-    return Column(children: [
-      Row(children: [
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: bx.border),
-            ),
-            child: TextField(
-              controller: _search,
-              onChanged: (v) => setState(() => _q = v),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                icon: Padding(padding: const EdgeInsets.only(left: 14), child: Icon(Icons.search, color: bx.muted)),
-                suffixIcon: _q.isEmpty ? null : IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setState(() { _q = ''; _search.clear(); })),
-                hintText: 'Search products…',
-                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 6),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: bx.border),
+                ),
+                child: TextField(
+                  controller: _search,
+                  onChanged: (v) => setState(() => _q = v),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Padding(
+                      padding: const EdgeInsets.only(left: 14),
+                      child: Icon(Icons.search, color: bx.muted),
+                    ),
+                    suffixIcon: _q.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.close, size: 18),
+                            onPressed: () => setState(() {
+                              _q = '';
+                              _search.clear();
+                            }),
+                          ),
+                    hintText: 'Search products…',
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 6),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        SizedBox(
-          width: 52, height: 52,
-          child: FilledButton(
-            onPressed: () => _scan(context),
-            style: FilledButton.styleFrom(
-              backgroundColor: bx.accent,
-              foregroundColor: bx.onAccent,
-              padding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 52,
+              height: 52,
+              child: FilledButton(
+                onPressed: () => _scan(context),
+                style: FilledButton.styleFrom(
+                  backgroundColor: bx.accent,
+                  foregroundColor: bx.onAccent,
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Icon(Icons.qr_code_scanner, size: 22),
+              ),
             ),
-            child: const Icon(Icons.qr_code_scanner, size: 22),
-          ),
+          ],
         ),
-      ]),
-      const SizedBox(height: 14),
-      if (all.isEmpty)
-        const EmptyState(
-          illustration: 'empty-no-products',
-          title: 'No products yet',
-          subtitle: "Add your shop's products in the Inventory tab, then bill them here.",
-        )
-      else if (items.isEmpty)
-        Padding(padding: const EdgeInsets.symmetric(vertical: 30), child: Center(child: Text('No products match "$_q"', style: TextStyle(color: bx.muted))))
-      else
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: items.length,
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 220,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            mainAxisExtent: 118,
+        const SizedBox(height: 14),
+        if (all.isEmpty)
+          const EmptyState(illustration: 'empty-no-products', title: 'No products yet', subtitle: "Add your shop's products in the Inventory tab, then bill them here.")
+        else if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            child: Center(
+              child: Text('No products match "$_q"', style: TextStyle(color: bx.muted)),
+            ),
+          )
+        else
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: items.length,
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 220, mainAxisSpacing: 10, crossAxisSpacing: 10, mainAxisExtent: 118),
+            itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => _add(context, items[i])),
           ),
-          itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => _add(context, items[i])),
-        ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -268,40 +299,55 @@ class _ProductTile extends StatelessWidget {
     return Opacity(
       opacity: item.out ? 0.55 : 1,
       child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: item.out ? bx.danger.withValues(alpha: 0.5) : bx.border),
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: item.out ? bx.danger.withValues(alpha: 0.5) : bx.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(color: bx.surface2, borderRadius: BorderRadius.circular(9)),
+                    child: Icon(Icons.inventory_2_outlined, size: 18, color: bx.brand),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    decoration: BoxDecoration(color: qtyColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
+                    child: Text(
+                      item.stockTracked ? '${qtyLabel(item.qty)} ${item.unit}' : 'Service',
+                      style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: qtyColor),
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Text(
+                item.name,
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Row(
+                children: [
+                  Text(money(item.price), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+                  const SizedBox(width: 4),
+                  Text('/ ${item.unit}', style: TextStyle(fontSize: 11, color: bx.muted)),
+                ],
+              ),
+            ],
+          ),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Container(
-              width: 34, height: 34,
-              decoration: BoxDecoration(color: bx.surface2, borderRadius: BorderRadius.circular(9)),
-              child: Icon(Icons.inventory_2_outlined, size: 18, color: bx.brand),
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-              decoration: BoxDecoration(color: qtyColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
-              child: Text(item.stockTracked ? '${qtyLabel(item.qty)} ${item.unit}' : 'Service',
-                  style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: qtyColor)),
-            ),
-          ]),
-          const Spacer(),
-          Text(item.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700), maxLines: 2, overflow: TextOverflow.ellipsis),
-          const SizedBox(height: 2),
-          Row(children: [
-            Text(money(item.price), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
-            const SizedBox(width: 4),
-            Text('/ ${item.unit}', style: TextStyle(fontSize: 11, color: bx.muted)),
-          ]),
-        ]),
-      ),
       ),
     );
   }
@@ -316,113 +362,146 @@ class _CartPanel extends StatelessWidget {
     final bx = context.bx;
     final posTemplates = kTemplates.where((t) => ['thermal80', 'thermal58', 'classic', 'modern'].contains(t.id)).toList();
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Card(
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Row(children: [
-              const Expanded(child: Text('Current bill', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800))),
-              Badge2('${state.cartQty} qty'),
-            ]),
-            if (state.isOn('creditLedger')) ...[
-              const SizedBox(height: 10),
-              _CustomerChip(state: state),
-            ],
-            const SizedBox(height: 8),
-            if (state.cart.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 34),
-                child: Center(child: Text('Tap a product to start the bill', style: TextStyle(fontSize: 13, color: bx.muted))),
-              )
-            else
-              ...state.cart.asMap().entries.map((e) => _CartRow(state: state, index: e.key, line: e.value)),
-            const SizedBox(height: 6),
-            if (state.cart.isNotEmpty) ...[
-              _totRow(bx, 'Taxable', money(state.bill.taxable)),
-              if (state.bill.discountTotal > 0) _totRow(bx, 'Discount', '− ${money(state.bill.discountTotal)}'),
-              _totRow(bx, 'CGST', money(state.bill.cgst)),
-              _totRow(bx, 'SGST', money(state.bill.sgst)),
-              if (state.bill.roundOff != 0) _totRow(bx, 'Round off', money(state.bill.roundOff)),
-              // Bill discount entry
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(children: [
-                  Icon(Icons.local_offer_outlined, size: 15, color: bx.muted),
-                  const SizedBox(width: 6),
-                  Text('Bill discount', style: TextStyle(fontSize: 13, color: bx.muted)),
-                  const Spacer(),
-                  SizedBox(width: 90, child: _BillDiscountField(state: state)),
-                ]),
-              ),
-            ],
-            Container(
-              margin: const EdgeInsets.only(top: 6),
-              padding: const EdgeInsets.only(top: 12),
-              decoration: BoxDecoration(border: Border(top: BorderSide(color: bx.border, width: 2))),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text('Total', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-                Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-              ]),
-            ),
-            const SizedBox(height: 12),
-            Builder(builder: (context) {
-              final empty = state.cart.isEmpty;
-              return Row(children: [
-                Expanded(child: OutlinedButton.icon(onPressed: empty ? null : () => _charge(context, 'Cash'), icon: const Icon(Icons.account_balance_wallet_outlined, size: 18), label: const Text('Cash'))),
-                const SizedBox(width: 8),
-                Expanded(child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'UPI'), child: const Text('UPI QR'))),
-                if (state.isOn('creditLedger')) ...[
-                  const SizedBox(width: 8),
-                  Expanded(child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'Credit'), child: const Text('Credit'))),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text('Current bill', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                    ),
+                    Badge2('${state.cartQty} qty'),
+                  ],
+                ),
+                if (state.isOn('creditLedger')) ...[const SizedBox(height: 10), _CustomerChip(state: state)],
+                const SizedBox(height: 8),
+                if (state.cart.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 34),
+                    child: Center(
+                      child: Text('Tap a product to start the bill', style: TextStyle(fontSize: 13, color: bx.muted)),
+                    ),
+                  )
+                else
+                  ...state.cart.asMap().entries.map((e) => _CartRow(state: state, index: e.key, line: e.value)),
+                const SizedBox(height: 6),
+                if (state.cart.isNotEmpty) ...[
+                  _totRow(bx, 'Taxable', money(state.bill.taxable)),
+                  if (state.bill.discountTotal > 0) _totRow(bx, 'Discount', '− ${money(state.bill.discountTotal)}'),
+                  _totRow(bx, 'CGST', money(state.bill.cgst)),
+                  _totRow(bx, 'SGST', money(state.bill.sgst)),
+                  if (state.bill.roundOff != 0) _totRow(bx, 'Round off', money(state.bill.roundOff)),
+                  // Bill discount entry
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(Icons.local_offer_outlined, size: 15, color: bx.muted),
+                        const SizedBox(width: 6),
+                        Text('Bill discount', style: TextStyle(fontSize: 13, color: bx.muted)),
+                        const Spacer(),
+                        SizedBox(width: 90, child: _BillDiscountField(state: state)),
+                      ],
+                    ),
+                  ),
                 ],
-              ]);
-            }),
-            const SizedBox(height: 8),
-            if (state.isOn('kot')) ...[
-              OutlinedButton.icon(
-                onPressed: state.cart.isEmpty ? null : () => _sendKot(context),
-                icon: const Icon(Icons.soup_kitchen_outlined, size: 18),
-                label: const Text('Send to Kitchen (KOT)'),
-              ),
-              const SizedBox(height: 8),
-            ],
-            FilledButton.icon(
-              onPressed: state.cart.isEmpty ? null : () => _charge(context, 'Cash'),
-              icon: const Icon(Icons.print_outlined, size: 18),
-              label: Text(state.cart.isEmpty ? 'Add items to charge' : 'Charge & print · ${money(state.total)}'),
-              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
+                Container(
+                  margin: const EdgeInsets.only(top: 6),
+                  padding: const EdgeInsets.only(top: 12),
+                  decoration: BoxDecoration(
+                    border: Border(top: BorderSide(color: bx.border, width: 2)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Total', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                      Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Builder(
+                  builder: (context) {
+                    final empty = state.cart.isEmpty;
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: empty ? null : () => _charge(context, 'Cash'),
+                            icon: const Icon(Icons.account_balance_wallet_outlined, size: 18),
+                            label: const Text('Cash'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'UPI'), child: const Text('UPI QR')),
+                        ),
+                        if (state.isOn('creditLedger')) ...[
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'Credit'), child: const Text('Credit')),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 8),
+                if (state.isOn('kot')) ...[
+                  OutlinedButton.icon(
+                    onPressed: state.cart.isEmpty ? null : () => _sendKot(context),
+                    icon: const Icon(Icons.soup_kitchen_outlined, size: 18),
+                    label: const Text('Send to Kitchen (KOT)'),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                FilledButton.icon(
+                  onPressed: state.cart.isEmpty ? null : () => _charge(context, 'Cash'),
+                  icon: const Icon(Icons.print_outlined, size: 18),
+                  label: Text(state.cart.isEmpty ? 'Add items to charge' : 'Charge & print · ${money(state.total)}'),
+                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
+                ),
+              ],
             ),
-          ]),
+          ),
         ),
-      ),
-      const SizedBox(height: 14),
-      // Live receipt
-      const Row(children: [
-        Expanded(child: Text('Live receipt', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800))),
-      ]),
-      const SizedBox(height: 8),
-      Wrap(spacing: 7, runSpacing: 7, children: [
-        for (final t in posTemplates)
-          _TplChip(label: t.name, on: state.posTemplate == t.id, onTap: () => state.setPosTemplate(t.id)),
-      ]),
-      const SizedBox(height: 12),
-      Center(
-        child: ReceiptView(
-          templateId: state.posTemplate,
-          businessName: state.shopName,
-          gstin: state.profile?.gstin,
-          phone: state.profile?.phone,
-          address: state.profile?.address,
-          lines: state.cart.isEmpty
-              ? const [RcptLine('— add items —', 0, 0)]
-              : state.cart.map((l) => RcptLine(l.name, l.qty, l.net)).toList(),
-          subtotal: state.subtotal,
-          gst: state.gst,
-          total: state.total,
+        const SizedBox(height: 14),
+        // Live receipt
+        const Row(
+          children: [
+            Expanded(
+              child: Text('Live receipt', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+            ),
+          ],
         ),
-      ),
-    ]);
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 7,
+          runSpacing: 7,
+          children: [for (final t in posTemplates) _TplChip(label: t.name, on: state.posTemplate == t.id, onTap: () => state.setPosTemplate(t.id))],
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: ReceiptView(
+            templateId: state.posTemplate,
+            businessName: state.shopName,
+            gstin: state.profile?.gstin,
+            phone: state.profile?.phone,
+            address: state.profile?.address,
+            lines: state.cart.isEmpty ? const [RcptLine('— add items —', 0, 0)] : state.cart.map((l) => RcptLine(l.name, l.qty, l.net)).toList(),
+            subtotal: state.subtotal,
+            gst: state.gst,
+            total: state.total,
+          ),
+        ),
+      ],
+    );
   }
 
   Future<void> _sendKot(BuildContext context) async {
@@ -434,7 +513,10 @@ class _CartPanel extends StatelessWidget {
       businessName: state.shopName,
       templateId: 'kot',
       lines: state.cart.map((l) => SaleLine(l.name, l.qty, l.price)).toList(),
-      subtotal: state.subtotal, gst: state.gst, total: state.total, paymentMode: 'KOT',
+      subtotal: state.subtotal,
+      gst: state.gst,
+      total: state.total,
+      paymentMode: 'KOT',
     );
     try {
       await PdfService.printSale(kot);
@@ -474,10 +556,12 @@ class _CartPanel extends StatelessWidget {
       }
     }
     final sale = state.postSale(paymentMode: mode, nowMs: DateTime.now().millisecondsSinceEpoch, customer: customer);
-    messenger.showSnackBar(SnackBar(
-      content: Text('${sale.invoiceNo} posted · $mode ${money(sale.total)}${customer != null ? ' · ${customer.name}' : ''} ✓'),
-      action: SnackBarAction(label: 'Share', onPressed: () => PdfService.shareSale(sale)),
-    ));
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text('${sale.invoiceNo} posted · $mode ${money(sale.total)}${customer != null ? ' · ${customer.name}' : ''} ✓'),
+        action: SnackBarAction(label: 'Share', onPressed: () => PdfService.shareSale(sale)),
+      ),
+    );
     // Open the printer dialog with the real invoice PDF (default template).
     try {
       await PdfService.printSale(sale);
@@ -488,12 +572,15 @@ class _CartPanel extends StatelessWidget {
   }
 
   Widget _totRow(BxColors bx, String k, String v) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(k, style: TextStyle(fontSize: 13, color: bx.muted)),
-          Text(v, style: TextStyle(fontSize: 13, color: bx.muted)),
-        ]),
-      );
+    padding: const EdgeInsets.symmetric(vertical: 3),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(k, style: TextStyle(fontSize: 13, color: bx.muted)),
+        Text(v, style: TextStyle(fontSize: 13, color: bx.muted)),
+      ],
+    ),
+  );
 }
 
 class _CartRow extends StatelessWidget {
@@ -506,27 +593,48 @@ class _CartRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final bx = context.bx;
     return Container(
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: bx.border))),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: bx.border)),
+      ),
       padding: const EdgeInsets.symmetric(vertical: 9),
-      child: Row(children: [
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(line.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-            Text('${money(line.price)} · ${line.unit}', style: TextStyle(fontSize: 11, color: bx.muted)),
-          ]),
-        ),
-        _stepBtn(bx, Icons.remove, () => state.dec(index)),
-        InkWell(
-          onTap: () => _editQty(context),
-          borderRadius: BorderRadius.circular(6),
-          child: SizedBox(
-            width: 44, height: 44,
-            child: Center(child: Text(qtyLabel(line.qty), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700))),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(line.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                Text('${money(line.price)} · ${line.unit}', style: TextStyle(fontSize: 11, color: bx.muted)),
+              ],
+            ),
           ),
-        ),
-        _stepBtn(bx, Icons.add, () => state.inc(index)),
-        SizedBox(width: 66, child: Text(money(line.net), textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w800))),
-      ]),
+          _stepBtn(bx, Icons.remove, () => state.dec(index)),
+          InkWell(
+            onTap: () => _editQty(context),
+            borderRadius: BorderRadius.circular(6),
+            child: SizedBox(
+              width: 44,
+              height: 44,
+              child: Center(
+                child: Text(
+                  qtyLabel(line.qty),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          ),
+          _stepBtn(bx, Icons.add, () => state.inc(index)),
+          SizedBox(
+            width: 66,
+            child: Text(
+              money(line.net),
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -557,20 +665,26 @@ class _CartRow extends StatelessWidget {
   }
 
   Widget _stepBtn(BxColors bx, IconData ic, VoidCallback onTap) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
-        child: SizedBox(
-          width: 44, height: 44,
-          child: Center(
-            child: Container(
-              width: 28, height: 28,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: bx.surface2, borderRadius: BorderRadius.circular(8), border: Border.all(color: bx.border)),
-              child: Icon(ic, size: 16),
-            ),
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(22),
+    child: SizedBox(
+      width: 44,
+      height: 44,
+      child: Center(
+        child: Container(
+          width: 28,
+          height: 28,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: bx.surface2,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: bx.border),
           ),
+          child: Icon(ic, size: 16),
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _CustomerChip extends StatelessWidget {
@@ -593,27 +707,35 @@ class _CustomerChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: c != null ? bx.brand : bx.border),
         ),
-        child: Row(children: [
-          Icon(c != null ? Icons.person : Icons.person_outline, size: 18, color: c != null ? bx.brand : bx.muted),
-          const SizedBox(width: 8),
-          Expanded(
-            child: c == null
-                ? Text('Walk-in customer · tap to attach', style: TextStyle(fontSize: 13, color: bx.muted))
-                : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(c.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                    if (state.balanceOf(c.id) > 0)
-                      Text('${money(state.balanceOf(c.id))} outstanding', style: TextStyle(fontSize: 11, color: bx.danger, fontWeight: FontWeight.w600)),
-                  ]),
-          ),
-          if (c != null)
-            InkWell(
-              onTap: () => state.selectCustomer(null),
-              borderRadius: BorderRadius.circular(22),
-              child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.muted)),
-            )
-          else
-            Icon(Icons.chevron_right, size: 18, color: bx.faint),
-        ]),
+        child: Row(
+          children: [
+            Icon(c != null ? Icons.person : Icons.person_outline, size: 18, color: c != null ? bx.brand : bx.muted),
+            const SizedBox(width: 8),
+            Expanded(
+              child: c == null
+                  ? Text('Walk-in customer · tap to attach', style: TextStyle(fontSize: 13, color: bx.muted))
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(c.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                        if (state.balanceOf(c.id) > 0)
+                          Text(
+                            '${money(state.balanceOf(c.id))} outstanding',
+                            style: TextStyle(fontSize: 11, color: bx.danger, fontWeight: FontWeight.w600),
+                          ),
+                      ],
+                    ),
+            ),
+            if (c != null)
+              InkWell(
+                onTap: () => state.selectCustomer(null),
+                borderRadius: BorderRadius.circular(22),
+                child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.muted)),
+              )
+            else
+              Icon(Icons.chevron_right, size: 18, color: bx.faint),
+          ],
+        ),
       ),
     );
   }
@@ -689,7 +811,10 @@ class _TplChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: on ? bx.brand : bx.border),
         ),
-        child: Text(label, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: on ? bx.brand : bx.muted)),
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: on ? bx.brand : bx.muted),
+        ),
       ),
     );
   }

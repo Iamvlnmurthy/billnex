@@ -3,10 +3,10 @@ enum ApptStatus { booked, done, noShow }
 
 extension ApptStatusX on ApptStatus {
   String get label => switch (this) {
-        ApptStatus.booked => 'Booked',
-        ApptStatus.done => 'Done',
-        ApptStatus.noShow => 'No-show',
-      };
+    ApptStatus.booked => 'Booked',
+    ApptStatus.done => 'Done',
+    ApptStatus.noShow => 'No-show',
+  };
   static ApptStatus fromCode(String c) => ApptStatus.values.firstWhere((s) => s.name == c, orElse: () => ApptStatus.booked);
 }
 
@@ -30,11 +30,11 @@ class Appointment {
 
   Map<String, dynamic> toJson() => {'id': id, 'c': customer, 'sv': service, 'st': staff, 't': epochMs, 's': status.name};
   factory Appointment.fromJson(Map<String, dynamic> j) => Appointment(
-        id: j['id'] as String,
-        customer: j['c'] as String,
-        service: j['sv'] as String,
-        staff: j['st'] as String,
-        epochMs: (j['t'] as num).toInt(),
-        status: ApptStatusX.fromCode(j['s'] as String),
-      );
+    id: j['id'] as String,
+    customer: j['c'] as String,
+    service: j['sv'] as String,
+    staff: j['st'] as String,
+    epochMs: (j['t'] as num).toInt(),
+    status: ApptStatusX.fromCode(j['s'] as String),
+  );
 }

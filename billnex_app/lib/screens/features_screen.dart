@@ -16,16 +16,12 @@ class FeaturesScreen extends StatelessWidget {
       children: [
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1180),
-          child: Column(children: [
-            PageHeader(
-              'Features',
-              'Everything is grouped by category with a master switch. Preset-enabled items were auto-allotted for ${biz.name} — override anything.',
-            ),
-            for (final cat in kCategories) ...[
-              _CategoryCard(state: state, cat: cat),
-              const SizedBox(height: 16),
+          child: Column(
+            children: [
+              PageHeader('Features', 'Everything is grouped by category with a master switch. Preset-enabled items were auto-allotted for ${biz.name} — override anything.'),
+              for (final cat in kCategories) ...[_CategoryCard(state: state, cat: cat), const SizedBox(height: 16)],
             ],
-          ]),
+          ),
         ),
       ],
     );
@@ -48,31 +44,36 @@ class _CategoryCard extends StatelessWidget {
     final allOn = unlockable.isNotEmpty && unlockable.every((c) => state.isOn(c.key));
 
     return Card(
-      child: Column(children: [
-        // header
-        Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(children: [
-            Container(
-              width: 34, height: 34,
-              decoration: BoxDecoration(color: bx.brand.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(9)),
-              child: Icon(cat.icon, size: 19, color: bx.brand),
+      child: Column(
+        children: [
+          // header
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(color: bx.brand.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(9)),
+                  child: Icon(cat.icon, size: 19, color: bx.brand),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(cat.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                      Text('$on of ${caps.length} enabled', style: TextStyle(fontSize: 12, color: bx.muted)),
+                    ],
+                  ),
+                ),
+                TextButton(onPressed: () => state.toggleCategory(cat.key), child: Text(allOn ? 'Disable all' : 'Enable all')),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(cat.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                Text('$on of ${caps.length} enabled', style: TextStyle(fontSize: 12, color: bx.muted)),
-              ]),
-            ),
-            TextButton(
-              onPressed: () => state.toggleCategory(cat.key),
-              child: Text(allOn ? 'Disable all' : 'Enable all'),
-            ),
-          ]),
-        ),
-        for (final cap in caps) _FeatureRow(state: state, cap: cap),
-      ]),
+          ),
+          for (final cap in caps) _FeatureRow(state: state, cap: cap),
+        ],
+      ),
     );
   }
 }
@@ -89,34 +90,48 @@ class _FeatureRow extends StatelessWidget {
     final preset = state.isPreset(cap.key);
 
     return Container(
-      decoration: BoxDecoration(border: Border(top: BorderSide(color: bx.border))),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: bx.border)),
+      ),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Row(children: [
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Wrap(spacing: 6, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
-              Text(cap.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              Pill.priority(cap.priority, context),
-              if (cap.pro) Pill('Pro', color: bx.accent),
-              if (preset) Pill('preset', color: bx.pos, icon: Icons.check),
-            ]),
-            const SizedBox(height: 2),
-            Text(cap.desc, style: TextStyle(fontSize: 12, color: bx.muted)),
-          ]),
-        ),
-        const SizedBox(width: 12),
-        if (locked)
-          Row(children: [
-            Icon(Icons.lock_outline, size: 15, color: bx.accent),
-            const SizedBox(width: 5),
-            Text('Pro plan', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: bx.accent)),
-          ])
-        else
-          Switch(
-            value: state.isOn(cap.key),
-            onChanged: (v) => state.setFlag(cap.key, v),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(cap.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    Pill.priority(cap.priority, context),
+                    if (cap.pro) Pill('Pro', color: bx.accent),
+                    if (preset) Pill('preset', color: bx.pos, icon: Icons.check),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(cap.desc, style: TextStyle(fontSize: 12, color: bx.muted)),
+              ],
+            ),
           ),
-      ]),
+          const SizedBox(width: 12),
+          if (locked)
+            Row(
+              children: [
+                Icon(Icons.lock_outline, size: 15, color: bx.accent),
+                const SizedBox(width: 5),
+                Text(
+                  'Pro plan',
+                  style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: bx.accent),
+                ),
+              ],
+            )
+          else
+            Switch(value: state.isOn(cap.key), onChanged: (v) => state.setFlag(cap.key, v)),
+        ],
+      ),
     );
   }
 }

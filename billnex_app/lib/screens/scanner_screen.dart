@@ -51,46 +51,63 @@ class _ScannerScreenState extends State<ScannerScreen> {
           IconButton(onPressed: () => _safe(_controller.switchCamera), icon: const Icon(Icons.cameraswitch)),
         ],
       ),
-      body: Stack(children: [
-        MobileScanner(
-          controller: _controller,
-          onDetect: _onDetect,
-          errorBuilder: (context, error) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.no_photography_outlined, color: Colors.white70, size: 40),
-                const SizedBox(height: 12),
-                const Text('Camera unavailable', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 4),
-                Text('${error.errorCode}', style: const TextStyle(color: Colors.white54, fontSize: 12), textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                FilledButton(onPressed: () => Navigator.of(context).pop('__manual__'), child: const Text('Type barcode instead')),
-              ]),
+      body: Stack(
+        children: [
+          MobileScanner(
+            controller: _controller,
+            onDetect: _onDetect,
+            errorBuilder: (context, error) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.no_photography_outlined, color: Colors.white70, size: 40),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Camera unavailable',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${error.errorCode}',
+                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(onPressed: () => Navigator.of(context).pop('__manual__'), child: const Text('Type barcode instead')),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-        // Scan frame
-        IgnorePointer(
-          child: Center(
-            child: Container(
-              width: 260,
-              height: 160,
-              decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 3), borderRadius: BorderRadius.circular(14)),
+          // Scan frame
+          IgnorePointer(
+            child: Center(
+              child: Container(
+                width: 260,
+                height: 160,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 3),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
             ),
           ),
-        ),
-        Positioned(
-          left: 0, right: 0, bottom: 40,
-          child: Center(
-            child: TextButton.icon(
-              onPressed: () => Navigator.of(context).pop('__manual__'),
-              icon: const Icon(Icons.keyboard, color: Colors.white),
-              label: const Text('Type instead', style: TextStyle(color: Colors.white)),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 40,
+            child: Center(
+              child: TextButton.icon(
+                onPressed: () => Navigator.of(context).pop('__manual__'),
+                icon: const Icon(Icons.keyboard, color: Colors.white),
+                label: const Text('Type instead', style: TextStyle(color: Colors.white)),
+              ),
             ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }
