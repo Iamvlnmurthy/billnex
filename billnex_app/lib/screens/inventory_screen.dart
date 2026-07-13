@@ -658,22 +658,8 @@ class StockDetailScreen extends StatelessWidget {
   }
 
   Future<void> _deleteProduct(BuildContext context, StockItem it) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Remove product?'),
-        content: Text('Remove "${it.name}" from your catalogue? Past sales keep their records.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: context.bx.danger),
-            child: const Text('Remove'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true) {
+    final ok = await confirmDialog(context, title: 'Remove product?', message: 'Remove "${it.name}" from your catalogue? Past sales keep their records.', confirmLabel: 'Remove', destructive: true);
+    if (ok && context.mounted) {
       state.deleteStockItem(it.sku, nowMs: DateTime.now().millisecondsSinceEpoch);
       if (context.mounted) Navigator.of(context).pop(); // leave the detail page
     }

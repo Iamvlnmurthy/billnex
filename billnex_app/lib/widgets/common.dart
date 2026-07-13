@@ -109,6 +109,56 @@ class Badge2 extends StatelessWidget {
   }
 }
 
+/// One standard confirmation dialog for destructive actions, so every
+/// "delete / remove / return" prompt looks and behaves the same (design-system
+/// consistency). Returns true only if the user confirms.
+Future<bool> confirmDialog(BuildContext context, {required String title, required String message, String confirmLabel = 'Confirm', String cancelLabel = 'Cancel', bool destructive = false}) async {
+  final bx = context.bx;
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+      content: Text(message, style: const TextStyle(height: 1.4)),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(cancelLabel)),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          style: destructive ? FilledButton.styleFrom(backgroundColor: bx.danger) : null,
+          child: Text(confirmLabel),
+        ),
+      ],
+    ),
+  );
+  return ok ?? false;
+}
+
+/// A consistent inline error state (mirrors [EmptyState]) for failed loads.
+class ErrorState extends StatelessWidget {
+  final String message;
+  final VoidCallback? onRetry;
+  const ErrorState({required this.message, this.onRetry, super.key});
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.error_outline, size: 40, color: bx.danger),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: bx.muted, height: 1.45),
+          ),
+          if (onRetry != null) ...[const SizedBox(height: 14), OutlinedButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh, size: 18), label: const Text('Retry'))],
+        ],
+      ),
+    );
+  }
+}
+
 /// Section header used on each screen.
 class PageHeader extends StatelessWidget {
   final String title;
