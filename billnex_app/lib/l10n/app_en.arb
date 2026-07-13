@@ -67,5 +67,10 @@
   "purchasesSuppliers": "Purchases & suppliers",
   "reportsAnalytics": "Reports & analytics",
   "featuresToggles": "Features & toggles",
-  "printTemplates": "Print templates"
+  "printTemplates": "Print templates",
+  "syncNow": "Sync now",
+  "backupDue": "due",
+  "backupNone": "none",
+  "backupSaved": "saved",
+  "activeFeatures": "Active features"
 }

@@ -67,5 +67,10 @@
   "purchasesSuppliers": "खरीद और आपूर्तिकर्ता",
   "reportsAnalytics": "रिपोर्ट और विश्लेषण",
   "featuresToggles": "फ़ीचर और टॉगल",
-  "printTemplates": "प्रिंट टेम्पलेट"
+  "printTemplates": "प्रिंट टेम्पलेट",
+  "syncNow": "अभी सिंक करें",
+  "backupDue": "बाकी",
+  "backupNone": "नहीं",
+  "backupSaved": "सहेजा",
+  "activeFeatures": "सक्रिय फ़ीचर"
 }

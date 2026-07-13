@@ -211,4 +211,19 @@ class LTe extends L {
 
   @override
   String get printTemplates => 'ప్రింట్ టెంప్లేట్లు';
+
+  @override
+  String get syncNow => 'ఇప్పుడు సింక్ చేయి';
+
+  @override
+  String get backupDue => 'పెండింగ్';
+
+  @override
+  String get backupNone => 'లేదు';
+
+  @override
+  String get backupSaved => 'సేవ్';
+
+  @override
+  String get activeFeatures => 'యాక్టివ్ ఫీచర్లు';
 }

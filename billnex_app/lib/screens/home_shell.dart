@@ -543,7 +543,7 @@ class _TrustBar extends StatelessWidget {
               TextButton(
                 onPressed: state.syncNow,
                 style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10), minimumSize: const Size(0, 40)),
-                child: const Text('Sync now', style: TextStyle(fontSize: 12.5)),
+                child: Text(L.of(context).syncNow, style: const TextStyle(fontSize: 12.5)),
               ),
             ],
             const SizedBox(width: 16),
@@ -565,9 +565,9 @@ class _TrustBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (state.backupDue) ...[Icon(Icons.warning_amber_rounded, size: 13, color: bx.warn), const SizedBox(width: 4)],
-                    Text('Backup ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
+                    Text('${L.of(context).backup} ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
                     Text(
-                      state.backupDue ? 'due' : (state.lastBackupMs == null ? 'none' : 'saved'),
+                      state.backupDue ? L.of(context).backupDue : (state.lastBackupMs == null ? L.of(context).backupNone : L.of(context).backupSaved),
                       style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: state.backupDue ? bx.warn : null),
                     ),
                   ],
@@ -575,7 +575,7 @@ class _TrustBar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            seg('Active features', '${state.activeCount}'),
+            seg(L.of(context).activeFeatures, '${state.activeCount}'),
           ],
         ),
       ),

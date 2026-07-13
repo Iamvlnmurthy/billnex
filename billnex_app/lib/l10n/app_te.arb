@@ -67,5 +67,10 @@
   "purchasesSuppliers": "కొనుగోళ్లు & సరఫరాదారులు",
   "reportsAnalytics": "నివేదికలు & విశ్లేషణ",
   "featuresToggles": "ఫీచర్లు & టోగుల్స్",
-  "printTemplates": "ప్రింట్ టెంప్లేట్లు"
+  "printTemplates": "ప్రింట్ టెంప్లేట్లు",
+  "syncNow": "ఇప్పుడు సింక్ చేయి",
+  "backupDue": "పెండింగ్",
+  "backupNone": "లేదు",
+  "backupSaved": "సేవ్",
+  "activeFeatures": "యాక్టివ్ ఫీచర్లు"
 }

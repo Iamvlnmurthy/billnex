@@ -500,6 +500,36 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Print templates'**
   String get printTemplates;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// No description provided for @backupDue.
+  ///
+  /// In en, this message translates to:
+  /// **'due'**
+  String get backupDue;
+
+  /// No description provided for @backupNone.
+  ///
+  /// In en, this message translates to:
+  /// **'none'**
+  String get backupNone;
+
+  /// No description provided for @backupSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'saved'**
+  String get backupSaved;
+
+  /// No description provided for @activeFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Active features'**
+  String get activeFeatures;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

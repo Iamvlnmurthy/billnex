@@ -211,4 +211,19 @@ class LHi extends L {
 
   @override
   String get printTemplates => 'प्रिंट टेम्पलेट';
+
+  @override
+  String get syncNow => 'अभी सिंक करें';
+
+  @override
+  String get backupDue => 'बाकी';
+
+  @override
+  String get backupNone => 'नहीं';
+
+  @override
+  String get backupSaved => 'सहेजा';
+
+  @override
+  String get activeFeatures => 'सक्रिय फ़ीचर';
 }

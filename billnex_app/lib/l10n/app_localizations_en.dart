@@ -211,4 +211,19 @@ class LEn extends L {
 
   @override
   String get printTemplates => 'Print templates';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String get backupDue => 'due';
+
+  @override
+  String get backupNone => 'none';
+
+  @override
+  String get backupSaved => 'saved';
+
+  @override
+  String get activeFeatures => 'Active features';
 }
