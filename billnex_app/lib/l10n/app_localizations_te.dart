@@ -226,4 +226,93 @@ class LTe extends L {
 
   @override
   String get activeFeatures => 'యాక్టివ్ ఫీచర్లు';
+
+  @override
+  String get greetMorning => 'శుభోదయం';
+
+  @override
+  String get greetAfternoon => 'శుభ మధ్యాహ్నం';
+
+  @override
+  String get greetEvening => 'శుభ సాయంత్రం';
+
+  @override
+  String get dashboardWord => 'డాష్‌బోర్డ్';
+
+  @override
+  String lowStockBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count వస్తువుల నిల్వ తక్కువ', one: '1 వస్తువు నిల్వ తక్కువ');
+    return '$_temp0';
+  }
+
+  @override
+  String get backupDueBanner => 'బ్యాకప్ పెండింగ్ — మీ డేటాను భద్రపరచండి';
+
+  @override
+  String get createNewBill => 'కొత్త బిల్లు సృష్టించండి';
+
+  @override
+  String get todaysSummary => 'నేటి సారాంశం';
+
+  @override
+  String get details => 'వివరాలు';
+
+  @override
+  String get todaysSales => 'నేటి అమ్మకాలు';
+
+  @override
+  String get noBillsYet => 'ఇంకా బిల్లులు లేవు';
+
+  @override
+  String billsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count బిల్లులు', one: '1 బిల్లు');
+    return '$_temp0';
+  }
+
+  @override
+  String get totalBills => 'మొత్తం బిల్లులు';
+
+  @override
+  String get cashReceived2 => 'నగదు స్వీకరించారు';
+
+  @override
+  String get upiCard => 'UPI / కార్డ్';
+
+  @override
+  String get creditSales => 'అరువు అమ్మకాలు';
+
+  @override
+  String get addProduct => 'వస్తువు జోడించు';
+
+  @override
+  String get viewStock => 'నిల్వ చూడండి';
+
+  @override
+  String get ledger => 'ఖాతా';
+
+  @override
+  String get dayClosing => 'రోజు ముగింపు';
+
+  @override
+  String get recentActivity => 'ఇటీవలి కార్యకలాపం';
+
+  @override
+  String get viewAll => 'అన్నీ చూడండి';
+
+  @override
+  String get noBillsTodayTitle => 'ఈరోజు ఇంకా బిల్లులు లేవు';
+
+  @override
+  String get noBillsTodaySubtitle => 'మీరు పోస్ట్ చేసిన బిల్లులు ఇక్కడ కనిపిస్తాయి. మొదటి అమ్మకం కోసం “కొత్త బిల్లు సృష్టించండి” నొక్కండి.';
+
+  @override
+  String billNo(String no) {
+    return 'బిల్లు $no';
+  }
+
+  @override
+  String get paid => 'చెల్లించారు';
+
+  @override
+  String get pending => 'పెండింగ్';
 }

@@ -4,6 +4,7 @@ import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/empty_state.dart';
+import '../l10n/app_localizations.dart';
 import 'backup_screen.dart';
 import 'nav.dart';
 
@@ -18,6 +19,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final biz = state.business!;
     final owner = (state.profile?.owner ?? '').trim();
     final greetName = owner.isNotEmpty ? owner.split(' ').first : biz.name;
@@ -36,29 +38,23 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 // ── Greeting ─────────────────────────────────────────────
                 Text(
-                  '${_greeting()}, $greetName!',
+                  '${_greeting(l)}, $greetName!',
                   style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, color: bx.muted),
                 ),
                 const SizedBox(height: 1),
-                Text('${state.shopName} Dashboard', style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
+                Text('${state.shopName} ${l.dashboardWord}', style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800, letterSpacing: -0.4, height: 1.15)),
                 const SizedBox(height: 12),
 
                 // ── Alert banners (only when actionable for this role) ───
                 if (state.lowStockCount > 0 && canInventory)
-                  _AlertBanner(
-                    icon: Icons.warning_amber_rounded,
-                    color: bx.warn,
-                    bg: bx.warnBg,
-                    text: '${state.lowStockCount} ${state.lowStockCount == 1 ? 'product' : 'products'} low in stock',
-                    onTap: () => goTo(NavId.inventory),
-                  ),
+                  _AlertBanner(icon: Icons.warning_amber_rounded, color: bx.warn, bg: bx.warnBg, text: l.lowStockBanner(state.lowStockCount), onTap: () => goTo(NavId.inventory)),
                 if (state.backupDue) ...[
                   if (state.lowStockCount > 0 && canInventory) const SizedBox(height: 10),
                   _AlertBanner(
                     icon: Icons.cloud_off_rounded,
                     color: bx.danger,
                     bg: bx.dangerBg,
-                    text: 'Backup due — protect your data',
+                    text: l.backupDueBanner,
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => Scaffold(
@@ -78,7 +74,7 @@ class DashboardScreen extends StatelessWidget {
                     child: FilledButton.icon(
                       onPressed: () => goTo(NavId.billing),
                       icon: const Icon(Icons.add, size: 20),
-                      label: const Text('Create New Bill', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                      label: Text(l.createNewBill, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                       style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                     ),
                   ),
@@ -86,7 +82,7 @@ class DashboardScreen extends StatelessWidget {
                 ],
 
                 // ── Today's Summary ──────────────────────────────────────
-                _SectionHead(title: "Today's Summary", action: canReports ? 'Details' : null, onAction: () => goTo(NavId.reports)),
+                _SectionHead(title: l.todaysSummary, action: canReports ? l.details : null, onAction: () => goTo(NavId.reports)),
                 const SizedBox(height: 8),
                 _HeroSales(state: state),
                 const SizedBox(height: 8),
@@ -98,7 +94,7 @@ class DashboardScreen extends StatelessWidget {
                 const SizedBox(height: 14),
 
                 // ── Recent Activity ──────────────────────────────────────
-                _SectionHead(title: 'Recent Activity', action: (state.billCount > 0 && state.roleCanAccess('sales')) ? 'View all' : null, onAction: () => goTo(NavId.sales)),
+                _SectionHead(title: l.recentActivity, action: (state.billCount > 0 && state.roleCanAccess('sales')) ? l.viewAll : null, onAction: () => goTo(NavId.sales)),
                 const SizedBox(height: 8),
                 _RecentActivity(state: state, goTo: goTo),
               ],
@@ -109,11 +105,11 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  String _greeting() {
+  String _greeting(L l) {
     final h = DateTime.now().hour;
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (h < 12) return l.greetMorning;
+    if (h < 17) return l.greetAfternoon;
+    return l.greetEvening;
   }
 }
 
@@ -193,6 +189,7 @@ class _HeroSales extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final live = state.billCount > 0;
     return Card(
       child: Padding(
@@ -204,7 +201,7 @@ class _HeroSales extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "TODAY'S SALES",
+                    l.todaysSales,
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.muted),
                   ),
                   const SizedBox(height: 8),
@@ -215,7 +212,7 @@ class _HeroSales extends StatelessWidget {
                       Flexible(child: Money(state.todaySales, style: BxText.valueHero.copyWith(fontSize: 26))),
                       const SizedBox(width: 10),
                       Text(
-                        live ? '${state.billCount} bills' : 'no bills yet',
+                        live ? l.billsCount(state.billCount) : l.noBillsYet,
                         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: live ? bx.pos : bx.faint),
                       ),
                     ],
@@ -244,6 +241,7 @@ class _SummaryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final mix = state.paymentMix();
     final cash = mix['Cash'] ?? 0;
     final upi = (mix['UPI'] ?? 0) + (mix['Card'] ?? 0);
@@ -259,10 +257,10 @@ class _SummaryGrid extends StatelessWidget {
           crossAxisSpacing: 12,
           mainAxisExtent: 86,
           children: [
-            _MiniStat('Total Bills', '${state.billCount}', color: bx.muted),
-            _MiniStat('Cash Received', money(cash), color: bx.muted),
-            _MiniStat('UPI / Card', money(upi), color: bx.muted),
-            _MiniStat('Credit Sales', money(credit), color: credit > 0 ? bx.danger : bx.muted, onTap: state.isOn('creditLedger') ? () => goTo(NavId.customers) : null),
+            _MiniStat(l.totalBills, '${state.billCount}', color: bx.muted),
+            _MiniStat(l.cashReceived2, money(cash), color: bx.muted),
+            _MiniStat(l.upiCard, money(upi), color: bx.muted),
+            _MiniStat(l.creditSales, money(credit), color: credit > 0 ? bx.danger : bx.muted, onTap: state.isOn('creditLedger') ? () => goTo(NavId.customers) : null),
           ],
         );
       },
@@ -320,15 +318,16 @@ class _QuickActions extends StatelessWidget {
   const _QuickActions({required this.state, required this.goTo});
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final ledgerOn = state.isOn('creditLedger');
     final canInventory = state.roleCanAccess('inventory');
     final canReports = state.roleCanAccess('reports');
     final canCustomers = state.roleCanAccess('customers');
     final actions = <({IconData icon, String label, VoidCallback onTap})>[
-      if (canInventory) (icon: Icons.add_box_outlined, label: 'Add Product', onTap: () => goTo(NavId.inventory)),
-      if (canInventory) (icon: Icons.inventory_2_outlined, label: 'View Stock', onTap: () => goTo(NavId.inventory)),
-      if (ledgerOn && canCustomers) (icon: Icons.groups_outlined, label: 'Ledger', onTap: () => goTo(NavId.customers)),
-      if (canReports) (icon: Icons.assessment_outlined, label: 'Day Closing', onTap: () => goTo(NavId.reports)),
+      if (canInventory) (icon: Icons.add_box_outlined, label: l.addProduct, onTap: () => goTo(NavId.inventory)),
+      if (canInventory) (icon: Icons.inventory_2_outlined, label: l.viewStock, onTap: () => goTo(NavId.inventory)),
+      if (ledgerOn && canCustomers) (icon: Icons.groups_outlined, label: l.ledger, onTap: () => goTo(NavId.customers)),
+      if (canReports) (icon: Icons.assessment_outlined, label: l.dayClosing, onTap: () => goTo(NavId.reports)),
     ];
     if (actions.isEmpty) return const SizedBox.shrink();
     return Row(
@@ -380,17 +379,13 @@ class _RecentActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final recent = state.sales.take(3).toList();
     if (recent.isEmpty) {
-      return const Card(
+      return Card(
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: EmptyState(
-            illustration: 'empty-no-sales',
-            illustrationSize: 96,
-            title: 'No bills yet today',
-            subtitle: 'Your posted bills will appear here. Tap “Create New Bill” to make your first sale.',
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: EmptyState(illustration: 'empty-no-sales', illustrationSize: 96, title: l.noBillsTodayTitle, subtitle: l.noBillsTodaySubtitle),
         ),
       );
     }
@@ -418,6 +413,7 @@ class _ActivityRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final pending = sale.paymentMode == 'Credit';
     return InkWell(
       onTap: onTap,
@@ -436,7 +432,7 @@ class _ActivityRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Bill ${sale.invoiceNo}', style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+                  Text(l.billNo(sale.invoiceNo), style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 2),
                   Text('${sale.timeLabel} · ${money(sale.total)} · ${sale.paymentMode}', style: TextStyle(fontSize: 12, color: bx.muted)),
                 ],
@@ -456,12 +452,13 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final c = pending ? bx.warn : bx.pos;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
       decoration: BoxDecoration(color: c.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(6)),
       child: Text(
-        pending ? 'PENDING' : 'PAID',
+        pending ? l.pending : l.paid,
         style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.3, color: c),
       ),
     );

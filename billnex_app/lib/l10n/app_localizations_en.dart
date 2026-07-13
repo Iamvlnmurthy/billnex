@@ -226,4 +226,93 @@ class LEn extends L {
 
   @override
   String get activeFeatures => 'Active features';
+
+  @override
+  String get greetMorning => 'Good morning';
+
+  @override
+  String get greetAfternoon => 'Good afternoon';
+
+  @override
+  String get greetEvening => 'Good evening';
+
+  @override
+  String get dashboardWord => 'Dashboard';
+
+  @override
+  String lowStockBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count products low in stock', one: '1 product low in stock');
+    return '$_temp0';
+  }
+
+  @override
+  String get backupDueBanner => 'Backup due — protect your data';
+
+  @override
+  String get createNewBill => 'Create New Bill';
+
+  @override
+  String get todaysSummary => 'Today\'s Summary';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get todaysSales => 'TODAY\'S SALES';
+
+  @override
+  String get noBillsYet => 'no bills yet';
+
+  @override
+  String billsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count bills', one: '1 bill');
+    return '$_temp0';
+  }
+
+  @override
+  String get totalBills => 'Total Bills';
+
+  @override
+  String get cashReceived2 => 'Cash Received';
+
+  @override
+  String get upiCard => 'UPI / Card';
+
+  @override
+  String get creditSales => 'Credit Sales';
+
+  @override
+  String get addProduct => 'Add Product';
+
+  @override
+  String get viewStock => 'View Stock';
+
+  @override
+  String get ledger => 'Ledger';
+
+  @override
+  String get dayClosing => 'Day Closing';
+
+  @override
+  String get recentActivity => 'Recent Activity';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get noBillsTodayTitle => 'No bills yet today';
+
+  @override
+  String get noBillsTodaySubtitle => 'Your posted bills will appear here. Tap “Create New Bill” to make your first sale.';
+
+  @override
+  String billNo(String no) {
+    return 'Bill $no';
+  }
+
+  @override
+  String get paid => 'PAID';
+
+  @override
+  String get pending => 'PENDING';
 }

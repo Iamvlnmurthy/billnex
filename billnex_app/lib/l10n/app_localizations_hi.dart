@@ -226,4 +226,93 @@ class LHi extends L {
 
   @override
   String get activeFeatures => 'सक्रिय फ़ीचर';
+
+  @override
+  String get greetMorning => 'सुप्रभात';
+
+  @override
+  String get greetAfternoon => 'नमस्ते';
+
+  @override
+  String get greetEvening => 'शुभ संध्या';
+
+  @override
+  String get dashboardWord => 'डैशबोर्ड';
+
+  @override
+  String lowStockBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count वस्तुओं का स्टॉक कम', one: '1 वस्तु का स्टॉक कम');
+    return '$_temp0';
+  }
+
+  @override
+  String get backupDueBanner => 'बैकअप बाकी — अपना डेटा सुरक्षित करें';
+
+  @override
+  String get createNewBill => 'नया बिल बनाएं';
+
+  @override
+  String get todaysSummary => 'आज का सारांश';
+
+  @override
+  String get details => 'विवरण';
+
+  @override
+  String get todaysSales => 'आज की बिक्री';
+
+  @override
+  String get noBillsYet => 'अभी कोई बिल नहीं';
+
+  @override
+  String billsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count बिल', one: '1 बिल');
+    return '$_temp0';
+  }
+
+  @override
+  String get totalBills => 'कुल बिल';
+
+  @override
+  String get cashReceived2 => 'नकद प्राप्त';
+
+  @override
+  String get upiCard => 'UPI / कार्ड';
+
+  @override
+  String get creditSales => 'उधार बिक्री';
+
+  @override
+  String get addProduct => 'वस्तु जोड़ें';
+
+  @override
+  String get viewStock => 'स्टॉक देखें';
+
+  @override
+  String get ledger => 'खाता';
+
+  @override
+  String get dayClosing => 'दिन का समापन';
+
+  @override
+  String get recentActivity => 'हाल की गतिविधि';
+
+  @override
+  String get viewAll => 'सभी देखें';
+
+  @override
+  String get noBillsTodayTitle => 'आज अभी कोई बिल नहीं';
+
+  @override
+  String get noBillsTodaySubtitle => 'आपके बनाए बिल यहाँ दिखेंगे। पहली बिक्री के लिए “नया बिल बनाएं” पर टैप करें।';
+
+  @override
+  String billNo(String no) {
+    return 'बिल $no';
+  }
+
+  @override
+  String get paid => 'चुकता';
+
+  @override
+  String get pending => 'बाकी';
 }

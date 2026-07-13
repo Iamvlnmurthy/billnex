@@ -530,6 +530,168 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Active features'**
   String get activeFeatures;
+
+  /// No description provided for @greetMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get greetMorning;
+
+  /// No description provided for @greetAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get greetAfternoon;
+
+  /// No description provided for @greetEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get greetEvening;
+
+  /// No description provided for @dashboardWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboardWord;
+
+  /// No description provided for @lowStockBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 product low in stock} other{{count} products low in stock}}'**
+  String lowStockBanner(int count);
+
+  /// No description provided for @backupDueBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup due — protect your data'**
+  String get backupDueBanner;
+
+  /// No description provided for @createNewBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Bill'**
+  String get createNewBill;
+
+  /// No description provided for @todaysSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Summary'**
+  String get todaysSummary;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @todaysSales.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY\'S SALES'**
+  String get todaysSales;
+
+  /// No description provided for @noBillsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'no bills yet'**
+  String get noBillsYet;
+
+  /// No description provided for @billsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 bill} other{{count} bills}}'**
+  String billsCount(int count);
+
+  /// No description provided for @totalBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Bills'**
+  String get totalBills;
+
+  /// No description provided for @cashReceived2.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Received'**
+  String get cashReceived2;
+
+  /// No description provided for @upiCard.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI / Card'**
+  String get upiCard;
+
+  /// No description provided for @creditSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit Sales'**
+  String get creditSales;
+
+  /// No description provided for @addProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Product'**
+  String get addProduct;
+
+  /// No description provided for @viewStock.
+  ///
+  /// In en, this message translates to:
+  /// **'View Stock'**
+  String get viewStock;
+
+  /// No description provided for @ledger.
+  ///
+  /// In en, this message translates to:
+  /// **'Ledger'**
+  String get ledger;
+
+  /// No description provided for @dayClosing.
+  ///
+  /// In en, this message translates to:
+  /// **'Day Closing'**
+  String get dayClosing;
+
+  /// No description provided for @recentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get recentActivity;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @noBillsTodayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills yet today'**
+  String get noBillsTodayTitle;
+
+  /// No description provided for @noBillsTodaySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your posted bills will appear here. Tap “Create New Bill” to make your first sale.'**
+  String get noBillsTodaySubtitle;
+
+  /// No description provided for @billNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill {no}'**
+  String billNo(String no);
+
+  /// No description provided for @paid.
+  ///
+  /// In en, this message translates to:
+  /// **'PAID'**
+  String get paid;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'PENDING'**
+  String get pending;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {
