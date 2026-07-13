@@ -31,7 +31,7 @@ class SalesScreen extends StatelessWidget {
               else
                 Card(
                   child: Column(
-                    children: [for (int i = 0; i < sales.length; i++) _SaleRow(sale: sales[i], first: i == 0)],
+                    children: [for (int i = 0; i < sales.length; i++) _SaleRow(state: state, sale: sales[i], first: i == 0)],
                   ),
                 ),
             ],
@@ -43,9 +43,37 @@ class SalesScreen extends StatelessWidget {
 }
 
 class _SaleRow extends StatelessWidget {
+  final AppState state;
   final Sale sale;
   final bool first;
-  const _SaleRow({required this.sale, required this.first});
+  const _SaleRow({required this.state, required this.sale, required this.first});
+
+  bool get _isReturn => sale.paymentMode == 'Return';
+
+  Future<void> _return(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Return this bill?'),
+        content: Text(
+          'Create a credit note for ${sale.invoiceNo} (${money(sale.total)}). Items go back into stock.${sale.paymentMode == 'Credit' ? '\n\nThis was a credit bill — adjust the customer\'s khata separately.' : ''}',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: ctx.bx.danger),
+            child: const Text('Return'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      final ret = state.returnSale(sale, nowMs: DateTime.now().millisecondsSinceEpoch);
+      messenger.showSnackBar(SnackBar(content: Text('${ret.invoiceNo} · credit note for ${sale.invoiceNo} ✓')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +100,12 @@ class _SaleRow extends StatelessWidget {
                   children: [
                     Text(sale.invoiceNo, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
                     const SizedBox(width: 8),
-                    sale.paymentMode == 'Credit' ? StatusChip('PENDING', bx.warn, bx.warnBg) : StatusChip('PAID · ${sale.paymentMode}', bx.pos, bx.posBg),
+                    if (_isReturn)
+                      StatusChip('RETURN', bx.danger, bx.dangerBg)
+                    else if (sale.paymentMode == 'Credit')
+                      StatusChip('PENDING', bx.warn, bx.warnBg)
+                    else
+                      StatusChip('PAID · ${sale.paymentMode}', bx.pos, bx.posBg),
                   ],
                 ),
                 const SizedBox(height: 2),
@@ -80,17 +113,39 @@ class _SaleRow extends StatelessWidget {
               ],
             ),
           ),
-          Text(money(sale.total), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-          const SizedBox(width: 6),
-          IconButton(
-            tooltip: 'Reprint',
-            onPressed: () => PdfService.run(context, () => PdfService.printSale(sale), failure: "Couldn't reprint — check the printer"),
-            icon: Icon(Icons.print_outlined, size: 20, color: bx.muted),
+          Money(
+            sale.total,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+            color: _isReturn ? bx.danger : null,
           ),
-          IconButton(
-            tooltip: 'Share PDF',
-            onPressed: () => PdfService.run(context, () => PdfService.shareSale(sale), failure: "Couldn't share the PDF"),
-            icon: Icon(Icons.ios_share, size: 19, color: bx.muted),
+          PopupMenuButton<String>(
+            tooltip: 'More',
+            icon: Icon(Icons.more_vert, size: 20, color: bx.muted),
+            onSelected: (v) {
+              switch (v) {
+                case 'print':
+                  PdfService.run(context, () => PdfService.printSale(sale), failure: "Couldn't reprint — check the printer");
+                case 'share':
+                  PdfService.run(context, () => PdfService.shareSale(sale), failure: "Couldn't share the PDF");
+                case 'return':
+                  _return(context);
+              }
+            },
+            itemBuilder: (ctx) => [
+              const PopupMenuItem(
+                value: 'print',
+                child: ListTile(dense: true, leading: Icon(Icons.print_outlined), title: Text('Reprint')),
+              ),
+              const PopupMenuItem(
+                value: 'share',
+                child: ListTile(dense: true, leading: Icon(Icons.ios_share), title: Text('Share PDF')),
+              ),
+              if (!_isReturn && !state.isReturned(sale.invoiceNo))
+                const PopupMenuItem(
+                  value: 'return',
+                  child: ListTile(dense: true, leading: Icon(Icons.assignment_return_outlined), title: Text('Return / credit note')),
+                ),
+            ],
           ),
         ],
       ),

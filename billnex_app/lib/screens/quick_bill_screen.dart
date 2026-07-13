@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/customer.dart';
+import '../models/sale.dart';
 import '../services/billing.dart';
 import '../services/pdf_service.dart';
 import '../state/app_state.dart';
@@ -106,11 +107,34 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
             child: Row(children: [_modeTab(bx, 'Tally', _Mode.tally), _modeTab(bx, 'Itemized', _Mode.itemized)]),
           ),
           if (_hasLines) ...[
-            const SizedBox(width: 6),
-            IconButton(
-              tooltip: 'Clear bill',
-              onPressed: _confirmClear,
-              icon: Icon(Icons.delete_sweep_outlined, color: bx.muted),
+            const SizedBox(width: 4),
+            PopupMenuButton<String>(
+              tooltip: 'More',
+              icon: Icon(Icons.more_vert, color: bx.muted),
+              onSelected: (v) {
+                switch (v) {
+                  case 'estimate':
+                    _shareDoc(context, 'quotation', 'Estimate');
+                  case 'challan':
+                    _shareDoc(context, 'delivery', 'Delivery challan');
+                  case 'clear':
+                    _confirmClear();
+                }
+              },
+              itemBuilder: (ctx) => const [
+                PopupMenuItem(
+                  value: 'estimate',
+                  child: ListTile(dense: true, leading: Icon(Icons.description_outlined), title: Text('Share as estimate')),
+                ),
+                PopupMenuItem(
+                  value: 'challan',
+                  child: ListTile(dense: true, leading: Icon(Icons.local_shipping_outlined), title: Text('Share delivery challan')),
+                ),
+                PopupMenuItem(
+                  value: 'clear',
+                  child: ListTile(dense: true, leading: Icon(Icons.delete_sweep_outlined), title: Text('Clear bill')),
+                ),
+              ],
             ),
           ],
         ],
@@ -768,6 +792,28 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       return [for (final a in all) (name: '', unit: 'pc', qty: 1.0, rate: a, gstRate: 0.0)];
     }
     return [for (final l in _items) (name: l.name, unit: l.unit, qty: l.qty, rate: l.rate, gstRate: 0.0)];
+  }
+
+  /// Shares an Estimate / Delivery Challan PDF from the current lines WITHOUT
+  /// posting — a quote/challan is not an accounting document.
+  Future<void> _shareDoc(BuildContext context, String templateId, String label) async {
+    final lines = _saleLines();
+    if (lines.isEmpty) return;
+    final doc = Sale(
+      invoiceNo: label == 'Estimate' ? '#EST' : '#DC',
+      epochMs: DateTime.now().millisecondsSinceEpoch,
+      businessName: state.shopName,
+      templateId: templateId,
+      lines: [for (final l in lines) SaleLine(l.name.isEmpty ? 'Item' : l.name, l.qty, l.rate, gstRate: l.gstRate)],
+      subtotal: _grand,
+      gst: 0,
+      total: _grand,
+      paymentMode: label,
+      sellerGstin: state.profile?.gstin,
+      sellerPhone: state.profile?.phone,
+      sellerAddress: state.profile?.address,
+    );
+    await PdfService.run(context, () => PdfService.shareSale(doc), failure: "Couldn't share the $label");
   }
 
   Future<void> _collect() async {

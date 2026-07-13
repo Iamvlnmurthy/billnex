@@ -501,6 +501,23 @@ void main() {
     expect(s.customers.any((c) => c.id == cust.id), true);
   });
 
+  test('sale return restocks and nets out the sale', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 10, gstRate: 0, nowMs: 1);
+    s.addProduct(s.stockItems.first);
+    s.addProduct(s.stockItems.first); // 2 kg
+    final sale = s.postSale(paymentMode: 'Cash', nowMs: 2);
+    expect(s.stockOf('Rice'), 8);
+    final net = s.salesNet;
+    final ret = s.returnSale(sale, nowMs: 3);
+    expect(ret.invoiceNo, startsWith('#RET-'));
+    expect(ret.total, -sale.total);
+    expect(s.stockOf('Rice'), 10); // restocked
+    expect(s.salesNet, closeTo(net - sale.total, 0.001)); // nets out
+    expect(s.isReturned(sale.invoiceNo), true); // guarded against double return
+  });
+
   test('reports: P&L, HSN summary and day book compute from posted data', () {
     final s = AppState();
     s.applyPreset('kirana');

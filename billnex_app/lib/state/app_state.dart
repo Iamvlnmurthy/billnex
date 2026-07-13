@@ -741,6 +741,54 @@ class AppState extends ChangeNotifier {
   double get todaySales => _sales.fold(0, (a, s) => a + s.total);
   int get billCount => _sales.length;
 
+  /// Whether a bill has already been returned (guards double credit notes).
+  bool isReturned(String invoiceNo) => _moves.any((m) => m.ref.startsWith('#RET') && (m.reason ?? '').contains(invoiceNo));
+
+  /// Sale Return / Credit Note (BNX returns) — reverses a posted bill: restocks
+  /// every line and records a negative-total credit note so reports net out.
+  /// Cash/UPI returns are a refund; for a credit bill, adjust the khata too.
+  Sale returnSale(Sale original, {int nowMs = 0}) {
+    _seq += 1;
+    final no = '#RET-$_seq';
+    final ret = Sale(
+      invoiceNo: no,
+      epochMs: nowMs,
+      businessName: shopName,
+      templateId: _template,
+      lines: original.lines,
+      subtotal: -original.subtotal,
+      gst: -original.gst,
+      total: -original.total,
+      discount: original.discount,
+      roundOff: -original.roundOff,
+      taxInclusive: original.taxInclusive,
+      paymentMode: 'Return',
+      sellerGstin: _profile?.gstin,
+      sellerPhone: _profile?.phone,
+      sellerAddress: _profile?.address,
+    );
+    _sales.add(ret);
+    var stockTouched = false;
+    for (final l in original.lines) {
+      final item = _stock[l.name];
+      if (item != null && item.stockTracked) {
+        item.qty += l.qty; // put it back on the shelf
+        _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.adjustment, delta: l.qty, ref: no, reason: 'Return ${original.invoiceNo}'));
+        stockTouched = true;
+      }
+    }
+    if (stockTouched) {
+      _store.saveStock(_stock.values.toList());
+      _store.saveMoves(_moves);
+    }
+    _store.saveSeq(_seq);
+    _store.saveSales(_sales);
+    _enqueue('return', no, nowMs);
+    _audit0('Return · ${original.invoiceNo} ${original.total.round()}', no, nowMs);
+    notifyListeners();
+    return ret;
+  }
+
   // -----------------------------------------------------------------------
   // Reports (computed from posted data)
   // -----------------------------------------------------------------------
