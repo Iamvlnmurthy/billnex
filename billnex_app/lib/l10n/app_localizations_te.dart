@@ -806,4 +806,145 @@ class LTe extends L {
   String collectedSnack(String ref, String amt) {
     return '$ref · $amt వసూలు చేయబడింది ✓';
   }
+
+  @override
+  String get billingTitle => 'బిల్లింగ్';
+
+  @override
+  String get billingSubtitleWide => 'వెతకండి లేదా స్కాన్ చేయండి · రసీదు లైవ్‌గా అప్‌డేట్ అవుతుంది.';
+
+  @override
+  String get billingSubtitlePhone => 'వస్తువులు జోడించడానికి వెతకండి లేదా స్కాన్ చేయండి.';
+
+  @override
+  String itemCountLabel(String count) {
+    return '$count వస్తువులు';
+  }
+
+  @override
+  String get viewBill => 'బిల్లు చూడండి';
+
+  @override
+  String noProductBarcode(String code) {
+    return 'బార్‌కోడ్ $code ఉన్న వస్తువు లేదు';
+  }
+
+  @override
+  String outOfStock(String name) {
+    return '$name స్టాక్‌లో లేదు';
+  }
+
+  @override
+  String get enterBarcodeSku => 'బార్‌కోడ్ / SKU నమోదు చేయండి';
+
+  @override
+  String get barcodeHint => 'బార్‌కోడ్ లేదా వస్తువు కోడ్';
+
+  @override
+  String get cancel => 'రద్దు';
+
+  @override
+  String get clearSearch => 'శోధన క్లియర్ చేయి';
+
+  @override
+  String get searchProducts => 'వస్తువులను వెతకండి…';
+
+  @override
+  String get posNoProductsSub => 'మీ దుకాణం వస్తువులను ఇన్వెంటరీ ట్యాబ్‌లో జోడించి, ఇక్కడ బిల్లు చేయండి.';
+
+  @override
+  String noProductsMatch(String q) {
+    return '\"$q\"కి సరిపోలే వస్తువులు లేవు';
+  }
+
+  @override
+  String get serviceLabel => 'సేవ';
+
+  @override
+  String qtyBadge(String count) {
+    return '$count పరిమాణం';
+  }
+
+  @override
+  String get tapProductToStart => 'బిల్లు ప్రారంభించడానికి వస్తువుపై నొక్కండి';
+
+  @override
+  String get taxable => 'పన్ను వర్తించే';
+
+  @override
+  String get cgst => 'CGST';
+
+  @override
+  String get sgst => 'SGST';
+
+  @override
+  String get billDiscountLabel => 'బిల్లు తగ్గింపు';
+
+  @override
+  String get upiQr => 'UPI QR';
+
+  @override
+  String get sendKot => 'కిచెన్‌కు పంపండి (KOT)';
+
+  @override
+  String get addItemsToCharge => 'ఛార్జ్ చేయడానికి వస్తువులు జోడించండి';
+
+  @override
+  String chargePrintAmt(String amt) {
+    return 'చెల్లించి ప్రింట్ · $amt';
+  }
+
+  @override
+  String get liveReceipt => 'లైవ్ రసీదు';
+
+  @override
+  String get addItemsPlaceholder => '— వస్తువులు జోడించండి —';
+
+  @override
+  String get kotSent => 'KOT కిచెన్‌కు పంపబడింది ✓';
+
+  @override
+  String get kotPrintFail => 'కిచెన్ టికెట్ ప్రింట్ కాలేదు — ప్రింటర్ తనిఖీ చేయండి';
+
+  @override
+  String get addItemsFirst => 'ముందు వస్తువులు జోడించండి';
+
+  @override
+  String get creditNeedsCustomer => 'అరువు అమ్మకానికి వినియోగదారు అవసరం';
+
+  @override
+  String get creditLimitExceeded => 'అరువు పరిమితి దాటింది';
+
+  @override
+  String creditLimitBody(String name, String limit) {
+    return '$name $limit పరిమితిని దాటుతారు. అయినా పోస్ట్ చేయాలా?';
+  }
+
+  @override
+  String get overrideAction => 'అయినా చేయి';
+
+  @override
+  String salePostedPrefix(String inv, String mode, String amt) {
+    return '$inv పోస్ట్ అయింది · $mode $amt';
+  }
+
+  @override
+  String get share => 'షేర్ చేయి';
+
+  @override
+  String quantityOf(String name) {
+    return 'పరిమాణం · $name';
+  }
+
+  @override
+  String get setLabel => 'సెట్ చేయి';
+
+  @override
+  String get removeCustomer => 'వినియోగదారును తీసివేయి';
+
+  @override
+  String get increaseQty => 'పరిమాణం పెంచు';
+
+  @override
+  String get decreaseQty => 'పరిమాణం తగ్గించు';
 }

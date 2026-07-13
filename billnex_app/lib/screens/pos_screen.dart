@@ -12,6 +12,7 @@ import '../models/stock.dart';
 import '../models/sale.dart';
 import '../widgets/customer_picker.dart';
 import '../widgets/empty_state.dart';
+import '../l10n/app_localizations.dart';
 import 'scanner_screen.dart';
 
 class PosScreen extends StatelessWidget {
@@ -20,6 +21,7 @@ class PosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final items = state.stockItems;
     return LayoutBuilder(
       builder: (context, c) {
@@ -34,7 +36,7 @@ class PosScreen extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 1180),
                 child: Column(
                   children: [
-                    const PageHeader('Billing', 'Search or scan · live receipt updates as you go.'),
+                    PageHeader(l.billingTitle, l.billingSubtitleWide),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -60,7 +62,7 @@ class PosScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(14, 18, 14, 16),
                 children: [
-                  const PageHeader('Billing', 'Search or scan to add items.'),
+                  PageHeader(l.billingTitle, l.billingSubtitlePhone),
                   _Catalog(state: state, items: items),
                 ],
               ),
@@ -81,6 +83,7 @@ class _MobileCartBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final empty = state.cart.isEmpty;
     return Material(
       elevation: 12,
@@ -93,7 +96,7 @@ class _MobileCartBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('${state.cartQty} item${state.cartQty == 1 ? '' : 's'}', style: TextStyle(fontSize: 12, color: bx.muted)),
+                Text(l.itemCountLabel(qtyLabel(state.cartQty)), style: TextStyle(fontSize: 12, color: bx.muted)),
                 Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
               ],
             ),
@@ -101,7 +104,7 @@ class _MobileCartBar extends StatelessWidget {
             FilledButton.icon(
               onPressed: empty ? null : () => _openCart(context),
               icon: const Icon(Icons.shopping_cart_checkout, size: 18),
-              label: const Text('View bill'),
+              label: Text(l.viewBill),
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13)),
             ),
           ],
@@ -166,7 +169,8 @@ class _CatalogState extends State<_Catalog> {
     if (code == null || code.trim().isEmpty) return;
     final name = widget.state.addByCode(code);
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(name != null ? '$name added ✓' : 'No product with barcode $code')));
+      final l = L.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(name != null ? l.addedSnack(name) : l.noProductBarcode(code))));
     }
   }
 
@@ -175,25 +179,26 @@ class _CatalogState extends State<_Catalog> {
   void _add(BuildContext context, StockItem item) {
     final ok = widget.state.addProduct(item);
     if (!ok) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${item.name} is out of stock')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L.of(context).outOfStock(item.name))));
     }
   }
 
   Future<String?> _manualEntry(BuildContext context) async {
+    final l = L.of(context);
     final c = TextEditingController();
     try {
       return await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Enter barcode / SKU'),
+          title: Text(l.enterBarcodeSku),
           content: TextField(
             controller: c,
             autofocus: true,
-            decoration: const InputDecoration(hintText: 'Barcode or product code', border: OutlineInputBorder()),
+            decoration: InputDecoration(hintText: l.barcodeHint, border: const OutlineInputBorder()),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Add')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+            FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: Text(l.add)),
           ],
         ),
       );
@@ -205,6 +210,7 @@ class _CatalogState extends State<_Catalog> {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final all = widget.items;
     final items = _q.isEmpty
         ? all
@@ -235,14 +241,14 @@ class _CatalogState extends State<_Catalog> {
                     suffixIcon: _q.isEmpty
                         ? null
                         : IconButton(
-                            tooltip: 'Clear search',
+                            tooltip: l.clearSearch,
                             icon: const Icon(Icons.close, size: 18),
                             onPressed: () => setState(() {
                               _q = '';
                               _search.clear();
                             }),
                           ),
-                    hintText: 'Search products…',
+                    hintText: l.searchProducts,
                     contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 6),
                   ),
                 ),
@@ -267,12 +273,12 @@ class _CatalogState extends State<_Catalog> {
         ),
         const SizedBox(height: 14),
         if (all.isEmpty)
-          const EmptyState(illustration: 'empty-no-products', title: 'No products yet', subtitle: "Add your shop's products in the Inventory tab, then bill them here.")
+          EmptyState(illustration: 'empty-no-products', title: l.noProductsTitle, subtitle: l.posNoProductsSub)
         else if (items.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 30),
             child: Center(
-              child: Text('No products match "$_q"', style: TextStyle(color: bx.muted)),
+              child: Text(l.noProductsMatch(_q), style: TextStyle(color: bx.muted)),
             ),
           )
         else
@@ -325,7 +331,7 @@ class _ProductTile extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                     decoration: BoxDecoration(color: qtyColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
                     child: Text(
-                      item.stockTracked ? '${qtyLabel(item.qty)} ${item.unit}' : 'Service',
+                      item.stockTracked ? '${qtyLabel(item.qty)} ${item.unit}' : L.of(context).serviceLabel,
                       style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: qtyColor),
                     ),
                   ),
@@ -367,6 +373,7 @@ class _CartPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final posTemplates = kTemplates.where((t) => ['thermal80', 'thermal58', 'classic', 'modern'].contains(t.id)).toList();
 
     return Column(
@@ -380,10 +387,10 @@ class _CartPanel extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Expanded(
-                      child: Text('Current bill', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                    Expanded(
+                      child: Text(l.currentBill, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                     ),
-                    Badge2('${state.cartQty} qty'),
+                    Badge2(l.qtyBadge(qtyLabel(state.cartQty))),
                   ],
                 ),
                 if (state.isOn('creditLedger')) ...[const SizedBox(height: 10), _CustomerChip(state: state)],
@@ -392,18 +399,18 @@ class _CartPanel extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 34),
                     child: Center(
-                      child: Text('Tap a product to start the bill', style: TextStyle(fontSize: 13, color: bx.muted)),
+                      child: Text(l.tapProductToStart, style: TextStyle(fontSize: 13, color: bx.muted)),
                     ),
                   )
                 else
                   ...state.cart.asMap().entries.map((e) => _CartRow(state: state, index: e.key, line: e.value)),
                 const SizedBox(height: 6),
                 if (state.cart.isNotEmpty) ...[
-                  _totRow(bx, 'Taxable', money(state.bill.taxable)),
-                  if (state.bill.discountTotal > 0) _totRow(bx, 'Discount', '− ${money(state.bill.discountTotal)}'),
-                  _totRow(bx, 'CGST', money(state.bill.cgst)),
-                  _totRow(bx, 'SGST', money(state.bill.sgst)),
-                  if (state.bill.roundOff != 0) _totRow(bx, 'Round off', money(state.bill.roundOff)),
+                  _totRow(bx, l.taxable, money(state.bill.taxable)),
+                  if (state.bill.discountTotal > 0) _totRow(bx, l.discount, '− ${money(state.bill.discountTotal)}'),
+                  _totRow(bx, l.cgst, money(state.bill.cgst)),
+                  _totRow(bx, l.sgst, money(state.bill.sgst)),
+                  if (state.bill.roundOff != 0) _totRow(bx, l.roundOff, money(state.bill.roundOff)),
                   // Bill discount entry
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
@@ -411,7 +418,7 @@ class _CartPanel extends StatelessWidget {
                       children: [
                         Icon(Icons.local_offer_outlined, size: 15, color: bx.muted),
                         const SizedBox(width: 6),
-                        Text('Bill discount', style: TextStyle(fontSize: 13, color: bx.muted)),
+                        Text(l.billDiscountLabel, style: TextStyle(fontSize: 13, color: bx.muted)),
                         const Spacer(),
                         SizedBox(width: 90, child: _BillDiscountField(state: state)),
                       ],
@@ -427,7 +434,7 @@ class _CartPanel extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Total', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                      Text(l.total, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                       Text(money(state.total), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                     ],
                   ),
@@ -439,20 +446,16 @@ class _CartPanel extends StatelessWidget {
                     return Row(
                       children: [
                         Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: empty ? null : () => _charge(context, 'Cash'),
-                            icon: const Icon(Icons.account_balance_wallet_outlined, size: 18),
-                            label: const Text('Cash'),
-                          ),
+                          child: OutlinedButton.icon(onPressed: empty ? null : () => _charge(context, 'Cash'), icon: const Icon(Icons.account_balance_wallet_outlined, size: 18), label: Text(l.cash)),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'UPI'), child: const Text('UPI QR')),
+                          child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'UPI'), child: Text(l.upiQr)),
                         ),
                         if (state.isOn('creditLedger')) ...[
                           const SizedBox(width: 8),
                           Expanded(
-                            child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'Credit'), child: const Text('Credit')),
+                            child: OutlinedButton(onPressed: empty ? null : () => _charge(context, 'Credit'), child: Text(l.credit)),
                           ),
                         ],
                       ],
@@ -461,17 +464,13 @@ class _CartPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 if (state.isOn('kot')) ...[
-                  OutlinedButton.icon(
-                    onPressed: state.cart.isEmpty ? null : () => _sendKot(context),
-                    icon: const Icon(Icons.soup_kitchen_outlined, size: 18),
-                    label: const Text('Send to Kitchen (KOT)'),
-                  ),
+                  OutlinedButton.icon(onPressed: state.cart.isEmpty ? null : () => _sendKot(context), icon: const Icon(Icons.soup_kitchen_outlined, size: 18), label: Text(l.sendKot)),
                   const SizedBox(height: 8),
                 ],
                 FilledButton.icon(
                   onPressed: state.cart.isEmpty ? null : () => _charge(context, 'Cash'),
                   icon: const Icon(Icons.print_outlined, size: 18),
-                  label: Text(state.cart.isEmpty ? 'Add items to charge' : 'Charge & print · ${money(state.total)}'),
+                  label: Text(state.cart.isEmpty ? l.addItemsToCharge : l.chargePrintAmt(money(state.total))),
                   style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
                 ),
               ],
@@ -480,10 +479,10 @@ class _CartPanel extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         // Live receipt
-        const Row(
+        Row(
           children: [
             Expanded(
-              child: Text('Live receipt', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+              child: Text(l.liveReceipt, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
             ),
           ],
         ),
@@ -501,7 +500,7 @@ class _CartPanel extends StatelessWidget {
             gstin: state.profile?.gstin,
             phone: state.profile?.phone,
             address: state.profile?.address,
-            lines: state.cart.isEmpty ? const [RcptLine('— add items —', 0, 0)] : state.cart.map((l) => RcptLine(l.name, l.qty, l.net)).toList(),
+            lines: state.cart.isEmpty ? [RcptLine(l.addItemsPlaceholder, 0, 0)] : state.cart.map((cl) => RcptLine(cl.name, cl.qty, cl.net)).toList(),
             subtotal: state.subtotal,
             gst: state.gst,
             total: state.total,
@@ -513,6 +512,7 @@ class _CartPanel extends StatelessWidget {
 
   Future<void> _sendKot(BuildContext context) async {
     // Print a kitchen ticket (no price) without posting the sale.
+    final l = L.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final kot = Sale(
       invoiceNo: '#KOT',
@@ -527,41 +527,37 @@ class _CartPanel extends StatelessWidget {
     );
     try {
       await PdfService.printSale(kot);
-      messenger.showSnackBar(const SnackBar(content: Text('KOT sent to kitchen ✓')));
+      messenger.showSnackBar(SnackBar(content: Text(l.kotSent)));
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('Couldn\'t print the kitchen ticket — check the printer')));
+      messenger.showSnackBar(SnackBar(content: Text(l.kotPrintFail)));
     }
   }
 
   Future<void> _charge(BuildContext context, String mode) async {
+    final l = L.of(context);
     final messenger = ScaffoldMessenger.of(context);
     if (state.cart.isEmpty) {
-      messenger.showSnackBar(const SnackBar(content: Text('Add items first')));
+      messenger.showSnackBar(SnackBar(content: Text(l.addItemsFirst)));
       return;
     }
     Customer? customer;
     if (mode == 'Credit') {
       customer = state.selectedCustomer ?? await pickCustomer(context, state);
       if (customer == null) {
-        messenger.showSnackBar(const SnackBar(content: Text('Credit sale needs a customer')));
+        messenger.showSnackBar(SnackBar(content: Text(l.creditNeedsCustomer)));
         return;
       }
       if (state.overLimit(customer, state.total)) {
         if (!context.mounted) return;
-        final proceed = await confirmDialog(
-          context,
-          title: 'Credit limit exceeded',
-          message: '${customer.name} would exceed the ${money(customer.creditLimit)} limit. Post anyway?',
-          confirmLabel: 'Override',
-        );
+        final proceed = await confirmDialog(context, title: l.creditLimitExceeded, message: l.creditLimitBody(customer.name, money(customer.creditLimit)), confirmLabel: l.overrideAction);
         if (!proceed) return;
       }
     }
     final sale = state.postSale(paymentMode: mode, nowMs: DateTime.now().millisecondsSinceEpoch, customer: customer);
     messenger.showSnackBar(
       SnackBar(
-        content: Text('${sale.invoiceNo} posted · $mode ${money(sale.total)}${customer != null ? ' · ${customer.name}' : ''} ✓'),
-        action: SnackBarAction(label: 'Share', onPressed: () => PdfService.shareSale(sale)),
+        content: Text('${l.salePostedPrefix(sale.invoiceNo, mode, money(sale.total))}${customer != null ? ' · ${customer.name}' : ''} ✓'),
+        action: SnackBarAction(label: l.share, onPressed: () => PdfService.shareSale(sale)),
       ),
     );
     // Open the printer dialog with the real invoice PDF (default template).
@@ -594,6 +590,7 @@ class _CartRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: bx.border)),
@@ -610,7 +607,7 @@ class _CartRow extends StatelessWidget {
               ],
             ),
           ),
-          _stepBtn(bx, Icons.remove, () => state.dec(index)),
+          _stepBtn(bx, l, Icons.remove, () => state.dec(index)),
           InkWell(
             onTap: () => _editQty(context),
             borderRadius: BorderRadius.circular(6),
@@ -626,7 +623,7 @@ class _CartRow extends StatelessWidget {
               ),
             ),
           ),
-          _stepBtn(bx, Icons.add, () => state.inc(index)),
+          _stepBtn(bx, l, Icons.add, () => state.inc(index)),
           SizedBox(
             width: 66,
             child: Text(
@@ -642,12 +639,13 @@ class _CartRow extends StatelessWidget {
 
   /// Tap-to-edit exact quantity — lets a grocer bill 0.5 kg of loose goods.
   Future<void> _editQty(BuildContext context) async {
+    final l = L.of(context);
     final c = TextEditingController(text: qtyLabel(line.qty));
     try {
       final v = await showDialog<double>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text('Quantity · ${line.name}'),
+          title: Text(l.quantityOf(line.name)),
           content: TextField(
             controller: c,
             autofocus: true,
@@ -655,8 +653,8 @@ class _CartRow extends StatelessWidget {
             decoration: InputDecoration(suffixText: line.unit, border: const OutlineInputBorder()),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(ctx, double.tryParse(c.text.trim())), child: const Text('Set')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+            FilledButton(onPressed: () => Navigator.pop(ctx, double.tryParse(c.text.trim())), child: Text(l.setLabel)),
           ],
         ),
       );
@@ -666,9 +664,9 @@ class _CartRow extends StatelessWidget {
     }
   }
 
-  Widget _stepBtn(BxColors bx, IconData ic, VoidCallback onTap) => Semantics(
+  Widget _stepBtn(BxColors bx, L l, IconData ic, VoidCallback onTap) => Semantics(
     button: true,
-    label: ic == Icons.add ? 'Increase quantity' : 'Decrease quantity',
+    label: ic == Icons.add ? l.increaseQty : l.decreaseQty,
     child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),
@@ -699,6 +697,7 @@ class _CustomerChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final c = state.selectedCustomer;
     return InkWell(
       onTap: () async {
@@ -719,14 +718,14 @@ class _CustomerChip extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: c == null
-                  ? Text('Walk-in customer · tap to attach', style: TextStyle(fontSize: 13, color: bx.muted))
+                  ? Text(l.walkInCustomer, style: TextStyle(fontSize: 13, color: bx.muted))
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(c.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
                         if (state.balanceOf(c.id) > 0)
                           Text(
-                            '${money(state.balanceOf(c.id))} outstanding',
+                            l.outstandingSuffix(money(state.balanceOf(c.id))),
                             style: TextStyle(fontSize: 11, color: bx.danger, fontWeight: FontWeight.w600),
                           ),
                       ],
@@ -738,7 +737,7 @@ class _CustomerChip extends StatelessWidget {
                 borderRadius: BorderRadius.circular(22),
                 child: Semantics(
                   button: true,
-                  label: 'Remove customer',
+                  label: l.removeCustomer,
                   child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.muted)),
                 ),
               )

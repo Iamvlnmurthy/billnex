@@ -806,4 +806,145 @@ class LEn extends L {
   String collectedSnack(String ref, String amt) {
     return '$ref · $amt collected ✓';
   }
+
+  @override
+  String get billingTitle => 'Billing';
+
+  @override
+  String get billingSubtitleWide => 'Search or scan · live receipt updates as you go.';
+
+  @override
+  String get billingSubtitlePhone => 'Search or scan to add items.';
+
+  @override
+  String itemCountLabel(String count) {
+    return '$count items';
+  }
+
+  @override
+  String get viewBill => 'View bill';
+
+  @override
+  String noProductBarcode(String code) {
+    return 'No product with barcode $code';
+  }
+
+  @override
+  String outOfStock(String name) {
+    return '$name is out of stock';
+  }
+
+  @override
+  String get enterBarcodeSku => 'Enter barcode / SKU';
+
+  @override
+  String get barcodeHint => 'Barcode or product code';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String get searchProducts => 'Search products…';
+
+  @override
+  String get posNoProductsSub => 'Add your shop\'s products in the Inventory tab, then bill them here.';
+
+  @override
+  String noProductsMatch(String q) {
+    return 'No products match \"$q\"';
+  }
+
+  @override
+  String get serviceLabel => 'Service';
+
+  @override
+  String qtyBadge(String count) {
+    return '$count qty';
+  }
+
+  @override
+  String get tapProductToStart => 'Tap a product to start the bill';
+
+  @override
+  String get taxable => 'Taxable';
+
+  @override
+  String get cgst => 'CGST';
+
+  @override
+  String get sgst => 'SGST';
+
+  @override
+  String get billDiscountLabel => 'Bill discount';
+
+  @override
+  String get upiQr => 'UPI QR';
+
+  @override
+  String get sendKot => 'Send to Kitchen (KOT)';
+
+  @override
+  String get addItemsToCharge => 'Add items to charge';
+
+  @override
+  String chargePrintAmt(String amt) {
+    return 'Charge & print · $amt';
+  }
+
+  @override
+  String get liveReceipt => 'Live receipt';
+
+  @override
+  String get addItemsPlaceholder => '— add items —';
+
+  @override
+  String get kotSent => 'KOT sent to kitchen ✓';
+
+  @override
+  String get kotPrintFail => 'Couldn\'t print the kitchen ticket — check the printer';
+
+  @override
+  String get addItemsFirst => 'Add items first';
+
+  @override
+  String get creditNeedsCustomer => 'Credit sale needs a customer';
+
+  @override
+  String get creditLimitExceeded => 'Credit limit exceeded';
+
+  @override
+  String creditLimitBody(String name, String limit) {
+    return '$name would exceed the $limit limit. Post anyway?';
+  }
+
+  @override
+  String get overrideAction => 'Override';
+
+  @override
+  String salePostedPrefix(String inv, String mode, String amt) {
+    return '$inv posted · $mode $amt';
+  }
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String quantityOf(String name) {
+    return 'Quantity · $name';
+  }
+
+  @override
+  String get setLabel => 'Set';
+
+  @override
+  String get removeCustomer => 'Remove customer';
+
+  @override
+  String get increaseQty => 'Increase quantity';
+
+  @override
+  String get decreaseQty => 'Decrease quantity';
 }

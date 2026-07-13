@@ -806,4 +806,145 @@ class LHi extends L {
   String collectedSnack(String ref, String amt) {
     return '$ref · $amt वसूल किया ✓';
   }
+
+  @override
+  String get billingTitle => 'बिलिंग';
+
+  @override
+  String get billingSubtitleWide => 'खोजें या स्कैन करें · रसीद लाइव अपडेट होती है।';
+
+  @override
+  String get billingSubtitlePhone => 'वस्तु जोड़ने के लिए खोजें या स्कैन करें।';
+
+  @override
+  String itemCountLabel(String count) {
+    return '$count वस्तुएं';
+  }
+
+  @override
+  String get viewBill => 'बिल देखें';
+
+  @override
+  String noProductBarcode(String code) {
+    return 'बारकोड $code वाली कोई वस्तु नहीं';
+  }
+
+  @override
+  String outOfStock(String name) {
+    return '$name स्टॉक में नहीं है';
+  }
+
+  @override
+  String get enterBarcodeSku => 'बारकोड / SKU दर्ज करें';
+
+  @override
+  String get barcodeHint => 'बारकोड या वस्तु कोड';
+
+  @override
+  String get cancel => 'रद्द करें';
+
+  @override
+  String get clearSearch => 'खोज साफ़ करें';
+
+  @override
+  String get searchProducts => 'वस्तुएं खोजें…';
+
+  @override
+  String get posNoProductsSub => 'अपनी दुकान की वस्तुएं इन्वेंट्री टैब में जोड़ें, फिर यहाँ बिल करें।';
+
+  @override
+  String noProductsMatch(String q) {
+    return '\"$q\" से कोई वस्तु मेल नहीं खाती';
+  }
+
+  @override
+  String get serviceLabel => 'सेवा';
+
+  @override
+  String qtyBadge(String count) {
+    return '$count मात्रा';
+  }
+
+  @override
+  String get tapProductToStart => 'बिल शुरू करने के लिए वस्तु पर टैप करें';
+
+  @override
+  String get taxable => 'कर-योग्य';
+
+  @override
+  String get cgst => 'CGST';
+
+  @override
+  String get sgst => 'SGST';
+
+  @override
+  String get billDiscountLabel => 'बिल छूट';
+
+  @override
+  String get upiQr => 'UPI QR';
+
+  @override
+  String get sendKot => 'किचन को भेजें (KOT)';
+
+  @override
+  String get addItemsToCharge => 'चार्ज करने के लिए वस्तुएं जोड़ें';
+
+  @override
+  String chargePrintAmt(String amt) {
+    return 'भुगतान और प्रिंट · $amt';
+  }
+
+  @override
+  String get liveReceipt => 'लाइव रसीद';
+
+  @override
+  String get addItemsPlaceholder => '— वस्तुएं जोड़ें —';
+
+  @override
+  String get kotSent => 'KOT किचन को भेजा गया ✓';
+
+  @override
+  String get kotPrintFail => 'किचन टिकट प्रिंट नहीं हो सका — प्रिंटर जांचें';
+
+  @override
+  String get addItemsFirst => 'पहले वस्तुएं जोड़ें';
+
+  @override
+  String get creditNeedsCustomer => 'उधार बिक्री के लिए ग्राहक चाहिए';
+
+  @override
+  String get creditLimitExceeded => 'उधार सीमा पार';
+
+  @override
+  String creditLimitBody(String name, String limit) {
+    return '$name $limit सीमा पार कर जाएगा। फिर भी पोस्ट करें?';
+  }
+
+  @override
+  String get overrideAction => 'फिर भी करें';
+
+  @override
+  String salePostedPrefix(String inv, String mode, String amt) {
+    return '$inv पोस्ट हुआ · $mode $amt';
+  }
+
+  @override
+  String get share => 'शेयर करें';
+
+  @override
+  String quantityOf(String name) {
+    return 'मात्रा · $name';
+  }
+
+  @override
+  String get setLabel => 'सेट करें';
+
+  @override
+  String get removeCustomer => 'ग्राहक हटाएं';
+
+  @override
+  String get increaseQty => 'मात्रा बढ़ाएं';
+
+  @override
+  String get decreaseQty => 'मात्रा घटाएं';
 }

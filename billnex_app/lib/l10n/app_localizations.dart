@@ -1562,6 +1562,252 @@ abstract class L {
   /// In en, this message translates to:
   /// **'{ref} · {amt} collected ✓'**
   String collectedSnack(String ref, String amt);
+
+  /// No description provided for @billingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing'**
+  String get billingTitle;
+
+  /// No description provided for @billingSubtitleWide.
+  ///
+  /// In en, this message translates to:
+  /// **'Search or scan · live receipt updates as you go.'**
+  String get billingSubtitleWide;
+
+  /// No description provided for @billingSubtitlePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Search or scan to add items.'**
+  String get billingSubtitlePhone;
+
+  /// No description provided for @itemCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String itemCountLabel(String count);
+
+  /// No description provided for @viewBill.
+  ///
+  /// In en, this message translates to:
+  /// **'View bill'**
+  String get viewBill;
+
+  /// No description provided for @noProductBarcode.
+  ///
+  /// In en, this message translates to:
+  /// **'No product with barcode {code}'**
+  String noProductBarcode(String code);
+
+  /// No description provided for @outOfStock.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is out of stock'**
+  String outOfStock(String name);
+
+  /// No description provided for @enterBarcodeSku.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter barcode / SKU'**
+  String get enterBarcodeSku;
+
+  /// No description provided for @barcodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode or product code'**
+  String get barcodeHint;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get clearSearch;
+
+  /// No description provided for @searchProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Search products…'**
+  String get searchProducts;
+
+  /// No description provided for @posNoProductsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your shop\'s products in the Inventory tab, then bill them here.'**
+  String get posNoProductsSub;
+
+  /// No description provided for @noProductsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No products match \"{q}\"'**
+  String noProductsMatch(String q);
+
+  /// No description provided for @serviceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get serviceLabel;
+
+  /// No description provided for @qtyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} qty'**
+  String qtyBadge(String count);
+
+  /// No description provided for @tapProductToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a product to start the bill'**
+  String get tapProductToStart;
+
+  /// No description provided for @taxable.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxable'**
+  String get taxable;
+
+  /// No description provided for @cgst.
+  ///
+  /// In en, this message translates to:
+  /// **'CGST'**
+  String get cgst;
+
+  /// No description provided for @sgst.
+  ///
+  /// In en, this message translates to:
+  /// **'SGST'**
+  String get sgst;
+
+  /// No description provided for @billDiscountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill discount'**
+  String get billDiscountLabel;
+
+  /// No description provided for @upiQr.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI QR'**
+  String get upiQr;
+
+  /// No description provided for @sendKot.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to Kitchen (KOT)'**
+  String get sendKot;
+
+  /// No description provided for @addItemsToCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Add items to charge'**
+  String get addItemsToCharge;
+
+  /// No description provided for @chargePrintAmt.
+  ///
+  /// In en, this message translates to:
+  /// **'Charge & print · {amt}'**
+  String chargePrintAmt(String amt);
+
+  /// No description provided for @liveReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Live receipt'**
+  String get liveReceipt;
+
+  /// No description provided for @addItemsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'— add items —'**
+  String get addItemsPlaceholder;
+
+  /// No description provided for @kotSent.
+  ///
+  /// In en, this message translates to:
+  /// **'KOT sent to kitchen ✓'**
+  String get kotSent;
+
+  /// No description provided for @kotPrintFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t print the kitchen ticket — check the printer'**
+  String get kotPrintFail;
+
+  /// No description provided for @addItemsFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Add items first'**
+  String get addItemsFirst;
+
+  /// No description provided for @creditNeedsCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit sale needs a customer'**
+  String get creditNeedsCustomer;
+
+  /// No description provided for @creditLimitExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit limit exceeded'**
+  String get creditLimitExceeded;
+
+  /// No description provided for @creditLimitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} would exceed the {limit} limit. Post anyway?'**
+  String creditLimitBody(String name, String limit);
+
+  /// No description provided for @overrideAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Override'**
+  String get overrideAction;
+
+  /// No description provided for @salePostedPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'{inv} posted · {mode} {amt}'**
+  String salePostedPrefix(String inv, String mode, String amt);
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @quantityOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity · {name}'**
+  String quantityOf(String name);
+
+  /// No description provided for @setLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get setLabel;
+
+  /// No description provided for @removeCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove customer'**
+  String get removeCustomer;
+
+  /// No description provided for @increaseQty.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase quantity'**
+  String get increaseQty;
+
+  /// No description provided for @decreaseQty.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease quantity'**
+  String get decreaseQty;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {
