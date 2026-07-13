@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/catalog.dart';
+import '../l10n/app_localizations.dart';
 import '../models/business_profile.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
@@ -60,9 +61,10 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final typeChanged = _editing && _type != widget.existing!.bizType;
     return Scaffold(
-      appBar: AppBar(title: Text(_editing ? 'Business details' : 'Set up your business')),
+      appBar: AppBar(title: Text(_editing ? l.businessDetails : l.setUpYourBusiness)),
       body: Form(
         key: _form,
         child: ListView(
@@ -78,7 +80,7 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
                   DropdownButtonFormField<String>(
                     initialValue: _type,
                     isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Business type', border: OutlineInputBorder()),
+                    decoration: InputDecoration(labelText: l.businessType, border: const OutlineInputBorder()),
                     items: [
                       for (final b in kBusinessTypes)
                         DropdownMenuItem(
@@ -96,41 +98,35 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
                           Icon(Icons.info_outline, size: 15, color: bx.accent),
                           const SizedBox(width: 6),
                           Expanded(
-                            child: Text('Features will re-align to this type. Your items, customers and bills stay as they are.', style: TextStyle(fontSize: 12, color: bx.muted)),
+                            child: Text(l.featuresRealignNote, style: TextStyle(fontSize: 12, color: bx.muted)),
                           ),
                         ],
                       ),
                     ),
                   const SizedBox(height: 16),
-                  _field(_shop, 'Shop / business name *', hint: 'e.g. Rajesh Kirana Store', validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null, autofocus: !_editing),
-                  _field(_owner, 'Owner name', hint: 'e.g. Rajesh Kumar'),
+                  _field(_shop, l.shopBusinessName, hint: l.shopNameHint, validator: (v) => (v == null || v.trim().isEmpty) ? l.requiredField : null, autofocus: !_editing),
+                  _field(_owner, l.ownerName, hint: l.ownerNameHint),
                   _field(
                     _phone,
-                    'Phone',
+                    l.phoneField,
                     keyboard: TextInputType.phone,
                     validator: (v) {
                       final t = (v ?? '').trim();
                       if (t.isEmpty) return null;
-                      return RegExp(r'^[0-9]{10}$').hasMatch(t) ? null : 'Enter a 10-digit phone';
+                      return RegExp(r'^[0-9]{10}$').hasMatch(t) ? null : l.phone10DigitError;
                     },
                   ),
-                  _field(
-                    _gstin,
-                    'GSTIN (optional)',
-                    hint: '15-character GST number',
-                    caps: true,
-                    validator: (v) => (v != null && v.trim().isNotEmpty && v.trim().length != 15) ? 'GSTIN must be 15 characters' : null,
-                  ),
-                  _field(_addr, 'Address', maxLines: 2),
+                  _field(_gstin, l.gstinOptional, hint: l.gstinHint, caps: true, validator: (v) => (v != null && v.trim().isNotEmpty && v.trim().length != 15) ? l.gstin15Error : null),
+                  _field(_addr, l.addressField, maxLines: 2),
                   _field(
                     _state,
-                    'GST state code',
+                    l.gstStateCode,
                     keyboard: TextInputType.number,
-                    hint: '36 = Telangana',
+                    hint: l.gstStateCodeHint,
                     validator: (v) {
                       final t = (v ?? '').trim();
                       if (t.isEmpty) return null;
-                      return RegExp(r'^[0-9]{2}$').hasMatch(t) ? null : '2-digit code (e.g. 36)';
+                      return RegExp(r'^[0-9]{2}$').hasMatch(t) ? null : l.stateCode2DigitError;
                     },
                   ),
                   const SizedBox(height: 4),
@@ -138,21 +134,21 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
                     contentPadding: EdgeInsets.zero,
                     value: _taxIncl,
                     onChanged: (v) => setState(() => _taxIncl = v),
-                    title: const Text('Prices include GST', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                    subtitle: Text(_taxIncl ? 'Tax is inside the price (MRP style)' : 'Tax is added on top at billing', style: const TextStyle(fontSize: 12)),
+                    title: Text(l.pricesIncludeGst, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    subtitle: Text(_taxIncl ? l.taxInsidePrice : l.taxAddedOnTop, style: const TextStyle(fontSize: 12)),
                   ),
                   const SizedBox(height: 18),
                   FilledButton.icon(
                     onPressed: _save,
                     icon: Icon(_editing ? Icons.check : Icons.arrow_forward, size: 18),
-                    label: Text(_editing ? 'Save changes' : 'Create my shop'),
+                    label: Text(_editing ? l.saveChanges : l.createMyShop),
                     style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
                   ),
                   if (!_editing)
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Text(
-                        'You can change any of this later in Settings. Your catalogue starts empty — add your own products next.',
+                        l.setupLaterNote,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 12, color: bx.faint),
                       ),

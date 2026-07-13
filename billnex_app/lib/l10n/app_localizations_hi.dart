@@ -1324,4 +1324,61 @@ class LHi extends L {
 
   @override
   String get restoreFromBackupBody => 'यह इस डिवाइस का सारा मौजूदा डेटा बैकअप से बदल देगा। इसे वापस नहीं किया जा सकता।';
+
+  @override
+  String get setUpYourBusiness => 'अपना व्यवसाय सेट करें';
+
+  @override
+  String get featuresRealignNote => 'फ़ीचर इस प्रकार के अनुसार बदल जाएंगे। आपकी वस्तुएं, ग्राहक और बिल जैसे हैं वैसे ही रहेंगे।';
+
+  @override
+  String get shopBusinessName => 'दुकान / व्यवसाय का नाम *';
+
+  @override
+  String get shopNameHint => 'जैसे राजेश किराना स्टोर';
+
+  @override
+  String get requiredField => 'आवश्यक';
+
+  @override
+  String get ownerName => 'मालिक का नाम';
+
+  @override
+  String get ownerNameHint => 'जैसे राजेश कुमार';
+
+  @override
+  String get phone10DigitError => '10 अंकों का फ़ोन नंबर दर्ज करें';
+
+  @override
+  String get gstinHint => '15 अंकों का GST नंबर';
+
+  @override
+  String get gstin15Error => 'GSTIN 15 अक्षरों का होना चाहिए';
+
+  @override
+  String get addressField => 'पता';
+
+  @override
+  String get gstStateCode => 'GST राज्य कोड';
+
+  @override
+  String get gstStateCodeHint => '36 = तेलंगाना';
+
+  @override
+  String get stateCode2DigitError => '2 अंकों का कोड (जैसे 36)';
+
+  @override
+  String get pricesIncludeGst => 'कीमतों में GST शामिल है';
+
+  @override
+  String get taxInsidePrice => 'कर कीमत में शामिल है (MRP शैली)';
+
+  @override
+  String get taxAddedOnTop => 'बिलिंग के समय कर ऊपर से जोड़ा जाता है';
+
+  @override
+  String get createMyShop => 'मेरी दुकान बनाएं';
+
+  @override
+  String get setupLaterNote => 'आप यह सब बाद में सेटिंग्स में बदल सकते हैं। आपकी सूची खाली शुरू होती है — आगे अपनी वस्तुएं जोड़ें।';
 }

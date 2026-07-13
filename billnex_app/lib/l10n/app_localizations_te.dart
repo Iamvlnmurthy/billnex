@@ -1324,4 +1324,61 @@ class LTe extends L {
 
   @override
   String get restoreFromBackupBody => 'ఇది ఈ పరికరంలోని మొత్తం ప్రస్తుత డేటాను బ్యాకప్‌తో భర్తీ చేస్తుంది. దీన్ని రద్దు చేయలేరు.';
+
+  @override
+  String get setUpYourBusiness => 'మీ వ్యాపారాన్ని సెటప్ చేయండి';
+
+  @override
+  String get featuresRealignNote => 'ఫీచర్లు ఈ రకానికి తగ్గట్టు మారతాయి. మీ వస్తువులు, వినియోగదారులు, బిల్లులు అలాగే ఉంటాయి.';
+
+  @override
+  String get shopBusinessName => 'దుకాణం / వ్యాపారం పేరు *';
+
+  @override
+  String get shopNameHint => 'ఉదా. రాజేష్ కిరాణా స్టోర్';
+
+  @override
+  String get requiredField => 'తప్పనిసరి';
+
+  @override
+  String get ownerName => 'యజమాని పేరు';
+
+  @override
+  String get ownerNameHint => 'ఉదా. రాజేష్ కుమార్';
+
+  @override
+  String get phone10DigitError => '10 అంకెల ఫోన్ నంబర్ నమోదు చేయండి';
+
+  @override
+  String get gstinHint => '15 అక్షరాల GST నంబర్';
+
+  @override
+  String get gstin15Error => 'GSTIN 15 అక్షరాలు ఉండాలి';
+
+  @override
+  String get addressField => 'చిరునామా';
+
+  @override
+  String get gstStateCode => 'GST రాష్ట్ర కోడ్';
+
+  @override
+  String get gstStateCodeHint => '36 = తెలంగాణ';
+
+  @override
+  String get stateCode2DigitError => '2 అంకెల కోడ్ (ఉదా. 36)';
+
+  @override
+  String get pricesIncludeGst => 'ధరల్లో GST కలిసి ఉంది';
+
+  @override
+  String get taxInsidePrice => 'పన్ను ధరలో కలిసి ఉంది (MRP శైలి)';
+
+  @override
+  String get taxAddedOnTop => 'బిల్లింగ్ సమయంలో పన్ను పైన కలుపబడుతుంది';
+
+  @override
+  String get createMyShop => 'నా దుకాణాన్ని సృష్టించు';
+
+  @override
+  String get setupLaterNote => 'మీరు వీటన్నింటినీ తర్వాత సెట్టింగ్స్‌లో మార్చవచ్చు. మీ జాబితా ఖాళీగా మొదలవుతుంది — తర్వాత మీ వస్తువులను జోడించండి.';
 }

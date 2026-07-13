@@ -1324,4 +1324,61 @@ class LEn extends L {
 
   @override
   String get restoreFromBackupBody => 'This replaces ALL current data on this device with the backup. This cannot be undone.';
+
+  @override
+  String get setUpYourBusiness => 'Set up your business';
+
+  @override
+  String get featuresRealignNote => 'Features will re-align to this type. Your items, customers and bills stay as they are.';
+
+  @override
+  String get shopBusinessName => 'Shop / business name *';
+
+  @override
+  String get shopNameHint => 'e.g. Rajesh Kirana Store';
+
+  @override
+  String get requiredField => 'Required';
+
+  @override
+  String get ownerName => 'Owner name';
+
+  @override
+  String get ownerNameHint => 'e.g. Rajesh Kumar';
+
+  @override
+  String get phone10DigitError => 'Enter a 10-digit phone';
+
+  @override
+  String get gstinHint => '15-character GST number';
+
+  @override
+  String get gstin15Error => 'GSTIN must be 15 characters';
+
+  @override
+  String get addressField => 'Address';
+
+  @override
+  String get gstStateCode => 'GST state code';
+
+  @override
+  String get gstStateCodeHint => '36 = Telangana';
+
+  @override
+  String get stateCode2DigitError => '2-digit code (e.g. 36)';
+
+  @override
+  String get pricesIncludeGst => 'Prices include GST';
+
+  @override
+  String get taxInsidePrice => 'Tax is inside the price (MRP style)';
+
+  @override
+  String get taxAddedOnTop => 'Tax is added on top at billing';
+
+  @override
+  String get createMyShop => 'Create my shop';
+
+  @override
+  String get setupLaterNote => 'You can change any of this later in Settings. Your catalogue starts empty — add your own products next.';
 }

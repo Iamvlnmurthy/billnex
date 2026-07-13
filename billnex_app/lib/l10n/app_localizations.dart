@@ -2474,6 +2474,120 @@ abstract class L {
   /// In en, this message translates to:
   /// **'This replaces ALL current data on this device with the backup. This cannot be undone.'**
   String get restoreFromBackupBody;
+
+  /// No description provided for @setUpYourBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your business'**
+  String get setUpYourBusiness;
+
+  /// No description provided for @featuresRealignNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Features will re-align to this type. Your items, customers and bills stay as they are.'**
+  String get featuresRealignNote;
+
+  /// No description provided for @shopBusinessName.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop / business name *'**
+  String get shopBusinessName;
+
+  /// No description provided for @shopNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Rajesh Kirana Store'**
+  String get shopNameHint;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredField;
+
+  /// No description provided for @ownerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner name'**
+  String get ownerName;
+
+  /// No description provided for @ownerNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Rajesh Kumar'**
+  String get ownerNameHint;
+
+  /// No description provided for @phone10DigitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a 10-digit phone'**
+  String get phone10DigitError;
+
+  /// No description provided for @gstinHint.
+  ///
+  /// In en, this message translates to:
+  /// **'15-character GST number'**
+  String get gstinHint;
+
+  /// No description provided for @gstin15Error.
+  ///
+  /// In en, this message translates to:
+  /// **'GSTIN must be 15 characters'**
+  String get gstin15Error;
+
+  /// No description provided for @addressField.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get addressField;
+
+  /// No description provided for @gstStateCode.
+  ///
+  /// In en, this message translates to:
+  /// **'GST state code'**
+  String get gstStateCode;
+
+  /// No description provided for @gstStateCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'36 = Telangana'**
+  String get gstStateCodeHint;
+
+  /// No description provided for @stateCode2DigitError.
+  ///
+  /// In en, this message translates to:
+  /// **'2-digit code (e.g. 36)'**
+  String get stateCode2DigitError;
+
+  /// No description provided for @pricesIncludeGst.
+  ///
+  /// In en, this message translates to:
+  /// **'Prices include GST'**
+  String get pricesIncludeGst;
+
+  /// No description provided for @taxInsidePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax is inside the price (MRP style)'**
+  String get taxInsidePrice;
+
+  /// No description provided for @taxAddedOnTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax is added on top at billing'**
+  String get taxAddedOnTop;
+
+  /// No description provided for @createMyShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Create my shop'**
+  String get createMyShop;
+
+  /// No description provided for @setupLaterNote.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change any of this later in Settings. Your catalogue starts empty — add your own products next.'**
+  String get setupLaterNote;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {
