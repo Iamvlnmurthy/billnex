@@ -947,4 +947,142 @@ class LTe extends L {
 
   @override
   String get decreaseQty => 'పరిమాణం తగ్గించు';
+
+  @override
+  String get newPurchase => 'కొత్త కొనుగోలు';
+
+  @override
+  String get purchasingTitle => 'కొనుగోళ్లు & సరఫరాదారులు';
+
+  @override
+  String purchasingSubtitle(int count, String payable, int purchases) {
+    return '$count సరఫరాదారులు · $payable చెల్లించవలసినది · $purchases కొనుగోళ్లు.';
+  }
+
+  @override
+  String get supplier => 'సరఫరాదారు';
+
+  @override
+  String get noSuppliersTitle => 'ఇంకా సరఫరాదారులు లేరు';
+
+  @override
+  String get noSuppliersSub => 'సరఫరాదారును జోడించి, స్టాక్-ఇన్ కోసం కొనుగోలు నమోదు చేయండి.';
+
+  @override
+  String get noContact => 'సంప్రదింపు లేదు';
+
+  @override
+  String get payableLower => 'చెల్లించవలసినది';
+
+  @override
+  String get newSupplier => 'కొత్త సరఫరాదారు';
+
+  @override
+  String get phoneField => 'ఫోన్';
+
+  @override
+  String get gstinOptional => 'GSTIN (ఐచ్ఛికం)';
+
+  @override
+  String get saveSupplier => 'సరఫరాదారును సేవ్ చేయి';
+
+  @override
+  String get recordPurchase => 'కొనుగోలు నమోదు చేయి';
+
+  @override
+  String get supplierInvoiceNo => 'సరఫరాదారు ఇన్‌వాయిస్ నం.';
+
+  @override
+  String get duplicateInvoiceSupplier => 'ఈ సరఫరాదారుకు నకిలీ ఇన్‌వాయిస్';
+
+  @override
+  String get items => 'వస్తువులు';
+
+  @override
+  String get noItemsYet => 'ఇంకా వస్తువులు లేవు';
+
+  @override
+  String get totalInclGst => 'మొత్తం (GSTతో సహా)';
+
+  @override
+  String get paidNow => 'ఇప్పుడు చెల్లించారు';
+
+  @override
+  String get noPayableCreated => 'చెల్లించవలసినది సృష్టించబడలేదు';
+
+  @override
+  String get addsToPayable => 'సరఫరాదారు చెల్లింపునకు జోడిస్తుంది';
+
+  @override
+  String get duplicateChangeRef => 'నకిలీ ఇన్‌వాయిస్ — రిఫరెన్స్ మార్చండి';
+
+  @override
+  String get recordPurchaseStockIn => 'కొనుగోలు నమోదు & స్టాక్-ఇన్';
+
+  @override
+  String get removeItem => 'వస్తువును తీసివేయి';
+
+  @override
+  String amtPayable(String amt) {
+    return '$amt చెల్లించవలసినది';
+  }
+
+  @override
+  String onHandCost(String qty, String cost) {
+    return 'నిల్వలో $qty · ధర $cost';
+  }
+
+  @override
+  String qtyUnit(String unit) {
+    return 'పరిమాణం ($unit)';
+  }
+
+  @override
+  String get addLine => 'లైన్ జోడించు';
+
+  @override
+  String purchaseRecordedSnack(String count) {
+    return 'కొనుగోలు నమోదైంది · $count వస్తువులు స్టాక్-ఇన్ ✓';
+  }
+
+  @override
+  String get payableBalance => 'చెల్లించవలసిన బ్యాలెన్స్';
+
+  @override
+  String get paySupplierBtn => 'సరఫరాదారుకు చెల్లించు';
+
+  @override
+  String get purchasesUpper => 'కొనుగోళ్లు';
+
+  @override
+  String get noPurchases => 'కొనుగోళ్లు లేవు';
+
+  @override
+  String get creditChip => 'అరువు';
+
+  @override
+  String get noRef => 'రిఫరెన్స్ లేదు';
+
+  @override
+  String purchaseLineInfo(String ref, String date, String items) {
+    return '$ref · $date · $items వస్తువులు';
+  }
+
+  @override
+  String paySupplierTitle(String name) {
+    return '$nameకు చెల్లించు';
+  }
+
+  @override
+  String payableColon(String amt) {
+    return 'చెల్లించవలసినది: $amt';
+  }
+
+  @override
+  String get recordPayment => 'చెల్లింపు నమోదు చేయి';
+
+  @override
+  String paidToSnack(String amt, String name) {
+    return '$nameకు $amt చెల్లించారు ✓';
+  }
 }

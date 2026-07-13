@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/supplier.dart';
 import '../models/stock.dart';
 import '../state/app_state.dart';
@@ -14,10 +15,11 @@ class PurchasingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final suppliers = [...state.suppliers]..sort((a, b) => state.payableOf(b.id).compareTo(state.payableOf(a.id)));
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton.extended(onPressed: () => _newPurchase(context), icon: const Icon(Icons.add_shopping_cart), label: const Text('New purchase')),
+      floatingActionButton: FloatingActionButton.extended(onPressed: () => _newPurchase(context), icon: const Icon(Icons.add_shopping_cart), label: Text(l.newPurchase)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
         children: [
@@ -27,9 +29,9 @@ class PurchasingScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 PageHeader(
-                  'Purchasing & Suppliers',
-                  '${suppliers.length} suppliers · ${money(state.totalPayable)} payable · ${state.purchases.length} purchases.',
-                  trailing: OutlinedButton.icon(onPressed: () => _addSupplier(context), icon: const Icon(Icons.person_add_alt, size: 18), label: const Text('Supplier')),
+                  l.purchasingTitle,
+                  l.purchasingSubtitle(suppliers.length, money(state.totalPayable), state.purchases.length),
+                  trailing: OutlinedButton.icon(onPressed: () => _addSupplier(context), icon: const Icon(Icons.person_add_alt, size: 18), label: Text(l.supplier)),
                 ),
                 if (suppliers.isEmpty)
                   Card(
@@ -40,11 +42,11 @@ class PurchasingScreen extends StatelessWidget {
                           Icon(Icons.local_shipping_outlined, size: 40, color: bx.faint),
                           const SizedBox(height: 12),
                           Text(
-                            'No suppliers yet',
+                            l.noSuppliersTitle,
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: bx.muted),
                           ),
                           const SizedBox(height: 4),
-                          Text('Add a supplier, then record a purchase to stock-in.', style: TextStyle(fontSize: 13, color: bx.faint)),
+                          Text(l.noSuppliersSub, style: TextStyle(fontSize: 13, color: bx.faint)),
                         ],
                       ),
                     ),
@@ -61,6 +63,7 @@ class PurchasingScreen extends StatelessWidget {
 
   Widget _row(BuildContext context, Supplier s, bool first) {
     final bx = context.bx;
+    final l = L.of(context);
     final pay = state.payableOf(s.id);
     return InkWell(
       onTap: () => Navigator.push(
@@ -95,7 +98,7 @@ class PurchasingScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
-                  Text(s.phone.isEmpty ? (s.gstin ?? 'No contact') : s.phone, style: TextStyle(fontSize: 12, color: bx.muted)),
+                  Text(s.phone.isEmpty ? (s.gstin ?? l.noContact) : s.phone, style: TextStyle(fontSize: 12, color: bx.muted)),
                 ],
               ),
             ),
@@ -103,10 +106,10 @@ class PurchasingScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  pay > 0 ? money(pay) : 'Settled',
+                  pay > 0 ? money(pay) : l.settledLabel,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: pay > 0 ? bx.warn : bx.pos),
                 ),
-                Text(pay > 0 ? 'payable' : 'no dues', style: TextStyle(fontSize: 11, color: bx.faint)),
+                Text(pay > 0 ? l.payableLower : l.noDues, style: TextStyle(fontSize: 11, color: bx.faint)),
               ],
             ),
             Icon(Icons.chevron_right, size: 20, color: bx.faint),
@@ -126,45 +129,48 @@ class PurchasingScreen extends StatelessWidget {
         context: context,
         isScrollControlled: true,
         showDragHandle: true,
-        builder: (ctx) => Padding(
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text('New supplier', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: name,
-                  autofocus: true,
-                  decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
-                  validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a name' : null,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: phone,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'Phone', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: gstin,
-                  decoration: const InputDecoration(labelText: 'GSTIN (optional)', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () {
-                    if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
-                  },
-                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                  child: const Text('Save supplier'),
-                ),
-              ],
+        builder: (ctx) {
+          final l = L.of(ctx);
+          return Padding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(l.newSupplier, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: name,
+                    autofocus: true,
+                    decoration: InputDecoration(labelText: l.fieldName, border: const OutlineInputBorder()),
+                    validator: (v) => (v ?? '').trim().isEmpty ? l.enterName : null,
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: phone,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(labelText: l.phoneField, border: const OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: gstin,
+                    decoration: InputDecoration(labelText: l.gstinOptional, border: const OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () {
+                      if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
+                    },
+                    style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                    child: Text(l.saveSupplier),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       );
       if (ok == true && name.text.trim().isNotEmpty) {
         return state.addSupplier(name: name.text, phone: phone.text, gstin: gstin.text, nowMs: DateTime.now().millisecondsSinceEpoch);
@@ -215,6 +221,7 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final dup = widget.state.isDuplicatePurchase(_supplier.id, _ref.text);
     return Padding(
       padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(context).viewInsets.bottom),
@@ -223,7 +230,7 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Record purchase', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            Text(l.recordPurchase, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
             const SizedBox(height: 12),
             // supplier
             InkWell(
@@ -232,7 +239,7 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
                 if (s != null) setState(() => _supplier = s);
               },
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Supplier', border: OutlineInputBorder(), suffixIcon: Icon(Icons.expand_more)),
+                decoration: InputDecoration(labelText: l.supplier, border: const OutlineInputBorder(), suffixIcon: const Icon(Icons.expand_more)),
                 child: Text(_supplier.name),
               ),
             ),
@@ -240,14 +247,14 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
             TextField(
               controller: _ref,
               onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(labelText: "Supplier invoice no.", border: const OutlineInputBorder(), errorText: dup ? 'Duplicate invoice for this supplier' : null),
+              decoration: InputDecoration(labelText: l.supplierInvoiceNo, border: const OutlineInputBorder(), errorText: dup ? l.duplicateInvoiceSupplier : null),
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                const Text('Items', style: TextStyle(fontWeight: FontWeight.w700)),
+                Text(l.items, style: const TextStyle(fontWeight: FontWeight.w700)),
                 const Spacer(),
-                TextButton.icon(onPressed: _addLine, icon: const Icon(Icons.add, size: 18), label: const Text('Add item')),
+                TextButton.icon(onPressed: _addLine, icon: const Icon(Icons.add, size: 18), label: Text(l.addItem)),
               ],
             ),
             for (int i = 0; i < _lines.length; i++)
@@ -266,7 +273,7 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
                     const SizedBox(width: 8),
                     Text(money(_lines[i].amount), style: const TextStyle(fontWeight: FontWeight.w700)),
                     IconButton(
-                      tooltip: 'Remove item',
+                      tooltip: l.removeItem,
                       visualDensity: VisualDensity.compact,
                       onPressed: () => setState(() => _lines.removeAt(i)),
                       icon: Icon(Icons.close, size: 16, color: bx.faint),
@@ -277,12 +284,12 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
             if (_lines.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text('No items yet', style: TextStyle(color: bx.faint)),
+                child: Text(l.noItemsYet, style: TextStyle(color: bx.faint)),
               ),
             const Divider(),
             Row(
               children: [
-                const Text('Total (incl. GST)', style: TextStyle(fontWeight: FontWeight.w700)),
+                Text(l.totalInclGst, style: const TextStyle(fontWeight: FontWeight.w700)),
                 const Spacer(),
                 Text(money(_total), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
               ],
@@ -291,14 +298,14 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
               contentPadding: EdgeInsets.zero,
               value: _paid,
               onChanged: (v) => setState(() => _paid = v),
-              title: const Text('Paid now', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              subtitle: Text(_paid ? 'No payable created' : 'Adds to supplier payable', style: const TextStyle(fontSize: 12)),
+              title: Text(l.paidNow, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              subtitle: Text(_paid ? l.noPayableCreated : l.addsToPayable, style: const TextStyle(fontSize: 12)),
             ),
             const SizedBox(height: 8),
             FilledButton.icon(
               onPressed: (_lines.isEmpty || dup) ? null : _record,
               icon: const Icon(Icons.check, size: 18),
-              label: Text(dup ? 'Duplicate invoice — change the ref' : 'Record purchase & stock-in'),
+              label: Text(dup ? l.duplicateChangeRef : l.recordPurchaseStockIn),
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
             ),
           ],
@@ -310,22 +317,25 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
   Future<Supplier?> _pickSupplier(BuildContext context) => showModalBottomSheet<Supplier>(
     context: context,
     showDragHandle: true,
-    builder: (ctx) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final s in widget.state.suppliers) ListTile(title: Text(s.name), subtitle: Text('${money(widget.state.payableOf(s.id))} payable'), onTap: () => Navigator.pop(ctx, s)),
-          ListTile(
-            leading: const Icon(Icons.person_add_alt),
-            title: const Text('New supplier'),
-            onTap: () async {
-              final s = await widget.onAddSupplier();
-              if (ctx.mounted) Navigator.pop(ctx, s);
-            },
-          ),
-        ],
-      ),
-    ),
+    builder: (ctx) {
+      final l = L.of(ctx);
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final s in widget.state.suppliers) ListTile(title: Text(s.name), subtitle: Text(l.amtPayable(money(widget.state.payableOf(s.id)))), onTap: () => Navigator.pop(ctx, s)),
+            ListTile(
+              leading: const Icon(Icons.person_add_alt),
+              title: Text(l.newSupplier),
+              onTap: () async {
+                final s = await widget.onAddSupplier();
+                if (ctx.mounted) Navigator.pop(ctx, s);
+              },
+            ),
+          ],
+        ),
+      );
+    },
   );
 
   Future<void> _addLine() async {
@@ -334,14 +344,17 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (ctx) => SafeArea(
-        child: SizedBox(
-          height: MediaQuery.of(ctx).size.height * 0.6,
-          child: ListView(
-            children: [for (final it in items) ListTile(title: Text(it.name), subtitle: Text('on hand ${qtyLabel(it.qty)} · cost ${money(it.cost)}'), onTap: () => Navigator.pop(ctx, it))],
+      builder: (ctx) {
+        final l = L.of(ctx);
+        return SafeArea(
+          child: SizedBox(
+            height: MediaQuery.of(ctx).size.height * 0.6,
+            child: ListView(
+              children: [for (final it in items) ListTile(title: Text(it.name), subtitle: Text(l.onHandCost(qtyLabel(it.qty), money(it.cost))), onTap: () => Navigator.pop(ctx, it))],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
     if (picked == null || !mounted) return;
     final qty = TextEditingController(text: '10');
@@ -352,50 +365,53 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
         context: context,
         isScrollControlled: true,
         showDragHandle: true,
-        builder: (ctx) => Padding(
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(picked.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: qty,
-                        autofocus: true,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: InputDecoration(labelText: 'Qty (${picked.unit})', border: const OutlineInputBorder()),
-                        validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) <= 0 ? '> 0' : null,
+        builder: (ctx) {
+          final l = L.of(ctx);
+          return Padding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(picked.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: qty,
+                          autofocus: true,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(labelText: l.qtyUnit(picked.unit), border: const OutlineInputBorder()),
+                          validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) <= 0 ? l.gtZeroShort : null,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextFormField(
-                        controller: rate,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Rate', border: OutlineInputBorder()),
-                        validator: (v) => (double.tryParse((v ?? '').trim()) ?? -1) < 0 ? '≥ 0' : null,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          controller: rate,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(prefixText: '₹ ', labelText: l.rate, border: const OutlineInputBorder()),
+                          validator: (v) => (double.tryParse((v ?? '').trim()) ?? -1) < 0 ? l.geZero : null,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () {
-                    if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
-                  },
-                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                  child: const Text('Add line'),
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () {
+                      if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
+                    },
+                    style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                    child: Text(l.addLine),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       );
       if (ok == true) {
         setState(() => _lines.add(PurchaseLine(picked.sku, double.tryParse(qty.text.trim()) ?? 0, double.tryParse(rate.text.trim()) ?? 0)));
@@ -407,11 +423,12 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
   }
 
   void _record() {
+    final l = L.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final count = _lines.length;
     widget.state.recordPurchase(supplier: _supplier, lines: _lines, supplierRef: _ref.text, paid: _paid, nowMs: DateTime.now().millisecondsSinceEpoch);
     Navigator.pop(context);
-    messenger.showSnackBar(SnackBar(content: Text('Purchase recorded · $count items stocked-in ✓')));
+    messenger.showSnackBar(SnackBar(content: Text(l.purchaseRecordedSnack(count.toString()))));
   }
 }
 
@@ -426,6 +443,7 @@ class SupplierDetailScreen extends StatelessWidget {
     return AnimatedBuilder(
       animation: state,
       builder: (context, _) {
+        final l = L.of(context);
         final s = state.suppliers.where((x) => x.id == supplierId).firstOrNull;
         if (s == null) return const Scaffold(body: SizedBox.shrink());
         final pay = state.payableOf(s.id);
@@ -442,7 +460,7 @@ class SupplierDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'PAYABLE BALANCE',
+                        l.payableBalance,
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
                       ),
                       const SizedBox(height: 6),
@@ -452,7 +470,7 @@ class SupplierDetailScreen extends StatelessWidget {
                       ),
                       if (s.phone.isNotEmpty) ...[const SizedBox(height: 4), Text(s.phone, style: TextStyle(fontSize: 13, color: bx.muted))],
                       const SizedBox(height: 14),
-                      FilledButton.icon(onPressed: pay <= 0 ? null : () => _pay(context, s, pay), icon: const Icon(Icons.payments_outlined, size: 18), label: const Text('Pay supplier')),
+                      FilledButton.icon(onPressed: pay <= 0 ? null : () => _pay(context, s, pay), icon: const Icon(Icons.payments_outlined, size: 18), label: Text(l.paySupplierBtn)),
                     ],
                   ),
                 ),
@@ -461,7 +479,7 @@ class SupplierDetailScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 2, bottom: 8),
                 child: Text(
-                  'PURCHASES',
+                  l.purchasesUpper,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
                 ),
               ),
@@ -470,7 +488,7 @@ class SupplierDetailScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 28),
                     child: Center(
-                      child: Text('No purchases', style: TextStyle(color: bx.muted)),
+                      child: Text(l.noPurchases, style: TextStyle(color: bx.muted)),
                     ),
                   ),
                 )
@@ -494,11 +512,11 @@ class SupplierDetailScreen extends StatelessWidget {
                                       children: [
                                         Text(purchases[i].purchaseNo, style: const TextStyle(fontWeight: FontWeight.w800)),
                                         const SizedBox(width: 8),
-                                        purchases[i].paid ? StatusChip('PAID', bx.pos, bx.posBg) : StatusChip('CREDIT', bx.warn, bx.warnBg),
+                                        purchases[i].paid ? StatusChip(l.paid, bx.pos, bx.posBg) : StatusChip(l.creditChip, bx.warn, bx.warnBg),
                                       ],
                                     ),
                                     Text(
-                                      '${purchases[i].supplierRef.isEmpty ? 'no ref' : purchases[i].supplierRef} · ${purchases[i].dateLabel} · ${purchases[i].lines.length} items',
+                                      l.purchaseLineInfo(purchases[i].supplierRef.isEmpty ? l.noRef : purchases[i].supplierRef, purchases[i].dateLabel, purchases[i].lines.length.toString()),
                                       style: TextStyle(fontSize: 12, color: bx.muted),
                                     ),
                                   ],
@@ -519,6 +537,7 @@ class SupplierDetailScreen extends StatelessWidget {
   }
 
   Future<void> _pay(BuildContext context, Supplier s, double due) async {
+    final l = L.of(context);
     final amt = TextEditingController(text: due.toStringAsFixed(2));
     String mode = 'Cash';
     final messenger = ScaffoldMessenger.of(context);
@@ -534,14 +553,14 @@ class SupplierDetailScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Pay ${s.name}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                Text(l.paySupplierTitle(s.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 4),
-                Text('Payable: ${money(due)}', style: TextStyle(fontSize: 12.5, color: context.bx.muted)),
+                Text(l.payableColon(money(due)), style: TextStyle(fontSize: 12.5, color: context.bx.muted)),
                 const SizedBox(height: 12),
                 TextField(
                   controller: amt,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Amount', border: OutlineInputBorder()),
+                  decoration: InputDecoration(prefixText: '₹ ', labelText: l.amount, border: const OutlineInputBorder()),
                 ),
                 const SizedBox(height: 12),
                 Wrap(
@@ -554,7 +573,7 @@ class SupplierDetailScreen extends StatelessWidget {
                 FilledButton(
                   onPressed: () => Navigator.pop(ctx, true),
                   style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                  child: const Text('Record payment'),
+                  child: Text(l.recordPayment),
                 ),
               ],
             ),
@@ -564,12 +583,12 @@ class SupplierDetailScreen extends StatelessWidget {
       if (ok == true) {
         var v = double.tryParse(amt.text.trim()) ?? 0;
         if (v <= 0) {
-          messenger.showSnackBar(const SnackBar(content: Text('Enter an amount greater than 0')));
+          messenger.showSnackBar(SnackBar(content: Text(l.enterAmtGt0)));
           return;
         }
         if (v > due) v = due; // can't pay more than owed
         state.paySupplier(supplier: s, amount: v, mode: mode, nowMs: DateTime.now().millisecondsSinceEpoch);
-        messenger.showSnackBar(SnackBar(content: Text('Paid ${money(v)} to ${s.name} ✓')));
+        messenger.showSnackBar(SnackBar(content: Text(l.paidToSnack(money(v), s.name))));
       }
     } finally {
       amt.dispose();

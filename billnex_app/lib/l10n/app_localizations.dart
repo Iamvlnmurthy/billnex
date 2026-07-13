@@ -1808,6 +1808,246 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Decrease quantity'**
   String get decreaseQty;
+
+  /// No description provided for @newPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'New purchase'**
+  String get newPurchase;
+
+  /// No description provided for @purchasingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchasing & Suppliers'**
+  String get purchasingTitle;
+
+  /// No description provided for @purchasingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} suppliers · {payable} payable · {purchases} purchases.'**
+  String purchasingSubtitle(int count, String payable, int purchases);
+
+  /// No description provided for @supplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get supplier;
+
+  /// No description provided for @noSuppliersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No suppliers yet'**
+  String get noSuppliersTitle;
+
+  /// No description provided for @noSuppliersSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a supplier, then record a purchase to stock-in.'**
+  String get noSuppliersSub;
+
+  /// No description provided for @noContact.
+  ///
+  /// In en, this message translates to:
+  /// **'No contact'**
+  String get noContact;
+
+  /// No description provided for @payableLower.
+  ///
+  /// In en, this message translates to:
+  /// **'payable'**
+  String get payableLower;
+
+  /// No description provided for @newSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'New supplier'**
+  String get newSupplier;
+
+  /// No description provided for @phoneField.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phoneField;
+
+  /// No description provided for @gstinOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'GSTIN (optional)'**
+  String get gstinOptional;
+
+  /// No description provided for @saveSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Save supplier'**
+  String get saveSupplier;
+
+  /// No description provided for @recordPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Record purchase'**
+  String get recordPurchase;
+
+  /// No description provided for @supplierInvoiceNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier invoice no.'**
+  String get supplierInvoiceNo;
+
+  /// No description provided for @duplicateInvoiceSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate invoice for this supplier'**
+  String get duplicateInvoiceSupplier;
+
+  /// No description provided for @items.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get items;
+
+  /// No description provided for @noItemsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No items yet'**
+  String get noItemsYet;
+
+  /// No description provided for @totalInclGst.
+  ///
+  /// In en, this message translates to:
+  /// **'Total (incl. GST)'**
+  String get totalInclGst;
+
+  /// No description provided for @paidNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid now'**
+  String get paidNow;
+
+  /// No description provided for @noPayableCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'No payable created'**
+  String get noPayableCreated;
+
+  /// No description provided for @addsToPayable.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds to supplier payable'**
+  String get addsToPayable;
+
+  /// No description provided for @duplicateChangeRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate invoice — change the ref'**
+  String get duplicateChangeRef;
+
+  /// No description provided for @recordPurchaseStockIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Record purchase & stock-in'**
+  String get recordPurchaseStockIn;
+
+  /// No description provided for @removeItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove item'**
+  String get removeItem;
+
+  /// No description provided for @amtPayable.
+  ///
+  /// In en, this message translates to:
+  /// **'{amt} payable'**
+  String amtPayable(String amt);
+
+  /// No description provided for @onHandCost.
+  ///
+  /// In en, this message translates to:
+  /// **'on hand {qty} · cost {cost}'**
+  String onHandCost(String qty, String cost);
+
+  /// No description provided for @qtyUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty ({unit})'**
+  String qtyUnit(String unit);
+
+  /// No description provided for @addLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Add line'**
+  String get addLine;
+
+  /// No description provided for @purchaseRecordedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase recorded · {count} items stocked-in ✓'**
+  String purchaseRecordedSnack(String count);
+
+  /// No description provided for @payableBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'PAYABLE BALANCE'**
+  String get payableBalance;
+
+  /// No description provided for @paySupplierBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay supplier'**
+  String get paySupplierBtn;
+
+  /// No description provided for @purchasesUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'PURCHASES'**
+  String get purchasesUpper;
+
+  /// No description provided for @noPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'No purchases'**
+  String get noPurchases;
+
+  /// No description provided for @creditChip.
+  ///
+  /// In en, this message translates to:
+  /// **'CREDIT'**
+  String get creditChip;
+
+  /// No description provided for @noRef.
+  ///
+  /// In en, this message translates to:
+  /// **'no ref'**
+  String get noRef;
+
+  /// No description provided for @purchaseLineInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'{ref} · {date} · {items} items'**
+  String purchaseLineInfo(String ref, String date, String items);
+
+  /// No description provided for @paySupplierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {name}'**
+  String paySupplierTitle(String name);
+
+  /// No description provided for @payableColon.
+  ///
+  /// In en, this message translates to:
+  /// **'Payable: {amt}'**
+  String payableColon(String amt);
+
+  /// No description provided for @recordPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Record payment'**
+  String get recordPayment;
+
+  /// No description provided for @paidToSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid {amt} to {name} ✓'**
+  String paidToSnack(String amt, String name);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

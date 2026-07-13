@@ -947,4 +947,142 @@ class LEn extends L {
 
   @override
   String get decreaseQty => 'Decrease quantity';
+
+  @override
+  String get newPurchase => 'New purchase';
+
+  @override
+  String get purchasingTitle => 'Purchasing & Suppliers';
+
+  @override
+  String purchasingSubtitle(int count, String payable, int purchases) {
+    return '$count suppliers · $payable payable · $purchases purchases.';
+  }
+
+  @override
+  String get supplier => 'Supplier';
+
+  @override
+  String get noSuppliersTitle => 'No suppliers yet';
+
+  @override
+  String get noSuppliersSub => 'Add a supplier, then record a purchase to stock-in.';
+
+  @override
+  String get noContact => 'No contact';
+
+  @override
+  String get payableLower => 'payable';
+
+  @override
+  String get newSupplier => 'New supplier';
+
+  @override
+  String get phoneField => 'Phone';
+
+  @override
+  String get gstinOptional => 'GSTIN (optional)';
+
+  @override
+  String get saveSupplier => 'Save supplier';
+
+  @override
+  String get recordPurchase => 'Record purchase';
+
+  @override
+  String get supplierInvoiceNo => 'Supplier invoice no.';
+
+  @override
+  String get duplicateInvoiceSupplier => 'Duplicate invoice for this supplier';
+
+  @override
+  String get items => 'Items';
+
+  @override
+  String get noItemsYet => 'No items yet';
+
+  @override
+  String get totalInclGst => 'Total (incl. GST)';
+
+  @override
+  String get paidNow => 'Paid now';
+
+  @override
+  String get noPayableCreated => 'No payable created';
+
+  @override
+  String get addsToPayable => 'Adds to supplier payable';
+
+  @override
+  String get duplicateChangeRef => 'Duplicate invoice — change the ref';
+
+  @override
+  String get recordPurchaseStockIn => 'Record purchase & stock-in';
+
+  @override
+  String get removeItem => 'Remove item';
+
+  @override
+  String amtPayable(String amt) {
+    return '$amt payable';
+  }
+
+  @override
+  String onHandCost(String qty, String cost) {
+    return 'on hand $qty · cost $cost';
+  }
+
+  @override
+  String qtyUnit(String unit) {
+    return 'Qty ($unit)';
+  }
+
+  @override
+  String get addLine => 'Add line';
+
+  @override
+  String purchaseRecordedSnack(String count) {
+    return 'Purchase recorded · $count items stocked-in ✓';
+  }
+
+  @override
+  String get payableBalance => 'PAYABLE BALANCE';
+
+  @override
+  String get paySupplierBtn => 'Pay supplier';
+
+  @override
+  String get purchasesUpper => 'PURCHASES';
+
+  @override
+  String get noPurchases => 'No purchases';
+
+  @override
+  String get creditChip => 'CREDIT';
+
+  @override
+  String get noRef => 'no ref';
+
+  @override
+  String purchaseLineInfo(String ref, String date, String items) {
+    return '$ref · $date · $items items';
+  }
+
+  @override
+  String paySupplierTitle(String name) {
+    return 'Pay $name';
+  }
+
+  @override
+  String payableColon(String amt) {
+    return 'Payable: $amt';
+  }
+
+  @override
+  String get recordPayment => 'Record payment';
+
+  @override
+  String paidToSnack(String amt, String name) {
+    return 'Paid $amt to $name ✓';
+  }
 }

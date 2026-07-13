@@ -947,4 +947,142 @@ class LHi extends L {
 
   @override
   String get decreaseQty => 'मात्रा घटाएं';
+
+  @override
+  String get newPurchase => 'नई खरीद';
+
+  @override
+  String get purchasingTitle => 'खरीद और आपूर्तिकर्ता';
+
+  @override
+  String purchasingSubtitle(int count, String payable, int purchases) {
+    return '$count आपूर्तिकर्ता · $payable देय · $purchases खरीद।';
+  }
+
+  @override
+  String get supplier => 'आपूर्तिकर्ता';
+
+  @override
+  String get noSuppliersTitle => 'अभी कोई आपूर्तिकर्ता नहीं';
+
+  @override
+  String get noSuppliersSub => 'एक आपूर्तिकर्ता जोड़ें, फिर स्टॉक-इन के लिए खरीद दर्ज करें।';
+
+  @override
+  String get noContact => 'कोई संपर्क नहीं';
+
+  @override
+  String get payableLower => 'देय';
+
+  @override
+  String get newSupplier => 'नया आपूर्तिकर्ता';
+
+  @override
+  String get phoneField => 'फ़ोन';
+
+  @override
+  String get gstinOptional => 'GSTIN (वैकल्पिक)';
+
+  @override
+  String get saveSupplier => 'आपूर्तिकर्ता सहेजें';
+
+  @override
+  String get recordPurchase => 'खरीद दर्ज करें';
+
+  @override
+  String get supplierInvoiceNo => 'आपूर्तिकर्ता चालान नं.';
+
+  @override
+  String get duplicateInvoiceSupplier => 'इस आपूर्तिकर्ता के लिए डुप्लिकेट चालान';
+
+  @override
+  String get items => 'वस्तुएं';
+
+  @override
+  String get noItemsYet => 'अभी कोई वस्तु नहीं';
+
+  @override
+  String get totalInclGst => 'कुल (GST सहित)';
+
+  @override
+  String get paidNow => 'अभी भुगतान किया';
+
+  @override
+  String get noPayableCreated => 'कोई देय नहीं बना';
+
+  @override
+  String get addsToPayable => 'आपूर्तिकर्ता देय में जुड़ता है';
+
+  @override
+  String get duplicateChangeRef => 'डुप्लिकेट चालान — संदर्भ बदलें';
+
+  @override
+  String get recordPurchaseStockIn => 'खरीद दर्ज करें और स्टॉक-इन';
+
+  @override
+  String get removeItem => 'वस्तु हटाएं';
+
+  @override
+  String amtPayable(String amt) {
+    return '$amt देय';
+  }
+
+  @override
+  String onHandCost(String qty, String cost) {
+    return 'स्टॉक में $qty · लागत $cost';
+  }
+
+  @override
+  String qtyUnit(String unit) {
+    return 'मात्रा ($unit)';
+  }
+
+  @override
+  String get addLine => 'लाइन जोड़ें';
+
+  @override
+  String purchaseRecordedSnack(String count) {
+    return 'खरीद दर्ज हुई · $count वस्तुएं स्टॉक-इन ✓';
+  }
+
+  @override
+  String get payableBalance => 'देय शेष';
+
+  @override
+  String get paySupplierBtn => 'आपूर्तिकर्ता को भुगतान करें';
+
+  @override
+  String get purchasesUpper => 'खरीद';
+
+  @override
+  String get noPurchases => 'कोई खरीद नहीं';
+
+  @override
+  String get creditChip => 'उधार';
+
+  @override
+  String get noRef => 'कोई संदर्भ नहीं';
+
+  @override
+  String purchaseLineInfo(String ref, String date, String items) {
+    return '$ref · $date · $items वस्तुएं';
+  }
+
+  @override
+  String paySupplierTitle(String name) {
+    return '$name को भुगतान करें';
+  }
+
+  @override
+  String payableColon(String amt) {
+    return 'देय: $amt';
+  }
+
+  @override
+  String get recordPayment => 'भुगतान दर्ज करें';
+
+  @override
+  String paidToSnack(String amt, String name) {
+    return '$name को $amt भुगतान किया ✓';
+  }
 }
