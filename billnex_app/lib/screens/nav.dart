@@ -3,13 +3,14 @@ import '../l10n/app_localizations.dart';
 
 /// Stable navigation ids — decoupled from index so feature-flagged tabs
 /// (e.g. Customers) can appear/disappear without breaking callers.
-enum NavId { dash, billing, appointments, sales, customers, inventory, purchasing, reports, features, print }
+enum NavId { dash, quickbill, billing, appointments, sales, customers, inventory, purchasing, reports, features, print }
 
 /// Localized label for a nav destination (falls back to the English spec).
 String navLabel(BuildContext context, NavId id) {
   final l = L.of(context);
   return switch (id) {
     NavId.dash => l.navDashboard,
+    NavId.quickbill => 'Quick Bill',
     NavId.billing => l.navBilling,
     NavId.appointments => l.navAppointments,
     NavId.sales => l.navSales,
@@ -32,6 +33,7 @@ class NavSpec {
 
 const Map<NavId, NavSpec> kNavSpecs = {
   NavId.dash: NavSpec(NavId.dash, 'Dashboard', Icons.dashboard_outlined, Icons.dashboard),
+  NavId.quickbill: NavSpec(NavId.quickbill, 'Quick Bill', Icons.bolt_outlined, Icons.bolt),
   NavId.billing: NavSpec(NavId.billing, 'Billing', Icons.point_of_sale_outlined, Icons.point_of_sale),
   NavId.appointments: NavSpec(NavId.appointments, 'Appointments', Icons.event_outlined, Icons.event),
   NavId.sales: NavSpec(NavId.sales, 'Sales', Icons.receipt_long_outlined, Icons.receipt_long),

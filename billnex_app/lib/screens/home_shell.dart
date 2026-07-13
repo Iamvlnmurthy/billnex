@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import 'nav.dart';
 import 'dashboard_screen.dart';
+import 'quick_bill_screen.dart';
 import 'features_screen.dart';
 import 'pos_screen.dart';
 import 'sales_screen.dart';
@@ -41,6 +42,10 @@ class _HomeShellState extends State<HomeShell> {
     if (widget.initialTab >= 0 && widget.initialTab < order.length) {
       _current = order[widget.initialTab];
     }
+    // Counter-heavy shops (Fast POS) open straight to Quick Bill.
+    if (widget.initialTab == 0 && widget.state.isOn('fastPOS') && order.contains(NavId.quickbill)) {
+      _current = NavId.quickbill;
+    }
   }
 
   /// Tabs available for the current preset + role. Customers is gated by
@@ -49,6 +54,7 @@ class _HomeShellState extends State<HomeShell> {
     final s = widget.state;
     final all = [
       NavId.dash,
+      NavId.quickbill,
       NavId.billing,
       if (s.isOn('appointments')) NavId.appointments,
       NavId.sales,
@@ -68,6 +74,7 @@ class _HomeShellState extends State<HomeShell> {
     final s = widget.state;
     return switch (id) {
       NavId.dash => DashboardScreen(state: s, goTo: _go),
+      NavId.quickbill => QuickBillScreen(state: s),
       NavId.billing => PosScreen(state: s),
       NavId.appointments => AppointmentsScreen(state: s),
       NavId.sales => SalesScreen(state: s),

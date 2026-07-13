@@ -443,6 +443,42 @@ void main() {
     expect(s.balanceOf(cust.id), 0); // never goes negative
   });
 
+  test('Quick Bill tally posts a real sale and learns rates', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    // tally: three punched amounts, no names, no catalogue
+    final sale = s.postCustomSale(
+      lines: const [(name: '', unit: 'pc', qty: 1.0, rate: 12.0, gstRate: 0.0), (name: '', unit: 'pc', qty: 1.0, rate: 40.0, gstRate: 0.0), (name: '', unit: 'pc', qty: 1.0, rate: 8.0, gstRate: 0.0)],
+      paymentMode: 'Cash',
+      nowMs: 1,
+    );
+    expect(sale.total, 60);
+    expect(s.billCount, 1);
+    expect(sale.lines.length, 3);
+  });
+
+  test('Quick Bill itemized: decimal weight + passive catalogue', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    // 250 g of sugar at ₹44/kg = ₹11
+    final sale = s.postCustomSale(lines: const [(name: 'Sugar', unit: 'kg', qty: 0.25, rate: 44.0, gstRate: 0.0)], paymentMode: 'Cash', nowMs: 1);
+    expect(sale.total, 11);
+    // the rate is now learned for next time
+    final sug = s.quickSuggest('sug');
+    expect(sug.single.name, 'Sugar');
+    expect(sug.single.rate, 44);
+    expect(s.frequentItems().first.name, 'Sugar');
+  });
+
+  test('Quick Bill round-off toggle keeps exact paise when off', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    final rounded = s.postCustomSale(lines: const [(name: '', unit: 'pc', qty: 1.0, rate: 10.4, gstRate: 0.0)], paymentMode: 'Cash', nowMs: 1);
+    expect(rounded.total, 10);
+    final exact = s.postCustomSale(lines: const [(name: '', unit: 'pc', qty: 1.0, rate: 10.4, gstRate: 0.0)], paymentMode: 'Cash', roundOff: false, nowMs: 2);
+    expect(exact.total, 10.4);
+  });
+
   test('purchase GST uses each item\'s own slab', () {
     final s = AppState();
     s.applyPreset('kirana');

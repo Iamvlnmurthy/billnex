@@ -82,7 +82,7 @@ class AppState extends ChangeNotifier {
       case Role.manager:
         return navId != 'features'; // no plan/entitlement config
       case Role.cashier:
-        return {'dash', 'billing', 'sales', 'customers'}.contains(navId);
+        return {'dash', 'quickbill', 'billing', 'sales', 'customers'}.contains(navId);
       case Role.accountant:
         return {'dash', 'sales', 'customers', 'purchasing', 'reports'}.contains(navId);
     }
@@ -595,6 +595,115 @@ class AppState extends ChangeNotifier {
     _audit0('Sale posted · $paymentMode ${sale.total.round()}', invoiceNo, nowMs);
     notifyListeners();
     return sale;
+  }
+
+  // -----------------------------------------------------------------------
+  // Quick Bill: post a sale from ad-hoc custom lines (no catalogue needed).
+  // -----------------------------------------------------------------------
+  Sale postCustomSale({
+    required List<({String name, String unit, double qty, double rate, double gstRate})> lines,
+    required String paymentMode,
+    double billDiscount = 0,
+    bool roundOff = true,
+    bool taxInclusive = true,
+    Customer? customer,
+    int nowMs = 0,
+  }) {
+    _seq += 1;
+    final invoiceNo = '#INV-$_seq';
+    final totals = computeBill(
+      lines: lines.map((l) => BillInput(price: l.rate, qty: l.qty, gstRate: l.gstRate)).toList(),
+      taxInclusive: taxInclusive,
+      billDiscount: billDiscount,
+      roundToUnit: roundOff,
+    );
+    final saleLines = lines.map((l) => SaleLine(l.name.trim().isEmpty ? 'Item' : l.name.trim(), l.qty, l.rate, gstRate: l.gstRate)).toList();
+    final sale = Sale(
+      invoiceNo: invoiceNo,
+      epochMs: nowMs,
+      businessName: shopName,
+      templateId: _template,
+      lines: saleLines,
+      subtotal: totals.taxable,
+      gst: totals.tax,
+      total: totals.total,
+      discount: totals.discountTotal,
+      roundOff: totals.roundOff,
+      taxInclusive: taxInclusive,
+      paymentMode: paymentMode,
+      sellerGstin: _profile?.gstin,
+      sellerPhone: _profile?.phone,
+      sellerAddress: _profile?.address,
+    );
+    _sales.add(sale);
+    // Decrement stock only where a line matches an existing tracked SKU by name.
+    var stockTouched = false;
+    for (final l in lines) {
+      final item = _stock[l.name.trim()];
+      if (item != null && item.stockTracked) {
+        item.qty = (item.qty - l.qty).clamp(0, double.infinity);
+        _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.sale, delta: -l.qty, ref: invoiceNo));
+        stockTouched = true;
+      }
+    }
+    if (stockTouched) {
+      _store.saveStock(_stock.values.toList());
+      _store.saveMoves(_moves);
+    }
+    if (paymentMode == 'Credit' && customer != null) {
+      _ledger.add(LedgerEntry(customerId: customer.id, epochMs: nowMs, kind: LedgerKind.creditSale, ref: invoiceNo, debit: sale.total));
+      _store.saveLedger(_ledger);
+    }
+    _store.saveSeq(_seq);
+    _store.saveSales(_sales);
+    _enqueue('sale', invoiceNo, nowMs);
+    _audit0('Quick bill · $paymentMode ${sale.total.round()}', invoiceNo, nowMs);
+    notifyListeners();
+    return sale;
+  }
+
+  /// Passive catalogue — learned from posted bills (+ any real catalogue), so
+  /// Quick Bill autofills the last rate for a name with zero setup.
+  Map<String, double> _learnedRates() {
+    final m = <String, double>{};
+    for (final it in _stock.values) {
+      m[it.name] = it.price; // seed from catalogue where present
+    }
+    for (final s in _sales) {
+      // iterate oldest→newest so the most recent rate wins
+      for (final l in s.lines) {
+        if (l.name.trim().isNotEmpty && l.name != 'Item') m[l.name] = l.price;
+      }
+    }
+    return m;
+  }
+
+  Map<String, int> _nameFrequency() {
+    final m = <String, int>{};
+    for (final s in _sales) {
+      for (final l in s.lines) {
+        if (l.name.trim().isNotEmpty && l.name != 'Item') m[l.name] = (m[l.name] ?? 0) + 1;
+      }
+    }
+    return m;
+  }
+
+  /// Name suggestions matching [prefix], most-used first, with the last rate.
+  List<({String name, double rate})> quickSuggest(String prefix, {int limit = 6}) {
+    final q = prefix.trim().toLowerCase();
+    if (q.isEmpty) return const [];
+    final rates = _learnedRates();
+    final freq = _nameFrequency();
+    final names = rates.keys.where((n) => n.toLowerCase().contains(q)).toList()..sort((a, b) => (freq[b] ?? 0).compareTo(freq[a] ?? 0));
+    return names.take(limit).map((n) => (name: n, rate: rates[n]!)).toList();
+  }
+
+  /// The shop's most-billed items for the one-tap frequent strip.
+  List<({String name, double rate})> frequentItems({int limit = 12}) {
+    final rates = _learnedRates();
+    final freq = _nameFrequency();
+    final names = rates.keys.toList()..sort((a, b) => (freq[b] ?? 0).compareTo(freq[a] ?? 0));
+    return names.where((n) => (freq[n] ?? 0) > 0).take(limit).map((n) => (name: n, rate: rates[n]!)).toList();
   }
 
   double get todaySales => _sales.fold(0, (a, s) => a + s.total);
