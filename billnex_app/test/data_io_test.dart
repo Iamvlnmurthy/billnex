@@ -28,10 +28,7 @@ void main() {
 
   group('inventory export → import round-trip', () {
     test('names (incl. comma/quote), prices and quantities survive', () {
-      final items = [
-        StockItem(sku: 'A1', name: 'Toor Dal', unit: 'kg', price: 145, cost: 120, qty: 12.5, reorderLevel: 5),
-        StockItem(sku: 'B2', name: 'Rice, "Premium"', unit: 'kg', price: 95),
-      ];
+      final items = [StockItem(sku: 'A1', name: 'Toor Dal', unit: 'kg', price: 145, cost: 120, qty: 12.5, reorderLevel: 5), StockItem(sku: 'B2', name: 'Rice, "Premium"', unit: 'kg', price: 95)];
       final csv = inventoryToCsv(items);
 
       final captured = <InventoryRow>[];
