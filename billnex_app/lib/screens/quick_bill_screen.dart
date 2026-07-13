@@ -219,7 +219,11 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                           InkWell(
                             onTap: () => setState(() => _tally.removeAt(idx)),
                             borderRadius: BorderRadius.circular(22),
-                            child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
+                            child: Semantics(
+                              button: true,
+                              label: 'Remove line',
+                              child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
+                            ),
                           ),
                         ],
                       ),
@@ -625,7 +629,11 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           InkWell(
             onTap: () => setState(() => _items.removeAt(i)),
             borderRadius: BorderRadius.circular(22),
-            child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
+            child: Semantics(
+              button: true,
+              label: 'Remove line',
+              child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
+            ),
           ),
         ],
       ),

@@ -736,7 +736,11 @@ class _CustomerChip extends StatelessWidget {
               InkWell(
                 onTap: () => state.selectCustomer(null),
                 borderRadius: BorderRadius.circular(22),
-                child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.muted)),
+                child: Semantics(
+                  button: true,
+                  label: 'Remove customer',
+                  child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.muted)),
+                ),
               )
             else
               Icon(Icons.chevron_right, size: 18, color: bx.faint),
