@@ -722,4 +722,88 @@ class LHi extends L {
   String exportFailed(String err) {
     return 'निर्यात विफल: $err';
   }
+
+  @override
+  String get addCustomer => 'ग्राहक जोड़ें';
+
+  @override
+  String get customersTitle => 'ग्राहक और उधार';
+
+  @override
+  String customersSubtitle(int count, String receivable, int accounts) {
+    return '$count ग्राहक · $accounts खातों में $receivable प्राप्य।';
+  }
+
+  @override
+  String get khataLedger => 'खाता बही';
+
+  @override
+  String get noCustomersTitle => 'अभी कोई ग्राहक नहीं';
+
+  @override
+  String get noCustomersSub => 'यहाँ एक जोड़ें, या उधार बिक्री पर ग्राहक जोड़ें।';
+
+  @override
+  String get sectionOutstanding => 'बकाया';
+
+  @override
+  String get sectionSettled => 'निपटाया';
+
+  @override
+  String get overLimit => 'सीमा से अधिक';
+
+  @override
+  String get noMobile => 'कोई मोबाइल नहीं';
+
+  @override
+  String get settledLabel => 'निपटाया';
+
+  @override
+  String get outstandingLabel => 'बकाया';
+
+  @override
+  String get noDues => 'कोई बकाया नहीं';
+
+  @override
+  String get outstandingBalance => 'बकाया राशि';
+
+  @override
+  String limitLabel(String amt) {
+    return 'सीमा $amt';
+  }
+
+  @override
+  String get collectPayment => 'भुगतान वसूल करें';
+
+  @override
+  String get ledgerLabel => 'बही';
+
+  @override
+  String get noLedgerEntries => 'कोई बही प्रविष्टि नहीं';
+
+  @override
+  String balLabel(String amt) {
+    return 'शेष $amt';
+  }
+
+  @override
+  String collectFrom(String name) {
+    return '$name से वसूल करें';
+  }
+
+  @override
+  String outstandingSuffix(String amt) {
+    return '$amt बकाया';
+  }
+
+  @override
+  String get recordCollection => 'वसूली दर्ज करें';
+
+  @override
+  String get enterAmtGt0 => '0 से अधिक राशि दर्ज करें';
+
+  @override
+  String collectedSnack(String ref, String amt) {
+    return '$ref · $amt वसूल किया ✓';
+  }
 }

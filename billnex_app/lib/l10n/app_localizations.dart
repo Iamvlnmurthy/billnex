@@ -1418,6 +1418,150 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Export failed: {err}'**
   String exportFailed(String err);
+
+  /// No description provided for @addCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Add customer'**
+  String get addCustomer;
+
+  /// No description provided for @customersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers & Credit'**
+  String get customersTitle;
+
+  /// No description provided for @customersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} customers · {receivable} receivable across {accounts} accounts.'**
+  String customersSubtitle(int count, String receivable, int accounts);
+
+  /// No description provided for @khataLedger.
+  ///
+  /// In en, this message translates to:
+  /// **'Khata ledger'**
+  String get khataLedger;
+
+  /// No description provided for @noCustomersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers yet'**
+  String get noCustomersTitle;
+
+  /// No description provided for @noCustomersSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Add one here, or attach a customer on a credit sale.'**
+  String get noCustomersSub;
+
+  /// No description provided for @sectionOutstanding.
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding'**
+  String get sectionOutstanding;
+
+  /// No description provided for @sectionSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Settled'**
+  String get sectionSettled;
+
+  /// No description provided for @overLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Over limit'**
+  String get overLimit;
+
+  /// No description provided for @noMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'No mobile'**
+  String get noMobile;
+
+  /// No description provided for @settledLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Settled'**
+  String get settledLabel;
+
+  /// No description provided for @outstandingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'outstanding'**
+  String get outstandingLabel;
+
+  /// No description provided for @noDues.
+  ///
+  /// In en, this message translates to:
+  /// **'no dues'**
+  String get noDues;
+
+  /// No description provided for @outstandingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'OUTSTANDING BALANCE'**
+  String get outstandingBalance;
+
+  /// No description provided for @limitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit {amt}'**
+  String limitLabel(String amt);
+
+  /// No description provided for @collectPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect payment'**
+  String get collectPayment;
+
+  /// No description provided for @ledgerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'LEDGER'**
+  String get ledgerLabel;
+
+  /// No description provided for @noLedgerEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No ledger entries'**
+  String get noLedgerEntries;
+
+  /// No description provided for @balLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'bal {amt}'**
+  String balLabel(String amt);
+
+  /// No description provided for @collectFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect from {name}'**
+  String collectFrom(String name);
+
+  /// No description provided for @outstandingSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'{amt} outstanding'**
+  String outstandingSuffix(String amt);
+
+  /// No description provided for @recordCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Record collection'**
+  String get recordCollection;
+
+  /// No description provided for @enterAmtGt0.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than 0'**
+  String get enterAmtGt0;
+
+  /// No description provided for @collectedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'{ref} · {amt} collected ✓'**
+  String collectedSnack(String ref, String amt);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

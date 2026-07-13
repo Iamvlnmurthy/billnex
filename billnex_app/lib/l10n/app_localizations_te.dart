@@ -722,4 +722,88 @@ class LTe extends L {
   String exportFailed(String err) {
     return 'ఎగుమతి విఫలం: $err';
   }
+
+  @override
+  String get addCustomer => 'వినియోగదారు జోడించు';
+
+  @override
+  String get customersTitle => 'వినియోగదారులు & అరువు';
+
+  @override
+  String customersSubtitle(int count, String receivable, int accounts) {
+    return '$count వినియోగదారులు · $accounts ఖాతాల్లో $receivable రావలసినది.';
+  }
+
+  @override
+  String get khataLedger => 'ఖాతా లెడ్జర్';
+
+  @override
+  String get noCustomersTitle => 'ఇంకా వినియోగదారులు లేరు';
+
+  @override
+  String get noCustomersSub => 'ఇక్కడ ఒకరిని జోడించండి, లేదా అరువు అమ్మకంపై వినియోగదారును జతచేయండి.';
+
+  @override
+  String get sectionOutstanding => 'బకాయి';
+
+  @override
+  String get sectionSettled => 'పరిష్కరించబడింది';
+
+  @override
+  String get overLimit => 'పరిమితి దాటింది';
+
+  @override
+  String get noMobile => 'మొబైల్ లేదు';
+
+  @override
+  String get settledLabel => 'పరిష్కరించబడింది';
+
+  @override
+  String get outstandingLabel => 'బకాయి';
+
+  @override
+  String get noDues => 'బకాయిలు లేవు';
+
+  @override
+  String get outstandingBalance => 'బకాయి బ్యాలెన్స్';
+
+  @override
+  String limitLabel(String amt) {
+    return 'పరిమితి $amt';
+  }
+
+  @override
+  String get collectPayment => 'చెల్లింపు వసూలు చేయి';
+
+  @override
+  String get ledgerLabel => 'లెడ్జర్';
+
+  @override
+  String get noLedgerEntries => 'లెడ్జర్ ఎంట్రీలు లేవు';
+
+  @override
+  String balLabel(String amt) {
+    return 'బ్యాలెన్స్ $amt';
+  }
+
+  @override
+  String collectFrom(String name) {
+    return '$name నుండి వసూలు చేయి';
+  }
+
+  @override
+  String outstandingSuffix(String amt) {
+    return '$amt బకాయి';
+  }
+
+  @override
+  String get recordCollection => 'వసూలు నమోదు చేయి';
+
+  @override
+  String get enterAmtGt0 => '0 కంటే ఎక్కువ మొత్తం నమోదు చేయండి';
+
+  @override
+  String collectedSnack(String ref, String amt) {
+    return '$ref · $amt వసూలు చేయబడింది ✓';
+  }
 }

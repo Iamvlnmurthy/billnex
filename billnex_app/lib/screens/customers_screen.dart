@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/customer_picker.dart';
+import '../l10n/app_localizations.dart';
 
 class CustomersScreen extends StatelessWidget {
   final AppState state;
@@ -13,6 +14,7 @@ class CustomersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final customers = state.customers;
     final withDue = customers.where((c) => state.balanceOf(c.id) > 0).toList()..sort((a, b) => state.balanceOf(b.id).compareTo(state.balanceOf(a.id)));
     final settled = customers.where((c) => state.balanceOf(c.id) <= 0).toList();
@@ -24,7 +26,7 @@ class CustomersScreen extends StatelessWidget {
           if (c != null && context.mounted) _openDetail(context, state, c);
         },
         icon: const Icon(Icons.person_add_alt),
-        label: const Text('Add customer'),
+        label: Text(l.addCustomer),
       ),
       backgroundColor: Colors.transparent,
       body: ListView(
@@ -35,21 +37,17 @@ class CustomersScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PageHeader(
-                  'Customers & Credit',
-                  '${customers.length} customers · ${money(state.totalReceivable)} receivable across ${state.overdueCount} accounts.',
-                  trailing: const Badge2('Khata ledger'),
-                ),
+                PageHeader(l.customersTitle, l.customersSubtitle(customers.length, money(state.totalReceivable), state.overdueCount), trailing: Badge2(l.khataLedger)),
                 if (customers.isEmpty)
-                  _empty(bx)
+                  _empty(bx, l)
                 else ...[
                   if (withDue.isNotEmpty) ...[
-                    _sectionLabel(bx, 'Outstanding'),
+                    _sectionLabel(bx, l.sectionOutstanding),
                     Card(child: Column(children: [for (int i = 0; i < withDue.length; i++) _row(context, withDue[i], i == 0)])),
                     const SizedBox(height: 16),
                   ],
                   if (settled.isNotEmpty) ...[
-                    _sectionLabel(bx, 'Settled'),
+                    _sectionLabel(bx, l.sectionSettled),
                     Card(child: Column(children: [for (int i = 0; i < settled.length; i++) _row(context, settled[i], i == 0)])),
                   ],
                 ],
@@ -69,12 +67,13 @@ class CustomersScreen extends StatelessWidget {
     ),
   );
 
-  Widget _empty(BxColors bx) => const Card(
-    child: EmptyState(illustration: 'empty-no-customers', title: 'No customers yet', subtitle: 'Add one here, or attach a customer on a credit sale.'),
+  Widget _empty(BxColors bx, L l) => Card(
+    child: EmptyState(illustration: 'empty-no-customers', title: l.noCustomersTitle, subtitle: l.noCustomersSub),
   );
 
   Widget _row(BuildContext context, Customer c, bool first) {
     final bx = context.bx;
+    final l = L.of(context);
     final bal = state.balanceOf(c.id);
     final over = c.creditLimit > 0 && bal > c.creditLimit;
     return InkWell(
@@ -108,11 +107,11 @@ class CustomersScreen extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (over) ...[const SizedBox(width: 6), StatusChip('Over limit', bx.warn, bx.warnBg)],
+                      if (over) ...[const SizedBox(width: 6), StatusChip(l.overLimit, bx.warn, bx.warnBg)],
                     ],
                   ),
                   const SizedBox(height: 2),
-                  Text(c.mobile.isEmpty ? 'No mobile' : c.mobile, style: TextStyle(fontSize: 12, color: bx.muted)),
+                  Text(c.mobile.isEmpty ? l.noMobile : c.mobile, style: TextStyle(fontSize: 12, color: bx.muted)),
                 ],
               ),
             ),
@@ -120,10 +119,10 @@ class CustomersScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  bal > 0 ? money(bal) : 'Settled',
+                  bal > 0 ? money(bal) : l.settledLabel,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: bal > 0 ? bx.danger : bx.pos),
                 ),
-                Text(bal > 0 ? 'outstanding' : 'no dues', style: TextStyle(fontSize: 11, color: bx.faint)),
+                Text(bal > 0 ? l.outstandingLabel : l.noDues, style: TextStyle(fontSize: 11, color: bx.faint)),
               ],
             ),
             Icon(Icons.chevron_right, size: 20, color: bx.faint),
@@ -169,6 +168,7 @@ class CustomerDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     return AnimatedBuilder(
       animation: state,
       builder: (context, _) {
@@ -197,7 +197,7 @@ class CustomerDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'OUTSTANDING BALANCE',
+                        l.outstandingBalance,
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
                       ),
                       const SizedBox(height: 6),
@@ -210,12 +210,12 @@ class CustomerDetailScreen extends StatelessWidget {
                         children: [
                           Icon(Icons.phone_outlined, size: 14, color: bx.muted),
                           const SizedBox(width: 5),
-                          Text(c.mobile.isEmpty ? 'No mobile' : c.mobile, style: TextStyle(fontSize: 13, color: bx.muted)),
+                          Text(c.mobile.isEmpty ? l.noMobile : c.mobile, style: TextStyle(fontSize: 13, color: bx.muted)),
                           if (c.creditLimit > 0) ...[
                             const SizedBox(width: 12),
                             Icon(Icons.credit_score_outlined, size: 14, color: bx.muted),
                             const SizedBox(width: 5),
-                            Text('Limit ${money(c.creditLimit)}', style: TextStyle(fontSize: 13, color: bx.muted)),
+                            Text(l.limitLabel(money(c.creditLimit)), style: TextStyle(fontSize: 13, color: bx.muted)),
                           ],
                         ],
                       ),
@@ -223,11 +223,7 @@ class CustomerDetailScreen extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: FilledButton.icon(
-                              onPressed: bal <= 0 ? null : () => _collect(context, c, bal),
-                              icon: const Icon(Icons.payments_outlined, size: 18),
-                              label: const Text('Collect payment'),
-                            ),
+                            child: FilledButton.icon(onPressed: bal <= 0 ? null : () => _collect(context, c, bal), icon: const Icon(Icons.payments_outlined, size: 18), label: Text(l.collectPayment)),
                           ),
                         ],
                       ),
@@ -239,7 +235,7 @@ class CustomerDetailScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 2, bottom: 8),
                 child: Text(
-                  'LEDGER',
+                  l.ledgerLabel,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
                 ),
               ),
@@ -248,7 +244,7 @@ class CustomerDetailScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 32),
                     child: Center(
-                      child: Text('No ledger entries', style: TextStyle(color: bx.muted)),
+                      child: Text(l.noLedgerEntries, style: TextStyle(color: bx.muted)),
                     ),
                   ),
                 )
@@ -263,6 +259,7 @@ class CustomerDetailScreen extends StatelessWidget {
 
   Widget _ledgerRow(BuildContext context, LedgerEntry e, double running, bool first) {
     final bx = context.bx;
+    final l = L.of(context);
     final isCredit = e.credit > 0;
     return Container(
       decoration: BoxDecoration(
@@ -294,7 +291,7 @@ class CustomerDetailScreen extends StatelessWidget {
                 '${isCredit ? '−' : '+'}${money(isCredit ? e.credit : e.debit)}',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: isCredit ? bx.pos : Theme.of(context).colorScheme.onSurface),
               ),
-              Text('bal ${money(running)}', style: TextStyle(fontSize: 11, color: bx.faint)),
+              Text(l.balLabel(money(running)), style: TextStyle(fontSize: 11, color: bx.faint)),
             ],
           ),
         ],
@@ -303,6 +300,7 @@ class CustomerDetailScreen extends StatelessWidget {
   }
 
   Future<void> _collect(BuildContext context, Customer c, double due) async {
+    final l = L.of(context);
     final controller = TextEditingController(text: due.toStringAsFixed(2));
     String mode = 'Cash';
     final messenger = ScaffoldMessenger.of(context);
@@ -321,14 +319,14 @@ class CustomerDetailScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Collect from ${c.name}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    Text(l.collectFrom(c.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 4),
-                    Text('${money(due)} outstanding', style: TextStyle(fontSize: 13, color: bx.muted)),
+                    Text(l.outstandingSuffix(money(due)), style: TextStyle(fontSize: 13, color: bx.muted)),
                     const SizedBox(height: 14),
                     TextField(
                       controller: controller,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Amount', border: OutlineInputBorder()),
+                      decoration: InputDecoration(prefixText: '₹ ', labelText: l.amount, border: const OutlineInputBorder()),
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -341,7 +339,7 @@ class CustomerDetailScreen extends StatelessWidget {
                     FilledButton(
                       onPressed: () => Navigator.pop(ctx, true),
                       style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                      child: const Text('Record collection'),
+                      child: Text(l.recordCollection),
                     ),
                   ],
                 ),
@@ -353,12 +351,12 @@ class CustomerDetailScreen extends StatelessWidget {
       if (result == true) {
         var amt = double.tryParse(controller.text.trim()) ?? 0;
         if (amt <= 0) {
-          messenger.showSnackBar(const SnackBar(content: Text('Enter an amount greater than 0')));
+          messenger.showSnackBar(SnackBar(content: Text(l.enterAmtGt0)));
           return;
         }
         if (amt > due) amt = due; // never collect more than what's outstanding
         final entry = state.collect(customer: c, amount: amt, mode: mode, nowMs: DateTime.now().millisecondsSinceEpoch);
-        messenger.showSnackBar(SnackBar(content: Text('${entry.ref} · ${money(amt)} collected ✓')));
+        messenger.showSnackBar(SnackBar(content: Text(l.collectedSnack(entry.ref, money(amt)))));
       }
     } finally {
       controller.dispose();

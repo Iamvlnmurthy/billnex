@@ -722,4 +722,88 @@ class LEn extends L {
   String exportFailed(String err) {
     return 'Export failed: $err';
   }
+
+  @override
+  String get addCustomer => 'Add customer';
+
+  @override
+  String get customersTitle => 'Customers & Credit';
+
+  @override
+  String customersSubtitle(int count, String receivable, int accounts) {
+    return '$count customers · $receivable receivable across $accounts accounts.';
+  }
+
+  @override
+  String get khataLedger => 'Khata ledger';
+
+  @override
+  String get noCustomersTitle => 'No customers yet';
+
+  @override
+  String get noCustomersSub => 'Add one here, or attach a customer on a credit sale.';
+
+  @override
+  String get sectionOutstanding => 'Outstanding';
+
+  @override
+  String get sectionSettled => 'Settled';
+
+  @override
+  String get overLimit => 'Over limit';
+
+  @override
+  String get noMobile => 'No mobile';
+
+  @override
+  String get settledLabel => 'Settled';
+
+  @override
+  String get outstandingLabel => 'outstanding';
+
+  @override
+  String get noDues => 'no dues';
+
+  @override
+  String get outstandingBalance => 'OUTSTANDING BALANCE';
+
+  @override
+  String limitLabel(String amt) {
+    return 'Limit $amt';
+  }
+
+  @override
+  String get collectPayment => 'Collect payment';
+
+  @override
+  String get ledgerLabel => 'LEDGER';
+
+  @override
+  String get noLedgerEntries => 'No ledger entries';
+
+  @override
+  String balLabel(String amt) {
+    return 'bal $amt';
+  }
+
+  @override
+  String collectFrom(String name) {
+    return 'Collect from $name';
+  }
+
+  @override
+  String outstandingSuffix(String amt) {
+    return '$amt outstanding';
+  }
+
+  @override
+  String get recordCollection => 'Record collection';
+
+  @override
+  String get enterAmtGt0 => 'Enter an amount greater than 0';
+
+  @override
+  String collectedSnack(String ref, String amt) {
+    return '$ref · $amt collected ✓';
+  }
 }
