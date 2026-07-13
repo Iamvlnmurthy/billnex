@@ -228,7 +228,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           child: Row(
             children: [
               Text(
-                'Amount',
+                L.of(context).amount,
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: bx.muted),
               ),
               const Spacer(),
