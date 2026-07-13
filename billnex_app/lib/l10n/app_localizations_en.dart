@@ -382,4 +382,235 @@ class LEn extends L {
 
   @override
   String get shareFail => 'Couldn\'t share the PDF';
+
+  @override
+  String get invTitle => 'Inventory & Stock';
+
+  @override
+  String invSubtitle(int skus, int low, String value) {
+    return '$skus SKUs · $low low · $value at cost.';
+  }
+
+  @override
+  String get liveStockLedger => 'Live stock ledger';
+
+  @override
+  String get searchItem => 'Search item…';
+
+  @override
+  String lowFilter(int count) {
+    return 'Low ($count)';
+  }
+
+  @override
+  String get noProductsTitle => 'No products yet';
+
+  @override
+  String get noMatchesTitle => 'No matches';
+
+  @override
+  String get noProductsSub => 'Tap \"Add product\" to build your catalogue.';
+
+  @override
+  String get noMatchesSub => 'Try a different search.';
+
+  @override
+  String get addProductBtn => 'Add product';
+
+  @override
+  String get chipOut => 'OUT';
+
+  @override
+  String get chipLow => 'LOW';
+
+  @override
+  String pricePerUnitReorder(String price, String unit, String reorder) {
+    return '$price / $unit · reorder $reorder';
+  }
+
+  @override
+  String get service => 'service';
+
+  @override
+  String get newProduct => 'New product';
+
+  @override
+  String get fieldName => 'Name';
+
+  @override
+  String get enterProductName => 'Enter a product name';
+
+  @override
+  String get productExistsErr => 'A product with this name already exists';
+
+  @override
+  String get fieldUnit => 'Unit';
+
+  @override
+  String get sellPrice => 'Sell price';
+
+  @override
+  String get enterPriceGt0 => 'Enter a price > 0';
+
+  @override
+  String get costOptional => 'Cost (optional)';
+
+  @override
+  String get trackStock => 'Track stock';
+
+  @override
+  String get trackStockSub => 'Off for services (salon, repair)';
+
+  @override
+  String get openingQty => 'Opening qty';
+
+  @override
+  String get geZero => '≥ 0';
+
+  @override
+  String get reorderLevel => 'Reorder level';
+
+  @override
+  String get fieldCategory => 'Category';
+
+  @override
+  String get hsnSac => 'HSN/SAC';
+
+  @override
+  String get barcodeOptional => 'Barcode (optional)';
+
+  @override
+  String get barcodeUsedErr => 'Barcode already used by another product';
+
+  @override
+  String get addToCatalogue => 'Add to catalogue';
+
+  @override
+  String get gstPct => 'GST %';
+
+  @override
+  String addedSnack(String name) {
+    return '$name added ✓';
+  }
+
+  @override
+  String get addFailExists => 'Could not add — name already exists';
+
+  @override
+  String get onHand => 'ON HAND';
+
+  @override
+  String reorderAtCost(String reorder, String cost) {
+    return 'Reorder at $reorder · cost $cost';
+  }
+
+  @override
+  String get reduce => 'Reduce';
+
+  @override
+  String get addStock => 'Add stock';
+
+  @override
+  String get batches => 'Batches';
+
+  @override
+  String get chipExpired => 'EXPIRED';
+
+  @override
+  String get chipNearExpiry => 'NEAR EXPIRY';
+
+  @override
+  String batchNo(String no) {
+    return 'Batch $no';
+  }
+
+  @override
+  String expLabel(String date) {
+    return 'exp $date';
+  }
+
+  @override
+  String get movementHistory => 'Movement history';
+
+  @override
+  String get editProductTooltip => 'Edit product';
+
+  @override
+  String get deleteProductTooltip => 'Delete product';
+
+  @override
+  String get editProduct => 'Edit product';
+
+  @override
+  String get enterName => 'Enter a name';
+
+  @override
+  String get fieldReorder => 'Reorder';
+
+  @override
+  String get fieldCost => 'Cost';
+
+  @override
+  String get gtZeroShort => '> 0';
+
+  @override
+  String get usedByAnother => 'Used by another product';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get productUpdated => 'Product updated ✓';
+
+  @override
+  String get removeProductTitle => 'Remove product?';
+
+  @override
+  String removeProductBody(String name) {
+    return 'Remove \"$name\" from your catalogue? Past sales keep their records.';
+  }
+
+  @override
+  String get removeAction => 'Remove';
+
+  @override
+  String addStockTitle(String name) {
+    return 'Add stock · $name';
+  }
+
+  @override
+  String reduceStockTitle(String name) {
+    return 'Reduce stock · $name';
+  }
+
+  @override
+  String onHandLabel(String qty, String unit) {
+    return 'On hand: $qty $unit';
+  }
+
+  @override
+  String quantityUnit(String unit) {
+    return 'Quantity ($unit)';
+  }
+
+  @override
+  String get reasonField => 'Reason';
+
+  @override
+  String get recordAdjustment => 'Record adjustment';
+
+  @override
+  String get enterQtyGt0 => 'Enter a quantity greater than 0';
+
+  @override
+  String get stockAdded => 'Stock added ✓';
+
+  @override
+  String get stockReduced => 'Stock reduced ✓';
+
+  @override
+  String get purchaseRestock => 'Purchase / restock';
+
+  @override
+  String get damageCorrection => 'Damage / correction';
 }

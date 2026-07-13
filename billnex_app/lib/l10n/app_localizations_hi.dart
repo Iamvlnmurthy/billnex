@@ -382,4 +382,235 @@ class LHi extends L {
 
   @override
   String get shareFail => 'PDF शेयर नहीं हो सका';
+
+  @override
+  String get invTitle => 'स्टॉक और इन्वेंट्री';
+
+  @override
+  String invSubtitle(int skus, int low, String value) {
+    return '$skus SKU · $low कम · लागत पर $value।';
+  }
+
+  @override
+  String get liveStockLedger => 'लाइव स्टॉक बही';
+
+  @override
+  String get searchItem => 'वस्तु खोजें…';
+
+  @override
+  String lowFilter(int count) {
+    return 'कम ($count)';
+  }
+
+  @override
+  String get noProductsTitle => 'अभी कोई वस्तु नहीं';
+
+  @override
+  String get noMatchesTitle => 'कोई मेल नहीं';
+
+  @override
+  String get noProductsSub => 'अपनी सूची बनाने के लिए \"वस्तु जोड़ें\" पर टैप करें।';
+
+  @override
+  String get noMatchesSub => 'कोई और खोज आज़माएं।';
+
+  @override
+  String get addProductBtn => 'वस्तु जोड़ें';
+
+  @override
+  String get chipOut => 'खत्म';
+
+  @override
+  String get chipLow => 'कम';
+
+  @override
+  String pricePerUnitReorder(String price, String unit, String reorder) {
+    return '$price / $unit · पुनःऑर्डर $reorder';
+  }
+
+  @override
+  String get service => 'सेवा';
+
+  @override
+  String get newProduct => 'नई वस्तु';
+
+  @override
+  String get fieldName => 'नाम';
+
+  @override
+  String get enterProductName => 'वस्तु का नाम दर्ज करें';
+
+  @override
+  String get productExistsErr => 'इस नाम की वस्तु पहले से मौजूद है';
+
+  @override
+  String get fieldUnit => 'इकाई';
+
+  @override
+  String get sellPrice => 'बिक्री मूल्य';
+
+  @override
+  String get enterPriceGt0 => 'मूल्य > 0 दर्ज करें';
+
+  @override
+  String get costOptional => 'लागत (वैकल्पिक)';
+
+  @override
+  String get trackStock => 'स्टॉक ट्रैक करें';
+
+  @override
+  String get trackStockSub => 'सेवाओं के लिए बंद करें (सैलून, मरम्मत)';
+
+  @override
+  String get openingQty => 'प्रारंभिक मात्रा';
+
+  @override
+  String get geZero => '≥ 0';
+
+  @override
+  String get reorderLevel => 'पुनःऑर्डर स्तर';
+
+  @override
+  String get fieldCategory => 'श्रेणी';
+
+  @override
+  String get hsnSac => 'HSN/SAC';
+
+  @override
+  String get barcodeOptional => 'बारकोड (वैकल्पिक)';
+
+  @override
+  String get barcodeUsedErr => 'बारकोड पहले से किसी अन्य वस्तु में उपयोग में है';
+
+  @override
+  String get addToCatalogue => 'सूची में जोड़ें';
+
+  @override
+  String get gstPct => 'GST %';
+
+  @override
+  String addedSnack(String name) {
+    return '$name जोड़ा गया ✓';
+  }
+
+  @override
+  String get addFailExists => 'जोड़ नहीं सके — नाम पहले से मौजूद है';
+
+  @override
+  String get onHand => 'उपलब्ध';
+
+  @override
+  String reorderAtCost(String reorder, String cost) {
+    return '$reorder पर पुनःऑर्डर · लागत $cost';
+  }
+
+  @override
+  String get reduce => 'घटाएं';
+
+  @override
+  String get addStock => 'स्टॉक जोड़ें';
+
+  @override
+  String get batches => 'बैच';
+
+  @override
+  String get chipExpired => 'समाप्त';
+
+  @override
+  String get chipNearExpiry => 'जल्द समाप्त';
+
+  @override
+  String batchNo(String no) {
+    return 'बैच $no';
+  }
+
+  @override
+  String expLabel(String date) {
+    return 'समाप्ति $date';
+  }
+
+  @override
+  String get movementHistory => 'गतिविधि इतिहास';
+
+  @override
+  String get editProductTooltip => 'वस्तु संपादित करें';
+
+  @override
+  String get deleteProductTooltip => 'वस्तु हटाएं';
+
+  @override
+  String get editProduct => 'वस्तु संपादित करें';
+
+  @override
+  String get enterName => 'नाम दर्ज करें';
+
+  @override
+  String get fieldReorder => 'पुनःऑर्डर';
+
+  @override
+  String get fieldCost => 'लागत';
+
+  @override
+  String get gtZeroShort => '> 0';
+
+  @override
+  String get usedByAnother => 'किसी अन्य वस्तु द्वारा उपयोग में';
+
+  @override
+  String get saveChanges => 'बदलाव सहेजें';
+
+  @override
+  String get productUpdated => 'वस्तु अपडेट हुई ✓';
+
+  @override
+  String get removeProductTitle => 'वस्तु हटाएं?';
+
+  @override
+  String removeProductBody(String name) {
+    return '\"$name\" को अपनी सूची से हटाएं? पिछली बिक्री के रिकॉर्ड बने रहेंगे।';
+  }
+
+  @override
+  String get removeAction => 'हटाएं';
+
+  @override
+  String addStockTitle(String name) {
+    return 'स्टॉक जोड़ें · $name';
+  }
+
+  @override
+  String reduceStockTitle(String name) {
+    return 'स्टॉक घटाएं · $name';
+  }
+
+  @override
+  String onHandLabel(String qty, String unit) {
+    return 'उपलब्ध: $qty $unit';
+  }
+
+  @override
+  String quantityUnit(String unit) {
+    return 'मात्रा ($unit)';
+  }
+
+  @override
+  String get reasonField => 'कारण';
+
+  @override
+  String get recordAdjustment => 'समायोजन दर्ज करें';
+
+  @override
+  String get enterQtyGt0 => '0 से अधिक मात्रा दर्ज करें';
+
+  @override
+  String get stockAdded => 'स्टॉक जोड़ा गया ✓';
+
+  @override
+  String get stockReduced => 'स्टॉक घटाया गया ✓';
+
+  @override
+  String get purchaseRestock => 'खरीद / पुनःस्टॉक';
+
+  @override
+  String get damageCorrection => 'क्षति / सुधार';
 }

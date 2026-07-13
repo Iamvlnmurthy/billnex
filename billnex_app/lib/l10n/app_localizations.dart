@@ -806,6 +806,420 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Couldn\'t share the PDF'**
   String get shareFail;
+
+  /// No description provided for @invTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory & Stock'**
+  String get invTitle;
+
+  /// No description provided for @invSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{skus} SKUs · {low} low · {value} at cost.'**
+  String invSubtitle(int skus, int low, String value);
+
+  /// No description provided for @liveStockLedger.
+  ///
+  /// In en, this message translates to:
+  /// **'Live stock ledger'**
+  String get liveStockLedger;
+
+  /// No description provided for @searchItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Search item…'**
+  String get searchItem;
+
+  /// No description provided for @lowFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Low ({count})'**
+  String lowFilter(int count);
+
+  /// No description provided for @noProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No products yet'**
+  String get noProductsTitle;
+
+  /// No description provided for @noMatchesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches'**
+  String get noMatchesTitle;
+
+  /// No description provided for @noProductsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"Add product\" to build your catalogue.'**
+  String get noProductsSub;
+
+  /// No description provided for @noMatchesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search.'**
+  String get noMatchesSub;
+
+  /// No description provided for @addProductBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get addProductBtn;
+
+  /// No description provided for @chipOut.
+  ///
+  /// In en, this message translates to:
+  /// **'OUT'**
+  String get chipOut;
+
+  /// No description provided for @chipLow.
+  ///
+  /// In en, this message translates to:
+  /// **'LOW'**
+  String get chipLow;
+
+  /// No description provided for @pricePerUnitReorder.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} / {unit} · reorder {reorder}'**
+  String pricePerUnitReorder(String price, String unit, String reorder);
+
+  /// No description provided for @service.
+  ///
+  /// In en, this message translates to:
+  /// **'service'**
+  String get service;
+
+  /// No description provided for @newProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'New product'**
+  String get newProduct;
+
+  /// No description provided for @fieldName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get fieldName;
+
+  /// No description provided for @enterProductName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a product name'**
+  String get enterProductName;
+
+  /// No description provided for @productExistsErr.
+  ///
+  /// In en, this message translates to:
+  /// **'A product with this name already exists'**
+  String get productExistsErr;
+
+  /// No description provided for @fieldUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get fieldUnit;
+
+  /// No description provided for @sellPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell price'**
+  String get sellPrice;
+
+  /// No description provided for @enterPriceGt0.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a price > 0'**
+  String get enterPriceGt0;
+
+  /// No description provided for @costOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost (optional)'**
+  String get costOptional;
+
+  /// No description provided for @trackStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Track stock'**
+  String get trackStock;
+
+  /// No description provided for @trackStockSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Off for services (salon, repair)'**
+  String get trackStockSub;
+
+  /// No description provided for @openingQty.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening qty'**
+  String get openingQty;
+
+  /// No description provided for @geZero.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 0'**
+  String get geZero;
+
+  /// No description provided for @reorderLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder level'**
+  String get reorderLevel;
+
+  /// No description provided for @fieldCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get fieldCategory;
+
+  /// No description provided for @hsnSac.
+  ///
+  /// In en, this message translates to:
+  /// **'HSN/SAC'**
+  String get hsnSac;
+
+  /// No description provided for @barcodeOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode (optional)'**
+  String get barcodeOptional;
+
+  /// No description provided for @barcodeUsedErr.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode already used by another product'**
+  String get barcodeUsedErr;
+
+  /// No description provided for @addToCatalogue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to catalogue'**
+  String get addToCatalogue;
+
+  /// No description provided for @gstPct.
+  ///
+  /// In en, this message translates to:
+  /// **'GST %'**
+  String get gstPct;
+
+  /// No description provided for @addedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} added ✓'**
+  String addedSnack(String name);
+
+  /// No description provided for @addFailExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not add — name already exists'**
+  String get addFailExists;
+
+  /// No description provided for @onHand.
+  ///
+  /// In en, this message translates to:
+  /// **'ON HAND'**
+  String get onHand;
+
+  /// No description provided for @reorderAtCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder at {reorder} · cost {cost}'**
+  String reorderAtCost(String reorder, String cost);
+
+  /// No description provided for @reduce.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce'**
+  String get reduce;
+
+  /// No description provided for @addStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Add stock'**
+  String get addStock;
+
+  /// No description provided for @batches.
+  ///
+  /// In en, this message translates to:
+  /// **'Batches'**
+  String get batches;
+
+  /// No description provided for @chipExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'EXPIRED'**
+  String get chipExpired;
+
+  /// No description provided for @chipNearExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'NEAR EXPIRY'**
+  String get chipNearExpiry;
+
+  /// No description provided for @batchNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch {no}'**
+  String batchNo(String no);
+
+  /// No description provided for @expLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'exp {date}'**
+  String expLabel(String date);
+
+  /// No description provided for @movementHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement history'**
+  String get movementHistory;
+
+  /// No description provided for @editProductTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit product'**
+  String get editProductTooltip;
+
+  /// No description provided for @deleteProductTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete product'**
+  String get deleteProductTooltip;
+
+  /// No description provided for @editProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit product'**
+  String get editProduct;
+
+  /// No description provided for @enterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get enterName;
+
+  /// No description provided for @fieldReorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder'**
+  String get fieldReorder;
+
+  /// No description provided for @fieldCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost'**
+  String get fieldCost;
+
+  /// No description provided for @gtZeroShort.
+  ///
+  /// In en, this message translates to:
+  /// **'> 0'**
+  String get gtZeroShort;
+
+  /// No description provided for @usedByAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Used by another product'**
+  String get usedByAnother;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
+  /// No description provided for @productUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Product updated ✓'**
+  String get productUpdated;
+
+  /// No description provided for @removeProductTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove product?'**
+  String get removeProductTitle;
+
+  /// No description provided for @removeProductBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{name}\" from your catalogue? Past sales keep their records.'**
+  String removeProductBody(String name);
+
+  /// No description provided for @removeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removeAction;
+
+  /// No description provided for @addStockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add stock · {name}'**
+  String addStockTitle(String name);
+
+  /// No description provided for @reduceStockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce stock · {name}'**
+  String reduceStockTitle(String name);
+
+  /// No description provided for @onHandLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'On hand: {qty} {unit}'**
+  String onHandLabel(String qty, String unit);
+
+  /// No description provided for @quantityUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity ({unit})'**
+  String quantityUnit(String unit);
+
+  /// No description provided for @reasonField.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get reasonField;
+
+  /// No description provided for @recordAdjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Record adjustment'**
+  String get recordAdjustment;
+
+  /// No description provided for @enterQtyGt0.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0'**
+  String get enterQtyGt0;
+
+  /// No description provided for @stockAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock added ✓'**
+  String get stockAdded;
+
+  /// No description provided for @stockReduced.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock reduced ✓'**
+  String get stockReduced;
+
+  /// No description provided for @purchaseRestock.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase / restock'**
+  String get purchaseRestock;
+
+  /// No description provided for @damageCorrection.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage / correction'**
+  String get damageCorrection;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

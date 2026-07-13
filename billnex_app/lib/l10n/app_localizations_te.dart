@@ -382,4 +382,235 @@ class LTe extends L {
 
   @override
   String get shareFail => 'PDF షేర్ చేయలేకపోయింది';
+
+  @override
+  String get invTitle => 'నిల్వ & స్టాక్';
+
+  @override
+  String invSubtitle(int skus, int low, String value) {
+    return '$skus SKUలు · $low తక్కువ · ధరకు $value.';
+  }
+
+  @override
+  String get liveStockLedger => 'లైవ్ స్టాక్ లెడ్జర్';
+
+  @override
+  String get searchItem => 'వస్తువును వెతకండి…';
+
+  @override
+  String lowFilter(int count) {
+    return 'తక్కువ ($count)';
+  }
+
+  @override
+  String get noProductsTitle => 'ఇంకా వస్తువులు లేవు';
+
+  @override
+  String get noMatchesTitle => 'సరిపోలికలు లేవు';
+
+  @override
+  String get noProductsSub => 'మీ జాబితాను రూపొందించడానికి \"వస్తువు జోడించు\" నొక్కండి.';
+
+  @override
+  String get noMatchesSub => 'వేరే శోధన ప్రయత్నించండి.';
+
+  @override
+  String get addProductBtn => 'వస్తువు జోడించు';
+
+  @override
+  String get chipOut => 'అయిపోయింది';
+
+  @override
+  String get chipLow => 'తక్కువ';
+
+  @override
+  String pricePerUnitReorder(String price, String unit, String reorder) {
+    return '$price / $unit · రీఆర్డర్ $reorder';
+  }
+
+  @override
+  String get service => 'సేవ';
+
+  @override
+  String get newProduct => 'కొత్త వస్తువు';
+
+  @override
+  String get fieldName => 'పేరు';
+
+  @override
+  String get enterProductName => 'వస్తువు పేరు నమోదు చేయండి';
+
+  @override
+  String get productExistsErr => 'ఈ పేరుతో వస్తువు ఇప్పటికే ఉంది';
+
+  @override
+  String get fieldUnit => 'యూనిట్';
+
+  @override
+  String get sellPrice => 'అమ్మకపు ధర';
+
+  @override
+  String get enterPriceGt0 => 'ధర > 0 నమోదు చేయండి';
+
+  @override
+  String get costOptional => 'ధర (ఐచ్ఛికం)';
+
+  @override
+  String get trackStock => 'స్టాక్ ట్రాక్ చేయి';
+
+  @override
+  String get trackStockSub => 'సేవలకు ఆఫ్ చేయండి (సెలూన్, రిపేర్)';
+
+  @override
+  String get openingQty => 'ప్రారంభ పరిమాణం';
+
+  @override
+  String get geZero => '≥ 0';
+
+  @override
+  String get reorderLevel => 'రీఆర్డర్ స్థాయి';
+
+  @override
+  String get fieldCategory => 'వర్గం';
+
+  @override
+  String get hsnSac => 'HSN/SAC';
+
+  @override
+  String get barcodeOptional => 'బార్‌కోడ్ (ఐచ్ఛికం)';
+
+  @override
+  String get barcodeUsedErr => 'బార్‌కోడ్ ఇప్పటికే మరో వస్తువులో వాడబడింది';
+
+  @override
+  String get addToCatalogue => 'జాబితాకు జోడించు';
+
+  @override
+  String get gstPct => 'GST %';
+
+  @override
+  String addedSnack(String name) {
+    return '$name జోడించబడింది ✓';
+  }
+
+  @override
+  String get addFailExists => 'జోడించలేకపోయాము — పేరు ఇప్పటికే ఉంది';
+
+  @override
+  String get onHand => 'అందుబాటులో';
+
+  @override
+  String reorderAtCost(String reorder, String cost) {
+    return '$reorder వద్ద రీఆర్డర్ · ధర $cost';
+  }
+
+  @override
+  String get reduce => 'తగ్గించు';
+
+  @override
+  String get addStock => 'స్టాక్ జోడించు';
+
+  @override
+  String get batches => 'బ్యాచ్‌లు';
+
+  @override
+  String get chipExpired => 'గడువు ముగిసింది';
+
+  @override
+  String get chipNearExpiry => 'గడువు దగ్గర';
+
+  @override
+  String batchNo(String no) {
+    return 'బ్యాచ్ $no';
+  }
+
+  @override
+  String expLabel(String date) {
+    return 'గడువు $date';
+  }
+
+  @override
+  String get movementHistory => 'కదలిక చరిత్ర';
+
+  @override
+  String get editProductTooltip => 'వస్తువు సవరించు';
+
+  @override
+  String get deleteProductTooltip => 'వస్తువు తొలగించు';
+
+  @override
+  String get editProduct => 'వస్తువు సవరించు';
+
+  @override
+  String get enterName => 'పేరు నమోదు చేయండి';
+
+  @override
+  String get fieldReorder => 'రీఆర్డర్';
+
+  @override
+  String get fieldCost => 'ధర';
+
+  @override
+  String get gtZeroShort => '> 0';
+
+  @override
+  String get usedByAnother => 'మరో వస్తువు వాడుతోంది';
+
+  @override
+  String get saveChanges => 'మార్పులు సేవ్ చేయి';
+
+  @override
+  String get productUpdated => 'వస్తువు అప్‌డేట్ అయింది ✓';
+
+  @override
+  String get removeProductTitle => 'వస్తువును తొలగించాలా?';
+
+  @override
+  String removeProductBody(String name) {
+    return '\"$name\"ను మీ జాబితా నుండి తొలగించాలా? గత అమ్మకాల రికార్డులు అలాగే ఉంటాయి.';
+  }
+
+  @override
+  String get removeAction => 'తొలగించు';
+
+  @override
+  String addStockTitle(String name) {
+    return 'స్టాక్ జోడించు · $name';
+  }
+
+  @override
+  String reduceStockTitle(String name) {
+    return 'స్టాక్ తగ్గించు · $name';
+  }
+
+  @override
+  String onHandLabel(String qty, String unit) {
+    return 'అందుబాటులో: $qty $unit';
+  }
+
+  @override
+  String quantityUnit(String unit) {
+    return 'పరిమాణం ($unit)';
+  }
+
+  @override
+  String get reasonField => 'కారణం';
+
+  @override
+  String get recordAdjustment => 'సర్దుబాటు నమోదు చేయి';
+
+  @override
+  String get enterQtyGt0 => '0 కంటే ఎక్కువ పరిమాణం నమోదు చేయండి';
+
+  @override
+  String get stockAdded => 'స్టాక్ జోడించబడింది ✓';
+
+  @override
+  String get stockReduced => 'స్టాక్ తగ్గించబడింది ✓';
+
+  @override
+  String get purchaseRestock => 'కొనుగోలు / రీస్టాక్';
+
+  @override
+  String get damageCorrection => 'నష్టం / సవరణ';
 }

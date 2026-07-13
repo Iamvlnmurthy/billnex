@@ -5,6 +5,7 @@ import '../services/billing.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/empty_state.dart';
+import '../l10n/app_localizations.dart';
 import 'customers_screen.dart' show StatusChip;
 
 class InventoryScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final state = widget.state;
     var items = state.stockItems;
     if (_lowOnly) items = items.where((i) => i.low).toList();
@@ -29,7 +31,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton.extended(onPressed: () => _addProduct(context), icon: const Icon(Icons.add), label: const Text('Add product')),
+      floatingActionButton: FloatingActionButton.extended(onPressed: () => _addProduct(context), icon: const Icon(Icons.add), label: Text(l.addProductBtn)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
         children: [
@@ -38,7 +40,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PageHeader('Inventory & Stock', '${state.stockItems.length} SKUs · ${state.lowStockCount} low · ${money(stockValue)} at cost.', trailing: const Badge2('Live stock ledger')),
+                PageHeader(l.invTitle, l.invSubtitle(state.stockItems.length, state.lowStockCount, money(stockValue)), trailing: Badge2(l.liveStockLedger)),
                 Row(
                   children: [
                     Expanded(
@@ -56,7 +58,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               padding: const EdgeInsets.only(left: 14),
                               child: Icon(Icons.search, color: bx.muted),
                             ),
-                            hintText: 'Search item…',
+                            hintText: l.searchItem,
                             contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
                           ),
                         ),
@@ -67,7 +69,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       selected: _lowOnly,
                       onSelected: (v) => setState(() => _lowOnly = v),
                       avatar: Icon(Icons.warning_amber_rounded, size: 16, color: _lowOnly ? bx.onAccent : bx.warn),
-                      label: Text('Low (${state.lowStockCount})'),
+                      label: Text(l.lowFilter(state.lowStockCount)),
                       showCheckmark: false,
                     ),
                   ],
@@ -77,8 +79,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   Card(
                     child: EmptyState(
                       illustration: 'empty-no-products',
-                      title: state.stockItems.isEmpty ? 'No products yet' : 'No matches',
-                      subtitle: state.stockItems.isEmpty ? 'Tap "Add product" to build your catalogue.' : 'Try a different search.',
+                      title: state.stockItems.isEmpty ? l.noProductsTitle : l.noMatchesTitle,
+                      subtitle: state.stockItems.isEmpty ? l.noProductsSub : l.noMatchesSub,
                     ),
                   )
                 else
@@ -93,6 +95,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   Widget _row(BuildContext context, StockItem it, bool first) {
     final bx = context.bx;
+    final l = L.of(context);
     final qtyColor = it.out ? bx.danger : (it.low ? bx.warn : bx.pos);
     return InkWell(
       onTap: () => Navigator.push(
@@ -128,12 +131,18 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (it.out) ...[const SizedBox(width: 6), StatusChip('OUT', bx.danger, bx.dangerBg)] else if (it.low) ...[const SizedBox(width: 6), StatusChip('LOW', bx.warn, bx.warnBg)],
+                      if (it.out) ...[
+                        const SizedBox(width: 6),
+                        StatusChip(l.chipOut, bx.danger, bx.dangerBg),
+                      ] else if (it.low) ...[
+                        const SizedBox(width: 6),
+                        StatusChip(l.chipLow, bx.warn, bx.warnBg),
+                      ],
                       if (it.batches.isNotEmpty) ...[const SizedBox(width: 6), Icon(Icons.event_outlined, size: 13, color: bx.faint)],
                     ],
                   ),
                   const SizedBox(height: 2),
-                  Text('${money(it.price)} / ${it.unit} · reorder ${it.reorderLevel.toStringAsFixed(0)}', style: TextStyle(fontSize: 12, color: bx.muted)),
+                  Text(l.pricePerUnitReorder(money(it.price), it.unit, it.reorderLevel.toStringAsFixed(0)), style: TextStyle(fontSize: 12, color: bx.muted)),
                 ],
               ),
             ),
@@ -144,7 +153,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   it.stockTracked ? qtyLabel(it.qty) : '—',
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: qtyColor),
                 ),
-                Text(it.stockTracked ? it.unit : 'service', style: TextStyle(fontSize: 11, color: bx.faint)),
+                Text(it.stockTracked ? it.unit : l.service, style: TextStyle(fontSize: 11, color: bx.faint)),
               ],
             ),
             Icon(Icons.chevron_right, size: 20, color: bx.faint),
@@ -167,6 +176,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     final formKey = GlobalKey<FormState>();
     double gst = 5;
     bool tracked = true;
+    final l = L.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final state = widget.state;
     try {
@@ -184,17 +194,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text('New product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    Text(l.newProduct, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: name,
                       autofocus: true,
                       textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+                      decoration: InputDecoration(labelText: l.fieldName, border: const OutlineInputBorder()),
                       validator: (v) {
                         final t = (v ?? '').trim();
-                        if (t.isEmpty) return 'Enter a product name';
-                        if (state.productExists(t)) return 'A product with this name already exists';
+                        if (t.isEmpty) return l.enterProductName;
+                        if (state.productExists(t)) return l.productExistsErr;
                         return null;
                       },
                     ),
@@ -204,7 +214,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: unit,
-                            decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: l.fieldUnit, border: const OutlineInputBorder()),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -212,10 +222,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           child: TextFormField(
                             controller: price,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Sell price', border: OutlineInputBorder()),
+                            decoration: InputDecoration(prefixText: '₹ ', labelText: l.sellPrice, border: const OutlineInputBorder()),
                             validator: (v) {
                               final p = double.tryParse((v ?? '').trim());
-                              if (p == null || p <= 0) return 'Enter a price > 0';
+                              if (p == null || p <= 0) return l.enterPriceGt0;
                               return null;
                             },
                           ),
@@ -233,19 +243,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           child: TextFormField(
                             controller: cost,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cost (optional)', border: OutlineInputBorder()),
+                            decoration: InputDecoration(prefixText: '₹ ', labelText: l.costOptional, border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 10),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Track stock'),
-                      subtitle: const Text('Off for services (salon, repair)'),
-                      value: tracked,
-                      onChanged: (v) => setSt(() => tracked = v),
-                    ),
+                    SwitchListTile(contentPadding: EdgeInsets.zero, title: Text(l.trackStock), subtitle: Text(l.trackStockSub), value: tracked, onChanged: (v) => setSt(() => tracked = v)),
                     if (tracked) ...[
                       Row(
                         children: [
@@ -253,8 +257,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             child: TextFormField(
                               controller: qty,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              decoration: const InputDecoration(labelText: 'Opening qty', border: OutlineInputBorder()),
-                              validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) < 0 ? '≥ 0' : null,
+                              decoration: InputDecoration(labelText: l.openingQty, border: const OutlineInputBorder()),
+                              validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) < 0 ? l.geZero : null,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -262,8 +266,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             child: TextFormField(
                               controller: reorder,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              decoration: const InputDecoration(labelText: 'Reorder level', border: OutlineInputBorder()),
-                              validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) < 0 ? '≥ 0' : null,
+                              decoration: InputDecoration(labelText: l.reorderLevel, border: const OutlineInputBorder()),
+                              validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) < 0 ? l.geZero : null,
                             ),
                           ),
                         ],
@@ -276,7 +280,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           child: TextFormField(
                             controller: category,
                             textCapitalization: TextCapitalization.words,
-                            decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: l.fieldCategory, border: const OutlineInputBorder()),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -284,7 +288,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           child: TextFormField(
                             controller: hsn,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'HSN/SAC', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: l.hsnSac, border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -292,8 +296,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     const SizedBox(height: 10),
                     TextFormField(
                       controller: barcode,
-                      decoration: const InputDecoration(labelText: 'Barcode (optional)', border: OutlineInputBorder()),
-                      validator: (v) => state.barcodeInUse((v ?? '').trim()) ? 'Barcode already used by another product' : null,
+                      decoration: InputDecoration(labelText: l.barcodeOptional, border: const OutlineInputBorder()),
+                      validator: (v) => state.barcodeInUse((v ?? '').trim()) ? l.barcodeUsedErr : null,
                     ),
                     const SizedBox(height: 16),
                     FilledButton(
@@ -301,7 +305,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
                       },
                       style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                      child: const Text('Add to catalogue'),
+                      child: Text(l.addToCatalogue),
                     ),
                   ],
                 ),
@@ -326,7 +330,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           stockTracked: tracked,
           nowMs: DateTime.now().millisecondsSinceEpoch,
         );
-        messenger.showSnackBar(SnackBar(content: Text(added != null ? '${added.name} added ✓' : 'Could not add — name already exists')));
+        messenger.showSnackBar(SnackBar(content: Text(added != null ? l.addedSnack(added.name) : l.addFailExists)));
       }
     } finally {
       for (final c in [name, unit, price, cost, qty, reorder, barcode, category, hsn]) {
@@ -350,7 +354,7 @@ class _GstDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DropdownButtonFormField<double>(
     initialValue: snapGst(value),
-    decoration: const InputDecoration(labelText: 'GST %', border: OutlineInputBorder()),
+    decoration: InputDecoration(labelText: L.of(context).gstPct, border: const OutlineInputBorder()),
     items: _gstSlabs.map((r) => DropdownMenuItem<double>(value: r, child: Text('${r.toStringAsFixed(0)}%'))).toList(),
     onChanged: (v) => onChanged(v ?? 5),
   );
@@ -364,6 +368,7 @@ class StockDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     return AnimatedBuilder(
       animation: state,
       builder: (context, _) {
@@ -380,8 +385,8 @@ class StockDetailScreen extends StatelessWidget {
             title: Text(it.name),
             backgroundColor: Theme.of(context).colorScheme.surface,
             actions: [
-              IconButton(tooltip: 'Edit product', onPressed: () => _editProduct(context, it), icon: const Icon(Icons.edit_outlined)),
-              IconButton(tooltip: 'Delete product', onPressed: () => _deleteProduct(context, it), icon: const Icon(Icons.delete_outline)),
+              IconButton(tooltip: l.editProductTooltip, onPressed: () => _editProduct(context, it), icon: const Icon(Icons.edit_outlined)),
+              IconButton(tooltip: l.deleteProductTooltip, onPressed: () => _deleteProduct(context, it), icon: const Icon(Icons.delete_outline)),
             ],
           ),
           body: ListView(
@@ -394,7 +399,7 @@ class StockDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'ON HAND',
+                        l.onHand,
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
                       ),
                       const SizedBox(height: 6),
@@ -413,17 +418,17 @@ class StockDetailScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text('Reorder at ${it.reorderLevel.toStringAsFixed(0)} · cost ${money(it.cost)}', style: TextStyle(fontSize: 13, color: bx.muted)),
+                      Text(l.reorderAtCost(it.reorderLevel.toStringAsFixed(0), money(it.cost)), style: TextStyle(fontSize: 13, color: bx.muted)),
                       if (it.stockTracked) ...[
                         const SizedBox(height: 14),
                         Row(
                           children: [
                             Expanded(
-                              child: OutlinedButton.icon(onPressed: () => _adjust(context, it, false), icon: const Icon(Icons.remove, size: 18), label: const Text('Reduce')),
+                              child: OutlinedButton.icon(onPressed: () => _adjust(context, it, false), icon: const Icon(Icons.remove, size: 18), label: Text(l.reduce)),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
-                              child: FilledButton.icon(onPressed: () => _adjust(context, it, true), icon: const Icon(Icons.add, size: 18), label: const Text('Add stock')),
+                              child: FilledButton.icon(onPressed: () => _adjust(context, it, true), icon: const Icon(Icons.add, size: 18), label: Text(l.addStock)),
                             ),
                           ],
                         ),
@@ -434,7 +439,7 @@ class StockDetailScreen extends StatelessWidget {
               ),
               if (it.batches.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _label(bx, 'Batches'),
+                _label(bx, l.batches),
                 Card(
                   child: Column(
                     children: [
@@ -449,11 +454,14 @@ class StockDetailScreen extends StatelessWidget {
                               Icon(Icons.event_outlined, size: 18, color: bx.muted),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text('Batch ${it.batches[i].batchNo}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                                child: Text(l.batchNo(it.batches[i].batchNo), style: const TextStyle(fontWeight: FontWeight.w600)),
                               ),
-                              if (it.batches[i].isExpired(now)) StatusChip('EXPIRED', bx.danger, bx.dangerBg) else if (it.batches[i].isNearExpiry(now)) StatusChip('NEAR EXPIRY', bx.warn, bx.warnBg),
+                              if (it.batches[i].isExpired(now))
+                                StatusChip(l.chipExpired, bx.danger, bx.dangerBg)
+                              else if (it.batches[i].isNearExpiry(now))
+                                StatusChip(l.chipNearExpiry, bx.warn, bx.warnBg),
                               const SizedBox(width: 8),
-                              Text('exp ${it.batches[i].expiryLabel}', style: TextStyle(fontSize: 12, color: bx.muted)),
+                              Text(l.expLabel(it.batches[i].expiryLabel), style: TextStyle(fontSize: 12, color: bx.muted)),
                             ],
                           ),
                         ),
@@ -462,7 +470,7 @@ class StockDetailScreen extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 16),
-              _label(bx, 'Movement history'),
+              _label(bx, l.movementHistory),
               Card(child: Column(children: [for (int i = 0; i < moves.length; i++) _moveRow(context, moves[i], i == 0)])),
             ],
           ),
@@ -520,6 +528,7 @@ class StockDetailScreen extends StatelessWidget {
     final hsn = TextEditingController(text: it.hsn ?? '');
     final formKey = GlobalKey<FormState>();
     double gst = it.gstRate;
+    final l = L.of(context);
     final messenger = ScaffoldMessenger.of(context);
     try {
       final ok = await showModalBottomSheet<bool>(
@@ -536,12 +545,12 @@ class StockDetailScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text('Edit product', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    Text(l.editProduct, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: name,
-                      decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
-                      validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a name' : null,
+                      decoration: InputDecoration(labelText: l.fieldName, border: const OutlineInputBorder()),
+                      validator: (v) => (v ?? '').trim().isEmpty ? l.enterName : null,
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -549,7 +558,7 @@ class StockDetailScreen extends StatelessWidget {
                         Expanded(
                           child: TextFormField(
                             controller: unit,
-                            decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: l.fieldUnit, border: const OutlineInputBorder()),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -557,7 +566,7 @@ class StockDetailScreen extends StatelessWidget {
                           child: TextFormField(
                             controller: reorder,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: const InputDecoration(labelText: 'Reorder', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: l.fieldReorder, border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -569,8 +578,8 @@ class StockDetailScreen extends StatelessWidget {
                           child: TextFormField(
                             controller: price,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Sell price', border: OutlineInputBorder()),
-                            validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) <= 0 ? '> 0' : null,
+                            decoration: InputDecoration(prefixText: '₹ ', labelText: l.sellPrice, border: const OutlineInputBorder()),
+                            validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) <= 0 ? l.gtZeroShort : null,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -578,7 +587,7 @@ class StockDetailScreen extends StatelessWidget {
                           child: TextFormField(
                             controller: cost,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cost', border: OutlineInputBorder()),
+                            decoration: InputDecoration(prefixText: '₹ ', labelText: l.fieldCost, border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -594,7 +603,7 @@ class StockDetailScreen extends StatelessWidget {
                           child: TextFormField(
                             controller: hsn,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'HSN/SAC', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: l.hsnSac, border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -606,15 +615,15 @@ class StockDetailScreen extends StatelessWidget {
                           child: TextFormField(
                             controller: category,
                             textCapitalization: TextCapitalization.words,
-                            decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: l.fieldCategory, border: const OutlineInputBorder()),
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
                             controller: barcode,
-                            decoration: const InputDecoration(labelText: 'Barcode', border: OutlineInputBorder()),
-                            validator: (v) => state.barcodeInUse((v ?? '').trim(), exceptSku: it.sku) ? 'Used by another product' : null,
+                            decoration: InputDecoration(labelText: l.barcodeOptional, border: const OutlineInputBorder()),
+                            validator: (v) => state.barcodeInUse((v ?? '').trim(), exceptSku: it.sku) ? l.usedByAnother : null,
                           ),
                         ),
                       ],
@@ -625,7 +634,7 @@ class StockDetailScreen extends StatelessWidget {
                         if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
                       },
                       style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                      child: const Text('Save changes'),
+                      child: Text(l.saveChanges),
                     ),
                   ],
                 ),
@@ -648,7 +657,7 @@ class StockDetailScreen extends StatelessWidget {
           hsn: hsn.text,
           nowMs: DateTime.now().millisecondsSinceEpoch,
         );
-        messenger.showSnackBar(const SnackBar(content: Text('Product updated ✓')));
+        messenger.showSnackBar(SnackBar(content: Text(l.productUpdated)));
       }
     } finally {
       for (final c in [name, unit, price, cost, reorder, barcode, category, hsn]) {
@@ -658,7 +667,8 @@ class StockDetailScreen extends StatelessWidget {
   }
 
   Future<void> _deleteProduct(BuildContext context, StockItem it) async {
-    final ok = await confirmDialog(context, title: 'Remove product?', message: 'Remove "${it.name}" from your catalogue? Past sales keep their records.', confirmLabel: 'Remove', destructive: true);
+    final l = L.of(context);
+    final ok = await confirmDialog(context, title: l.removeProductTitle, message: l.removeProductBody(it.name), confirmLabel: l.removeAction, destructive: true);
     if (ok && context.mounted) {
       state.deleteStockItem(it.sku, nowMs: DateTime.now().millisecondsSinceEpoch);
       if (context.mounted) Navigator.of(context).pop(); // leave the detail page
@@ -666,8 +676,9 @@ class StockDetailScreen extends StatelessWidget {
   }
 
   Future<void> _adjust(BuildContext context, StockItem it, bool add) async {
+    final l = L.of(context);
     final qty = TextEditingController();
-    final reason = TextEditingController(text: add ? 'Purchase / restock' : 'Damage / correction');
+    final reason = TextEditingController(text: add ? l.purchaseRestock : l.damageCorrection);
     final messenger = ScaffoldMessenger.of(context);
     try {
       final ok = await showModalBottomSheet<bool>(
@@ -680,29 +691,29 @@ class StockDetailScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(add ? 'Add stock · ${it.name}' : 'Reduce stock · ${it.name}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              Text(add ? l.addStockTitle(it.name) : l.reduceStockTitle(it.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
               if (!add)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Text('On hand: ${qtyLabel(it.qty)} ${it.unit}', style: TextStyle(fontSize: 12.5, color: context.bx.muted)),
+                  child: Text(l.onHandLabel(qtyLabel(it.qty), it.unit), style: TextStyle(fontSize: 12.5, color: context.bx.muted)),
                 ),
               const SizedBox(height: 12),
               TextField(
                 controller: qty,
                 autofocus: true,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: 'Quantity (${it.unit})', border: const OutlineInputBorder()),
+                decoration: InputDecoration(labelText: l.quantityUnit(it.unit), border: const OutlineInputBorder()),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: reason,
-                decoration: const InputDecoration(labelText: 'Reason', border: OutlineInputBorder()),
+                decoration: InputDecoration(labelText: l.reasonField, border: const OutlineInputBorder()),
               ),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () => Navigator.pop(ctx, true),
                 style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                child: const Text('Record adjustment'),
+                child: Text(l.recordAdjustment),
               ),
             ],
           ),
@@ -711,12 +722,12 @@ class StockDetailScreen extends StatelessWidget {
       if (ok == true) {
         var q = double.tryParse(qty.text.trim()) ?? 0;
         if (q <= 0) {
-          messenger.showSnackBar(const SnackBar(content: Text('Enter a quantity greater than 0')));
+          messenger.showSnackBar(SnackBar(content: Text(l.enterQtyGt0)));
           return;
         }
         if (!add && q > it.qty) q = it.qty; // can't reduce below on-hand
         state.adjustStock(sku: it.sku, delta: add ? q : -q, reason: reason.text.trim(), kind: add ? MoveKind.purchase : MoveKind.damage, nowMs: DateTime.now().millisecondsSinceEpoch);
-        messenger.showSnackBar(SnackBar(content: Text('Stock ${add ? 'added' : 'reduced'} ✓')));
+        messenger.showSnackBar(SnackBar(content: Text(add ? l.stockAdded : l.stockReduced)));
       }
     } finally {
       qty.dispose();
