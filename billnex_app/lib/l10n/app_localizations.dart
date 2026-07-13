@@ -3686,6 +3686,18 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Not set'**
   String get wizardNotSet;
+
+  /// Empty-state title for the tablet master-detail pane when nothing is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Select an item'**
+  String get selectItemTitle;
+
+  /// Empty-state subtitle for the tablet master-detail pane when nothing is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from the list to see details here.'**
+  String get selectItemSub;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

@@ -669,5 +669,9 @@
   "wizardDoneSubtitle": "Your shop is ready. You can fine-tune everything from Settings anytime.",
   "wizardEnterApp": "Enter BillNex",
   "wizardStandardStore": "Standard store",
-  "wizardNotSet": "Not set"
+  "wizardNotSet": "Not set",
+  "selectItemTitle": "Select an item",
+  "@selectItemTitle": { "description": "Empty-state title for the tablet master-detail pane when nothing is selected" },
+  "selectItemSub": "Choose from the list to see details here.",
+  "@selectItemSub": { "description": "Empty-state subtitle for the tablet master-detail pane when nothing is selected" }
 }

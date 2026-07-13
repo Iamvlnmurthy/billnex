@@ -598,5 +598,7 @@
   "wizardDoneSubtitle": "మీ దుకాణం సిద్ధంగా ఉంది. సెట్టింగ్‌ల నుండి ఎప్పుడైనా అన్నింటినీ సర్దుబాటు చేయవచ్చు.",
   "wizardEnterApp": "BillNex తెరవండి",
   "wizardStandardStore": "ప్రామాణిక స్టోర్",
-  "wizardNotSet": "సెట్ కాలేదు"
+  "wizardNotSet": "సెట్ కాలేదు",
+  "selectItemTitle": "ఒక అంశాన్ని ఎంచుకోండి",
+  "selectItemSub": "వివరాలు ఇక్కడ చూడటానికి జాబితా నుండి ఎంచుకోండి."
 }

@@ -18,94 +18,138 @@ class InventoryScreen extends StatefulWidget {
 class _InventoryScreenState extends State<InventoryScreen> {
   String _q = '';
   bool _lowOnly = false;
+  String? _selectedSku;
 
   @override
   Widget build(BuildContext context) {
-    final bx = context.bx;
     final l = L.of(context);
-    final state = widget.state;
-    var items = state.stockItems;
-    if (_lowOnly) items = items.where((i) => i.low).toList();
-    if (_q.isNotEmpty) items = items.where((i) => i.name.toLowerCase().contains(_q.toLowerCase())).toList();
-    final stockValue = state.stockItems.fold<double>(0, (a, i) => a + i.qty * i.cost);
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       floatingActionButton: FloatingActionButton.extended(onPressed: () => _addProduct(context), icon: const Icon(Icons.add), label: Text(l.addProductBtn)),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
-        children: [
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1180),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                PageHeader(l.invTitle, l.invSubtitle(state.stockItems.length, state.lowStockCount, money(stockValue)), trailing: Badge2(l.liveStockLedger)),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: bx.border),
-                        ),
-                        child: TextField(
-                          onChanged: (v) => setState(() => _q = v),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Padding(
-                              padding: const EdgeInsets.only(left: 14),
-                              child: Icon(Icons.search, color: bx.muted),
-                            ),
-                            hintText: l.searchItem,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    FilterChip(
-                      selected: _lowOnly,
-                      onSelected: (v) => setState(() => _lowOnly = v),
-                      avatar: Icon(Icons.warning_amber_rounded, size: 16, color: _lowOnly ? bx.onAccent : bx.warn),
-                      label: Text(l.lowFilter(state.lowStockCount)),
-                      showCheckmark: false,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                if (items.isEmpty)
-                  Card(
-                    child: EmptyState(
-                      illustration: 'empty-no-products',
-                      title: state.stockItems.isEmpty ? l.noProductsTitle : l.noMatchesTitle,
-                      subtitle: state.stockItems.isEmpty ? l.noProductsSub : l.noMatchesSub,
-                    ),
-                  )
-                else
-                  Card(child: Column(children: [for (int i = 0; i < items.length; i++) _row(context, items[i], i == 0)])),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: LayoutBuilder(builder: (context, c) => c.maxWidth >= 720 ? _wide(context) : _narrow(context)),
     );
   }
 
-  Widget _row(BuildContext context, StockItem it, bool first) {
+  // Filtered items honoring search + low-only.
+  List<StockItem> _items() {
+    var items = widget.state.stockItems;
+    if (_lowOnly) items = items.where((i) => i.low).toList();
+    if (_q.isNotEmpty) items = items.where((i) => i.name.toLowerCase().contains(_q.toLowerCase())).toList();
+    return items;
+  }
+
+  // ── Phone: unchanged single-column list, taps push the detail screen. ──
+  Widget _narrow(BuildContext context) => ListView(
+    padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+    children: [ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1180), child: _masterColumn(context, wide: false))],
+  );
+
+  // ── Tablet: master list + live detail pane. ──
+  Widget _wide(BuildContext context) {
+    final bx = context.bx;
+    final l = L.of(context);
+    return AnimatedBuilder(
+      animation: widget.state,
+      builder: (context, _) {
+        final selected = _selectedSku != null && widget.state.stockItems.any((x) => x.sku == _selectedSku);
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 360,
+              child: ListView(padding: const EdgeInsets.fromLTRB(22, 24, 16, 100), children: [_masterColumn(context, wide: true)]),
+            ),
+            Container(width: 1, color: bx.border),
+            Expanded(
+              child: selected
+                  ? StockDetailView(state: widget.state, sku: _selectedSku!, embedded: true, onDeleted: () => setState(() => _selectedSku = null))
+                  : Center(
+                      child: EmptyState(illustration: 'empty-no-products', title: l.selectItemTitle, subtitle: l.selectItemSub),
+                    ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _masterColumn(BuildContext context, {required bool wide}) {
+    final bx = context.bx;
+    final l = L.of(context);
+    final state = widget.state;
+    final items = _items();
+    final stockValue = state.stockItems.fold<double>(0, (a, i) => a + i.qty * i.cost);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PageHeader(l.invTitle, l.invSubtitle(state.stockItems.length, state.lowStockCount, money(stockValue)), trailing: wide ? null : Badge2(l.liveStockLedger)),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: bx.border),
+                ),
+                child: TextField(
+                  onChanged: (v) => setState(() => _q = v),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Padding(
+                      padding: const EdgeInsets.only(left: 14),
+                      child: Icon(Icons.search, color: bx.muted),
+                    ),
+                    hintText: l.searchItem,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            FilterChip(
+              selected: _lowOnly,
+              onSelected: (v) => setState(() => _lowOnly = v),
+              avatar: Icon(Icons.warning_amber_rounded, size: 16, color: _lowOnly ? bx.onAccent : bx.warn),
+              label: Text(l.lowFilter(state.lowStockCount)),
+              showCheckmark: false,
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        if (items.isEmpty)
+          Card(
+            child: EmptyState(
+              illustration: 'empty-no-products',
+              title: state.stockItems.isEmpty ? l.noProductsTitle : l.noMatchesTitle,
+              subtitle: state.stockItems.isEmpty ? l.noProductsSub : l.noMatchesSub,
+            ),
+          )
+        else
+          Card(
+            child: Column(children: [for (int i = 0; i < items.length; i++) _row(context, items[i], i == 0, wide: wide)]),
+          ),
+      ],
+    );
+  }
+
+  Widget _row(BuildContext context, StockItem it, bool first, {required bool wide}) {
     final bx = context.bx;
     final l = L.of(context);
     final qtyColor = it.out ? bx.danger : (it.low ? bx.warn : bx.pos);
+    final isSelected = wide && it.sku == _selectedSku;
     return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => StockDetailScreen(state: widget.state, sku: it.sku),
-        ),
-      ),
+      onTap: () => wide
+          ? setState(() => _selectedSku = it.sku)
+          : Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => StockDetailScreen(state: widget.state, sku: it.sku),
+              ),
+            ),
       child: Container(
         decoration: BoxDecoration(
+          color: isSelected ? bx.brand.withValues(alpha: 0.08) : null,
           border: first ? null : Border(top: BorderSide(color: bx.border)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -360,6 +404,7 @@ class _GstDropdown extends StatelessWidget {
   );
 }
 
+/// Pushed detail screen for phones — Scaffold + AppBar wrapping [StockDetailView].
 class StockDetailScreen extends StatelessWidget {
   final AppState state;
   final String sku;
@@ -367,7 +412,6 @@ class StockDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bx = context.bx;
     final l = L.of(context);
     return AnimatedBuilder(
       animation: state,
@@ -377,103 +421,153 @@ class StockDetailScreen extends StatelessWidget {
           // Product was just deleted — the pop is in flight; render a safe frame.
           return const Scaffold(body: SizedBox.shrink());
         }
-        final moves = state.movementsFor(sku);
-        final now = DateTime.now().millisecondsSinceEpoch;
-        final qtyColor = it.out ? bx.danger : (it.low ? bx.warn : bx.pos);
         return Scaffold(
           appBar: AppBar(
             title: Text(it.name),
             backgroundColor: Theme.of(context).colorScheme.surface,
             actions: [
-              IconButton(tooltip: l.editProductTooltip, onPressed: () => _editProduct(context, it), icon: const Icon(Icons.edit_outlined)),
-              IconButton(tooltip: l.deleteProductTooltip, onPressed: () => _deleteProduct(context, it), icon: const Icon(Icons.delete_outline)),
+              IconButton(tooltip: l.editProductTooltip, onPressed: () => _editStock(context, state, it), icon: const Icon(Icons.edit_outlined)),
+              IconButton(
+                tooltip: l.deleteProductTooltip,
+                onPressed: () => _deleteStock(context, state, it, onDeleted: () => Navigator.of(context).pop()),
+                icon: const Icon(Icons.delete_outline),
+              ),
             ],
           ),
-          body: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
-            children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l.onHand,
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
-                      ),
-                      const SizedBox(height: 6),
+          body: StockDetailView(state: state, sku: sku),
+        );
+      },
+    );
+  }
+}
+
+/// Body content for a stock item — used both inside [StockDetailScreen] (phone)
+/// and embedded in the tablet master-detail pane. When [embedded] it renders its
+/// own header with edit/delete actions; [onDeleted] fires after a delete so the
+/// pane can clear its selection instead of popping a route.
+class StockDetailView extends StatelessWidget {
+  final AppState state;
+  final String sku;
+  final bool embedded;
+  final VoidCallback? onDeleted;
+  const StockDetailView({required this.state, required this.sku, this.embedded = false, this.onDeleted, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    final l = L.of(context);
+    return AnimatedBuilder(
+      animation: state,
+      builder: (context, _) {
+        final it = state.stockItems.where((x) => x.sku == sku).firstOrNull;
+        if (it == null) return const SizedBox.shrink();
+        final moves = state.movementsFor(sku);
+        final now = DateTime.now().millisecondsSinceEpoch;
+        final qtyColor = it.out ? bx.danger : (it.low ? bx.warn : bx.pos);
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+          children: [
+            if (embedded) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      it.name,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(tooltip: l.editProductTooltip, onPressed: () => _editStock(context, state, it), icon: const Icon(Icons.edit_outlined)),
+                  IconButton(
+                    tooltip: l.deleteProductTooltip,
+                    onPressed: () => _deleteStock(context, state, it, onDeleted: onDeleted),
+                    icon: const Icon(Icons.delete_outline),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+            ],
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l.onHand,
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: bx.faint),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          it.stockTracked ? qtyLabel(it.qty) : '—',
+                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: qtyColor),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(it.unit, style: TextStyle(fontSize: 14, color: bx.muted)),
+                        const Spacer(),
+                        Text('${money(it.price)} / ${it.unit}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(l.reorderAtCost(it.reorderLevel.toStringAsFixed(0), money(it.cost)), style: TextStyle(fontSize: 13, color: bx.muted)),
+                    if (it.stockTracked) ...[
+                      const SizedBox(height: 14),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Text(
-                            it.stockTracked ? qtyLabel(it.qty) : '—',
-                            style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: qtyColor),
+                          Expanded(
+                            child: OutlinedButton.icon(onPressed: () => _adjustStock(context, state, it, false), icon: const Icon(Icons.remove, size: 18), label: Text(l.reduce)),
                           ),
-                          const SizedBox(width: 6),
-                          Text(it.unit, style: TextStyle(fontSize: 14, color: bx.muted)),
-                          const Spacer(),
-                          Text('${money(it.price)} / ${it.unit}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: FilledButton.icon(onPressed: () => _adjustStock(context, state, it, true), icon: const Icon(Icons.add, size: 18), label: Text(l.addStock)),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(l.reorderAtCost(it.reorderLevel.toStringAsFixed(0), money(it.cost)), style: TextStyle(fontSize: 13, color: bx.muted)),
-                      if (it.stockTracked) ...[
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton.icon(onPressed: () => _adjust(context, it, false), icon: const Icon(Icons.remove, size: 18), label: Text(l.reduce)),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: FilledButton.icon(onPressed: () => _adjust(context, it, true), icon: const Icon(Icons.add, size: 18), label: Text(l.addStock)),
-                            ),
-                          ],
-                        ),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
               ),
-              if (it.batches.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                _label(bx, l.batches),
-                Card(
-                  child: Column(
-                    children: [
-                      for (int i = 0; i < it.batches.length; i++)
-                        Container(
-                          decoration: BoxDecoration(
-                            border: i == 0 ? null : Border(top: BorderSide(color: bx.border)),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          child: Row(
-                            children: [
-                              Icon(Icons.event_outlined, size: 18, color: bx.muted),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(l.batchNo(it.batches[i].batchNo), style: const TextStyle(fontWeight: FontWeight.w600)),
-                              ),
-                              if (it.batches[i].isExpired(now))
-                                StatusChip(l.chipExpired, bx.danger, bx.dangerBg)
-                              else if (it.batches[i].isNearExpiry(now))
-                                StatusChip(l.chipNearExpiry, bx.warn, bx.warnBg),
-                              const SizedBox(width: 8),
-                              Text(l.expLabel(it.batches[i].expiryLabel), style: TextStyle(fontSize: 12, color: bx.muted)),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+            ),
+            if (it.batches.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _label(bx, l.movementHistory),
-              Card(child: Column(children: [for (int i = 0; i < moves.length; i++) _moveRow(context, moves[i], i == 0)])),
+              _label(bx, l.batches),
+              Card(
+                child: Column(
+                  children: [
+                    for (int i = 0; i < it.batches.length; i++)
+                      Container(
+                        decoration: BoxDecoration(
+                          border: i == 0 ? null : Border(top: BorderSide(color: bx.border)),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Row(
+                          children: [
+                            Icon(Icons.event_outlined, size: 18, color: bx.muted),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(l.batchNo(it.batches[i].batchNo), style: const TextStyle(fontWeight: FontWeight.w600)),
+                            ),
+                            if (it.batches[i].isExpired(now))
+                              StatusChip(l.chipExpired, bx.danger, bx.dangerBg)
+                            else if (it.batches[i].isNearExpiry(now))
+                              StatusChip(l.chipNearExpiry, bx.warn, bx.warnBg),
+                            const SizedBox(width: 8),
+                            Text(l.expLabel(it.batches[i].expiryLabel), style: TextStyle(fontSize: 12, color: bx.muted)),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
-          ),
+            const SizedBox(height: 16),
+            _label(bx, l.movementHistory),
+            Card(child: Column(children: [for (int i = 0; i < moves.length; i++) _moveRow(context, moves[i], i == 0)])),
+          ],
         );
       },
     );
@@ -516,222 +610,222 @@ class StockDetailScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Future<void> _editProduct(BuildContext context, StockItem it) async {
-    final name = TextEditingController(text: it.name);
-    final unit = TextEditingController(text: it.unit);
-    final price = TextEditingController(text: it.price.toStringAsFixed(it.price % 1 == 0 ? 0 : 2));
-    final cost = TextEditingController(text: it.cost.toStringAsFixed(it.cost % 1 == 0 ? 0 : 2));
-    final reorder = TextEditingController(text: qtyLabel(it.reorderLevel));
-    final barcode = TextEditingController(text: it.barcode ?? '');
-    final category = TextEditingController(text: it.category ?? '');
-    final hsn = TextEditingController(text: it.hsn ?? '');
-    final formKey = GlobalKey<FormState>();
-    double gst = it.gstRate;
-    final l = L.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      final ok = await showModalBottomSheet<bool>(
-        context: context,
-        isScrollControlled: true,
-        showDragHandle: true,
-        builder: (ctx) => StatefulBuilder(
-          builder: (ctx, setSt) => Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-            child: SingleChildScrollView(
-              child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(l.editProduct, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: name,
-                      decoration: InputDecoration(labelText: l.fieldName, border: const OutlineInputBorder()),
-                      validator: (v) => (v ?? '').trim().isEmpty ? l.enterName : null,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: unit,
-                            decoration: InputDecoration(labelText: l.fieldUnit, border: const OutlineInputBorder()),
-                          ),
+Future<void> _editStock(BuildContext context, AppState state, StockItem it) async {
+  final name = TextEditingController(text: it.name);
+  final unit = TextEditingController(text: it.unit);
+  final price = TextEditingController(text: it.price.toStringAsFixed(it.price % 1 == 0 ? 0 : 2));
+  final cost = TextEditingController(text: it.cost.toStringAsFixed(it.cost % 1 == 0 ? 0 : 2));
+  final reorder = TextEditingController(text: qtyLabel(it.reorderLevel));
+  final barcode = TextEditingController(text: it.barcode ?? '');
+  final category = TextEditingController(text: it.category ?? '');
+  final hsn = TextEditingController(text: it.hsn ?? '');
+  final formKey = GlobalKey<FormState>();
+  double gst = it.gstRate;
+  final l = L.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    final ok = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSt) => Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(l.editProduct, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: name,
+                    decoration: InputDecoration(labelText: l.fieldName, border: const OutlineInputBorder()),
+                    validator: (v) => (v ?? '').trim().isEmpty ? l.enterName : null,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: unit,
+                          decoration: InputDecoration(labelText: l.fieldUnit, border: const OutlineInputBorder()),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            controller: reorder,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: InputDecoration(labelText: l.fieldReorder, border: const OutlineInputBorder()),
-                          ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          controller: reorder,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(labelText: l.fieldReorder, border: const OutlineInputBorder()),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: price,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: InputDecoration(prefixText: '₹ ', labelText: l.sellPrice, border: const OutlineInputBorder()),
-                            validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) <= 0 ? l.gtZeroShort : null,
-                          ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: price,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(prefixText: '₹ ', labelText: l.sellPrice, border: const OutlineInputBorder()),
+                          validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) <= 0 ? l.gtZeroShort : null,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            controller: cost,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: InputDecoration(prefixText: '₹ ', labelText: l.fieldCost, border: const OutlineInputBorder()),
-                          ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          controller: cost,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(prefixText: '₹ ', labelText: l.fieldCost, border: const OutlineInputBorder()),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _GstDropdown(value: gst, onChanged: (v) => setSt(() => gst = v)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _GstDropdown(value: gst, onChanged: (v) => setSt(() => gst = v)),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          controller: hsn,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(labelText: l.hsnSac, border: const OutlineInputBorder()),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            controller: hsn,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(labelText: l.hsnSac, border: const OutlineInputBorder()),
-                          ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: category,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(labelText: l.fieldCategory, border: const OutlineInputBorder()),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: category,
-                            textCapitalization: TextCapitalization.words,
-                            decoration: InputDecoration(labelText: l.fieldCategory, border: const OutlineInputBorder()),
-                          ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          controller: barcode,
+                          decoration: InputDecoration(labelText: l.barcodeOptional, border: const OutlineInputBorder()),
+                          validator: (v) => state.barcodeInUse((v ?? '').trim(), exceptSku: it.sku) ? l.usedByAnother : null,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            controller: barcode,
-                            decoration: InputDecoration(labelText: l.barcodeOptional, border: const OutlineInputBorder()),
-                            validator: (v) => state.barcodeInUse((v ?? '').trim(), exceptSku: it.sku) ? l.usedByAnother : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () {
-                        if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
-                      },
-                      style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                      child: Text(l.saveChanges),
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () {
+                      if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
+                    },
+                    style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                    child: Text(l.saveChanges),
+                  ),
+                ],
               ),
             ),
           ),
         ),
+      ),
+    );
+    if (ok == true) {
+      state.editStockItem(
+        it.sku,
+        name: name.text,
+        unit: unit.text,
+        price: double.tryParse(price.text) ?? it.price,
+        cost: double.tryParse(cost.text) ?? it.cost,
+        reorder: double.tryParse(reorder.text) ?? it.reorderLevel,
+        gstRate: gst,
+        barcode: barcode.text,
+        category: category.text,
+        hsn: hsn.text,
+        nowMs: DateTime.now().millisecondsSinceEpoch,
       );
-      if (ok == true) {
-        state.editStockItem(
-          it.sku,
-          name: name.text,
-          unit: unit.text,
-          price: double.tryParse(price.text) ?? it.price,
-          cost: double.tryParse(cost.text) ?? it.cost,
-          reorder: double.tryParse(reorder.text) ?? it.reorderLevel,
-          gstRate: gst,
-          barcode: barcode.text,
-          category: category.text,
-          hsn: hsn.text,
-          nowMs: DateTime.now().millisecondsSinceEpoch,
-        );
-        messenger.showSnackBar(SnackBar(content: Text(l.productUpdated)));
-      }
-    } finally {
-      for (final c in [name, unit, price, cost, reorder, barcode, category, hsn]) {
-        c.dispose();
-      }
+      messenger.showSnackBar(SnackBar(content: Text(l.productUpdated)));
+    }
+  } finally {
+    for (final c in [name, unit, price, cost, reorder, barcode, category, hsn]) {
+      c.dispose();
     }
   }
+}
 
-  Future<void> _deleteProduct(BuildContext context, StockItem it) async {
-    final l = L.of(context);
-    final ok = await confirmDialog(context, title: l.removeProductTitle, message: l.removeProductBody(it.name), confirmLabel: l.removeAction, destructive: true);
-    if (ok && context.mounted) {
-      state.deleteStockItem(it.sku, nowMs: DateTime.now().millisecondsSinceEpoch);
-      if (context.mounted) Navigator.of(context).pop(); // leave the detail page
-    }
+Future<void> _deleteStock(BuildContext context, AppState state, StockItem it, {VoidCallback? onDeleted}) async {
+  final l = L.of(context);
+  final ok = await confirmDialog(context, title: l.removeProductTitle, message: l.removeProductBody(it.name), confirmLabel: l.removeAction, destructive: true);
+  if (ok && context.mounted) {
+    state.deleteStockItem(it.sku, nowMs: DateTime.now().millisecondsSinceEpoch);
+    onDeleted?.call(); // phone pops the route; embedded pane clears its selection
   }
+}
 
-  Future<void> _adjust(BuildContext context, StockItem it, bool add) async {
-    final l = L.of(context);
-    final qty = TextEditingController();
-    final reason = TextEditingController(text: add ? l.purchaseRestock : l.damageCorrection);
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      final ok = await showModalBottomSheet<bool>(
-        context: context,
-        isScrollControlled: true,
-        showDragHandle: true,
-        builder: (ctx) => Padding(
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(add ? l.addStockTitle(it.name) : l.reduceStockTitle(it.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-              if (!add)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(l.onHandLabel(qtyLabel(it.qty), it.unit), style: TextStyle(fontSize: 12.5, color: context.bx.muted)),
-                ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: qty,
-                autofocus: true,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: l.quantityUnit(it.unit), border: const OutlineInputBorder()),
+Future<void> _adjustStock(BuildContext context, AppState state, StockItem it, bool add) async {
+  final l = L.of(context);
+  final qty = TextEditingController();
+  final reason = TextEditingController(text: add ? l.purchaseRestock : l.damageCorrection);
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    final ok = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(add ? l.addStockTitle(it.name) : l.reduceStockTitle(it.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            if (!add)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(l.onHandLabel(qtyLabel(it.qty), it.unit), style: TextStyle(fontSize: 12.5, color: context.bx.muted)),
               ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: reason,
-                decoration: InputDecoration(labelText: l.reasonField, border: const OutlineInputBorder()),
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                child: Text(l.recordAdjustment),
-              ),
-            ],
-          ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: qty,
+              autofocus: true,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(labelText: l.quantityUnit(it.unit), border: const OutlineInputBorder()),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: reason,
+              decoration: InputDecoration(labelText: l.reasonField, border: const OutlineInputBorder()),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+              child: Text(l.recordAdjustment),
+            ),
+          ],
         ),
-      );
-      if (ok == true) {
-        var q = double.tryParse(qty.text.trim()) ?? 0;
-        if (q <= 0) {
-          messenger.showSnackBar(SnackBar(content: Text(l.enterQtyGt0)));
-          return;
-        }
-        if (!add && q > it.qty) q = it.qty; // can't reduce below on-hand
-        state.adjustStock(sku: it.sku, delta: add ? q : -q, reason: reason.text.trim(), kind: add ? MoveKind.purchase : MoveKind.damage, nowMs: DateTime.now().millisecondsSinceEpoch);
-        messenger.showSnackBar(SnackBar(content: Text(add ? l.stockAdded : l.stockReduced)));
+      ),
+    );
+    if (ok == true) {
+      var q = double.tryParse(qty.text.trim()) ?? 0;
+      if (q <= 0) {
+        messenger.showSnackBar(SnackBar(content: Text(l.enterQtyGt0)));
+        return;
       }
-    } finally {
-      qty.dispose();
-      reason.dispose();
+      if (!add && q > it.qty) q = it.qty; // can't reduce below on-hand
+      state.adjustStock(sku: it.sku, delta: add ? q : -q, reason: reason.text.trim(), kind: add ? MoveKind.purchase : MoveKind.damage, nowMs: DateTime.now().millisecondsSinceEpoch);
+      messenger.showSnackBar(SnackBar(content: Text(add ? l.stockAdded : l.stockReduced)));
     }
+  } finally {
+    qty.dispose();
+    reason.dispose();
   }
 }

@@ -6,39 +6,86 @@ import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/receipt.dart';
 import '../l10n/app_localizations.dart';
 import 'customers_screen.dart' show StatusChip;
 
-class SalesScreen extends StatelessWidget {
+class SalesScreen extends StatefulWidget {
   final AppState state;
   const SalesScreen({required this.state, super.key});
+  @override
+  State<SalesScreen> createState() => _SalesScreenState();
+}
+
+class _SalesScreenState extends State<SalesScreen> {
+  String? _selectedInvoice;
+
+  AppState get state => widget.state;
 
   @override
   Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, c) => c.maxWidth >= 720 ? _wide(context) : _narrow(context));
+  }
+
+  Widget _narrow(BuildContext context) => ListView(
+    padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+    children: [ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1180), child: _masterColumn(context, wide: false))],
+  );
+
+  Widget _wide(BuildContext context) {
+    final bx = context.bx;
+    final l = L.of(context);
+    return AnimatedBuilder(
+      animation: state,
+      builder: (context, _) {
+        final sale = state.sales.where((x) => x.invoiceNo == _selectedInvoice).firstOrNull;
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 360,
+              child: ListView(padding: const EdgeInsets.fromLTRB(22, 24, 16, 100), children: [_masterColumn(context, wide: true)]),
+            ),
+            Container(width: 1, color: bx.border),
+            Expanded(
+              child: sale != null
+                  ? SaleDetailView(state: state, sale: sale)
+                  : Center(
+                      child: EmptyState(illustration: 'empty-no-sales', title: l.selectItemTitle, subtitle: l.selectItemSub),
+                    ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _masterColumn(BuildContext context, {required bool wide}) {
     final l = L.of(context);
     final sales = state.sales;
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1180),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              PageHeader(l.salesTitle, l.salesSubtitle(state.billCount, money(state.todaySales)), trailing: Badge2(l.auditedReprint)),
-              if (sales.isEmpty)
-                Card(
-                  child: EmptyState(illustration: 'empty-no-sales', title: l.salesEmptyTitle, subtitle: l.salesEmptySubtitle),
-                )
-              else
-                Card(
-                  child: Column(
-                    children: [for (int i = 0; i < sales.length; i++) _SaleRow(state: state, sale: sales[i], first: i == 0)],
+        PageHeader(l.salesTitle, l.salesSubtitle(state.billCount, money(state.todaySales)), trailing: wide ? null : Badge2(l.auditedReprint)),
+        if (sales.isEmpty)
+          Card(
+            child: EmptyState(illustration: 'empty-no-sales', title: l.salesEmptyTitle, subtitle: l.salesEmptySubtitle),
+          )
+        else
+          Card(
+            child: Column(
+              children: [
+                for (int i = 0; i < sales.length; i++)
+                  _SaleRow(
+                    state: state,
+                    sale: sales[i],
+                    first: i == 0,
+                    selected: wide && sales[i].invoiceNo == _selectedInvoice,
+                    onTap: wide ? () => setState(() => _selectedInvoice = sales[i].invoiceNo) : null,
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
       ],
     );
   }
@@ -48,32 +95,19 @@ class _SaleRow extends StatelessWidget {
   final AppState state;
   final Sale sale;
   final bool first;
-  const _SaleRow({required this.state, required this.sale, required this.first});
+  final bool selected;
+  final VoidCallback? onTap;
+  const _SaleRow({required this.state, required this.sale, required this.first, this.selected = false, this.onTap});
 
   bool get _isReturn => sale.paymentMode == 'Return';
-
-  Future<void> _return(BuildContext context) async {
-    final l = L.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final ok = await confirmDialog(
-      context,
-      title: l.returnDialogTitle,
-      message: l.returnDialogBody(sale.invoiceNo, money(sale.total)) + (sale.paymentMode == 'Credit' ? l.returnCreditKhataNote : ''),
-      confirmLabel: l.returnAction,
-      destructive: true,
-    );
-    if (ok) {
-      final ret = state.returnSale(sale, nowMs: DateTime.now().millisecondsSinceEpoch);
-      messenger.showSnackBar(SnackBar(content: Text(l.returnSnack(ret.invoiceNo, sale.invoiceNo))));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
     final l = L.of(context);
-    return Container(
+    final row = Container(
       decoration: BoxDecoration(
+        color: selected ? bx.brand.withValues(alpha: 0.08) : null,
         border: first ? null : Border(top: BorderSide(color: bx.border)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -128,7 +162,7 @@ class _SaleRow extends StatelessWidget {
                 case 'share':
                   PdfService.run(context, () => PdfService.shareSale(sale), failure: l.shareFail);
                 case 'return':
-                  _return(context);
+                  returnSale(context, state, sale);
               }
             },
             itemBuilder: (ctx) => [
@@ -150,5 +184,78 @@ class _SaleRow extends StatelessWidget {
         ],
       ),
     );
+    return onTap == null ? row : InkWell(onTap: onTap, child: row);
+  }
+}
+
+/// Read-only invoice/receipt pane for the tablet master-detail layout. Shows the
+/// same ⋮ actions (Reprint / Share / Return) available in the list row.
+class SaleDetailView extends StatelessWidget {
+  final AppState state;
+  final Sale sale;
+  const SaleDetailView({required this.state, required this.sale, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final canReturn = !sale.isReturn && !state.isReturned(sale.invoiceNo);
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                sale.invoiceNo,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            IconButton(
+              tooltip: l.reprint,
+              onPressed: () => PdfService.run(context, () => PdfService.printSale(sale), failure: l.reprintFail),
+              icon: const Icon(Icons.print_outlined),
+            ),
+            IconButton(
+              tooltip: l.sharePdf,
+              onPressed: () => PdfService.run(context, () => PdfService.shareSale(sale), failure: l.shareFail),
+              icon: const Icon(Icons.ios_share),
+            ),
+            if (canReturn) IconButton(tooltip: l.returnCreditNote, onPressed: () => returnSale(context, state, sale), icon: const Icon(Icons.assignment_return_outlined)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: ReceiptView(
+            templateId: sale.templateId,
+            businessName: sale.businessName,
+            gstin: sale.sellerGstin,
+            phone: sale.sellerPhone,
+            address: sale.sellerAddress,
+            lines: sale.lines.map((sl) => RcptLine(sl.name, sl.qty, sl.amount)).toList(),
+            subtotal: sale.subtotal,
+            gst: sale.gst,
+            total: sale.total,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Shared return flow used by both the list row menu and the detail pane.
+Future<void> returnSale(BuildContext context, AppState state, Sale sale) async {
+  final l = L.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  final ok = await confirmDialog(
+    context,
+    title: l.returnDialogTitle,
+    message: l.returnDialogBody(sale.invoiceNo, money(sale.total)) + (sale.paymentMode == 'Credit' ? l.returnCreditKhataNote : ''),
+    confirmLabel: l.returnAction,
+    destructive: true,
+  );
+  if (ok) {
+    final ret = state.returnSale(sale, nowMs: DateTime.now().millisecondsSinceEpoch);
+    messenger.showSnackBar(SnackBar(content: Text(l.returnSnack(ret.invoiceNo, sale.invoiceNo))));
   }
 }

@@ -1948,4 +1948,10 @@ class LHi extends L {
 
   @override
   String get wizardNotSet => 'सेट नहीं';
+
+  @override
+  String get selectItemTitle => 'कोई आइटम चुनें';
+
+  @override
+  String get selectItemSub => 'विवरण यहाँ देखने के लिए सूची से चुनें।';
 }

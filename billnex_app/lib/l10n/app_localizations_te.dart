@@ -1948,4 +1948,10 @@ class LTe extends L {
 
   @override
   String get wizardNotSet => 'సెట్ కాలేదు';
+
+  @override
+  String get selectItemTitle => 'ఒక అంశాన్ని ఎంచుకోండి';
+
+  @override
+  String get selectItemSub => 'వివరాలు ఇక్కడ చూడటానికి జాబితా నుండి ఎంచుకోండి.';
 }
