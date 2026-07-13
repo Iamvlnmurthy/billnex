@@ -1183,4 +1183,145 @@ class LEn extends L {
 
   @override
   String get apptBookedSnack => 'Appointment booked ✓';
+
+  @override
+  String get backupNeverBackedUp => 'Never backed up';
+
+  @override
+  String get backupJustNow => 'Backed up just now';
+
+  @override
+  String backupMinAgo(String mins) {
+    return 'Backed up $mins min ago';
+  }
+
+  @override
+  String backupHoursAgo(String hours) {
+    return 'Backed up $hours h ago';
+  }
+
+  @override
+  String backupDaysAgo(String days) {
+    return 'Backed up $days d ago';
+  }
+
+  @override
+  String get backupRestoreTitle => 'Backup & Restore';
+
+  @override
+  String get backupRestoreSubtitle => 'Your shop data stays yours. Save it to your device, PC, or your own Google Drive — and restore anytime.';
+
+  @override
+  String get backupCountSales => 'Sales';
+
+  @override
+  String get backupCountCustomers => 'Customers';
+
+  @override
+  String get backupCountProducts => 'Products';
+
+  @override
+  String get backupCountSuppliers => 'Suppliers';
+
+  @override
+  String backupDataSummary(String bills, String customers, String products) {
+    return '$bills bills · $customers customers · $products products';
+  }
+
+  @override
+  String get saveBackupToFile => 'Save backup to a file';
+
+  @override
+  String get saveDialogHint => 'Choose Google Drive, your PC, or Files in the save dialog.';
+
+  @override
+  String get restoreFromFile => 'Restore from a file';
+
+  @override
+  String get inThisBackup => 'In this backup';
+
+  @override
+  String get backupRestoreFootnote => 'Restoring replaces the current data on this device. Keep a copy on Google Drive to move to a new phone or PC in one tap.';
+
+  @override
+  String get googleDrive => 'Google Drive';
+
+  @override
+  String get driveConnected => 'Connected';
+
+  @override
+  String get driveConnectPrompt => 'Connect your account for one-tap backup';
+
+  @override
+  String get connectGoogleDrive => 'Connect Google Drive';
+
+  @override
+  String get backUpNow => 'Back up now';
+
+  @override
+  String get disconnect => 'Disconnect';
+
+  @override
+  String get noDriveBackups => 'No Drive backups yet.';
+
+  @override
+  String get backupsOnYourDrive => 'Backups on your Drive';
+
+  @override
+  String get restore => 'Restore';
+
+  @override
+  String get backupSavedCheck => 'Backup saved ✓';
+
+  @override
+  String get saveCancelled => 'Save cancelled';
+
+  @override
+  String backupFailed(String err) {
+    return 'Backup failed: $err';
+  }
+
+  @override
+  String get dataRestored => 'Data restored ✓';
+
+  @override
+  String get restoreCancelled => 'Restore cancelled';
+
+  @override
+  String get notBillnexBackup => 'That file is not a BillNex backup';
+
+  @override
+  String restoreFailed(String err) {
+    return 'Restore failed: $err';
+  }
+
+  @override
+  String get googleSignInCancelled => 'Google sign-in cancelled';
+
+  @override
+  String signInFailed(String err) {
+    return 'Sign-in failed: $err';
+  }
+
+  @override
+  String get backedUpToDrive => 'Backed up to Google Drive ✓';
+
+  @override
+  String driveBackupFailed(String err) {
+    return 'Drive backup failed: $err';
+  }
+
+  @override
+  String get restoredFromDrive => 'Restored from Google Drive ✓';
+
+  @override
+  String driveRestoreFailed(String err) {
+    return 'Drive restore failed: $err';
+  }
+
+  @override
+  String get restoreFromBackupTitle => 'Restore from backup?';
+
+  @override
+  String get restoreFromBackupBody => 'This replaces ALL current data on this device with the backup. This cannot be undone.';
 }

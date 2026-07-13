@@ -1183,4 +1183,145 @@ class LHi extends L {
 
   @override
   String get apptBookedSnack => 'अपॉइंटमेंट बुक हो गई ✓';
+
+  @override
+  String get backupNeverBackedUp => 'कभी बैकअप नहीं लिया';
+
+  @override
+  String get backupJustNow => 'अभी-अभी बैकअप लिया';
+
+  @override
+  String backupMinAgo(String mins) {
+    return '$mins मिनट पहले बैकअप लिया';
+  }
+
+  @override
+  String backupHoursAgo(String hours) {
+    return '$hours घंटे पहले बैकअप लिया';
+  }
+
+  @override
+  String backupDaysAgo(String days) {
+    return '$days दिन पहले बैकअप लिया';
+  }
+
+  @override
+  String get backupRestoreTitle => 'बैकअप और रिस्टोर';
+
+  @override
+  String get backupRestoreSubtitle => 'आपका दुकान डेटा आपका ही रहता है। इसे अपने फ़ोन, PC या अपने Google Drive में सेव करें — और कभी भी रिस्टोर करें।';
+
+  @override
+  String get backupCountSales => 'बिक्री';
+
+  @override
+  String get backupCountCustomers => 'ग्राहक';
+
+  @override
+  String get backupCountProducts => 'प्रोडक्ट';
+
+  @override
+  String get backupCountSuppliers => 'सप्लायर';
+
+  @override
+  String backupDataSummary(String bills, String customers, String products) {
+    return '$bills बिल · $customers ग्राहक · $products प्रोडक्ट';
+  }
+
+  @override
+  String get saveBackupToFile => 'फ़ाइल में बैकअप सेव करें';
+
+  @override
+  String get saveDialogHint => 'सेव डायलॉग में Google Drive, अपना PC या Files चुनें।';
+
+  @override
+  String get restoreFromFile => 'फ़ाइल से रिस्टोर करें';
+
+  @override
+  String get inThisBackup => 'इस बैकअप में';
+
+  @override
+  String get backupRestoreFootnote => 'रिस्टोर करने से इस डिवाइस का मौजूदा डेटा बदल जाता है। नए फ़ोन या PC पर एक टैप में ले जाने के लिए Google Drive पर एक कॉपी रखें।';
+
+  @override
+  String get googleDrive => 'Google Drive';
+
+  @override
+  String get driveConnected => 'कनेक्टेड';
+
+  @override
+  String get driveConnectPrompt => 'एक-टैप बैकअप के लिए अपना अकाउंट कनेक्ट करें';
+
+  @override
+  String get connectGoogleDrive => 'Google Drive कनेक्ट करें';
+
+  @override
+  String get backUpNow => 'अभी बैकअप लें';
+
+  @override
+  String get disconnect => 'डिस्कनेक्ट करें';
+
+  @override
+  String get noDriveBackups => 'अभी कोई Drive बैकअप नहीं।';
+
+  @override
+  String get backupsOnYourDrive => 'आपके Drive पर बैकअप';
+
+  @override
+  String get restore => 'रिस्टोर करें';
+
+  @override
+  String get backupSavedCheck => 'बैकअप सेव हो गया ✓';
+
+  @override
+  String get saveCancelled => 'सेव रद्द किया गया';
+
+  @override
+  String backupFailed(String err) {
+    return 'बैकअप विफल: $err';
+  }
+
+  @override
+  String get dataRestored => 'डेटा रिस्टोर हो गया ✓';
+
+  @override
+  String get restoreCancelled => 'रिस्टोर रद्द किया गया';
+
+  @override
+  String get notBillnexBackup => 'यह फ़ाइल BillNex बैकअप नहीं है';
+
+  @override
+  String restoreFailed(String err) {
+    return 'रिस्टोर विफल: $err';
+  }
+
+  @override
+  String get googleSignInCancelled => 'Google साइन-इन रद्द किया गया';
+
+  @override
+  String signInFailed(String err) {
+    return 'साइन-इन विफल: $err';
+  }
+
+  @override
+  String get backedUpToDrive => 'Google Drive पर बैकअप हो गया ✓';
+
+  @override
+  String driveBackupFailed(String err) {
+    return 'Drive बैकअप विफल: $err';
+  }
+
+  @override
+  String get restoredFromDrive => 'Google Drive से रिस्टोर हो गया ✓';
+
+  @override
+  String driveRestoreFailed(String err) {
+    return 'Drive रिस्टोर विफल: $err';
+  }
+
+  @override
+  String get restoreFromBackupTitle => 'बैकअप से रिस्टोर करें?';
+
+  @override
+  String get restoreFromBackupBody => 'यह इस डिवाइस का सारा मौजूदा डेटा बैकअप से बदल देगा। इसे वापस नहीं किया जा सकता।';
 }

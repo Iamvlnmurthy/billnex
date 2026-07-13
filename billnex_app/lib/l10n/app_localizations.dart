@@ -2228,6 +2228,252 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Appointment booked ✓'**
   String get apptBookedSnack;
+
+  /// No description provided for @backupNeverBackedUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Never backed up'**
+  String get backupNeverBackedUp;
+
+  /// No description provided for @backupJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Backed up just now'**
+  String get backupJustNow;
+
+  /// No description provided for @backupMinAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Backed up {mins} min ago'**
+  String backupMinAgo(String mins);
+
+  /// No description provided for @backupHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Backed up {hours} h ago'**
+  String backupHoursAgo(String hours);
+
+  /// No description provided for @backupDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Backed up {days} d ago'**
+  String backupDaysAgo(String days);
+
+  /// No description provided for @backupRestoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & Restore'**
+  String get backupRestoreTitle;
+
+  /// No description provided for @backupRestoreSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop data stays yours. Save it to your device, PC, or your own Google Drive — and restore anytime.'**
+  String get backupRestoreSubtitle;
+
+  /// No description provided for @backupCountSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get backupCountSales;
+
+  /// No description provided for @backupCountCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get backupCountCustomers;
+
+  /// No description provided for @backupCountProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get backupCountProducts;
+
+  /// No description provided for @backupCountSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get backupCountSuppliers;
+
+  /// No description provided for @backupDataSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{bills} bills · {customers} customers · {products} products'**
+  String backupDataSummary(String bills, String customers, String products);
+
+  /// No description provided for @saveBackupToFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Save backup to a file'**
+  String get saveBackupToFile;
+
+  /// No description provided for @saveDialogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Google Drive, your PC, or Files in the save dialog.'**
+  String get saveDialogHint;
+
+  /// No description provided for @restoreFromFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from a file'**
+  String get restoreFromFile;
+
+  /// No description provided for @inThisBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'In this backup'**
+  String get inThisBackup;
+
+  /// No description provided for @backupRestoreFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring replaces the current data on this device. Keep a copy on Google Drive to move to a new phone or PC in one tap.'**
+  String get backupRestoreFootnote;
+
+  /// No description provided for @googleDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Drive'**
+  String get googleDrive;
+
+  /// No description provided for @driveConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get driveConnected;
+
+  /// No description provided for @driveConnectPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your account for one-tap backup'**
+  String get driveConnectPrompt;
+
+  /// No description provided for @connectGoogleDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Google Drive'**
+  String get connectGoogleDrive;
+
+  /// No description provided for @backUpNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up now'**
+  String get backUpNow;
+
+  /// No description provided for @disconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get disconnect;
+
+  /// No description provided for @noDriveBackups.
+  ///
+  /// In en, this message translates to:
+  /// **'No Drive backups yet.'**
+  String get noDriveBackups;
+
+  /// No description provided for @backupsOnYourDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Backups on your Drive'**
+  String get backupsOnYourDrive;
+
+  /// No description provided for @restore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restore;
+
+  /// No description provided for @backupSavedCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup saved ✓'**
+  String get backupSavedCheck;
+
+  /// No description provided for @saveCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Save cancelled'**
+  String get saveCancelled;
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup failed: {err}'**
+  String backupFailed(String err);
+
+  /// No description provided for @dataRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Data restored ✓'**
+  String get dataRestored;
+
+  /// No description provided for @restoreCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore cancelled'**
+  String get restoreCancelled;
+
+  /// No description provided for @notBillnexBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'That file is not a BillNex backup'**
+  String get notBillnexBackup;
+
+  /// No description provided for @restoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore failed: {err}'**
+  String restoreFailed(String err);
+
+  /// No description provided for @googleSignInCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in cancelled'**
+  String get googleSignInCancelled;
+
+  /// No description provided for @signInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in failed: {err}'**
+  String signInFailed(String err);
+
+  /// No description provided for @backedUpToDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Backed up to Google Drive ✓'**
+  String get backedUpToDrive;
+
+  /// No description provided for @driveBackupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Drive backup failed: {err}'**
+  String driveBackupFailed(String err);
+
+  /// No description provided for @restoredFromDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Restored from Google Drive ✓'**
+  String get restoredFromDrive;
+
+  /// No description provided for @driveRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Drive restore failed: {err}'**
+  String driveRestoreFailed(String err);
+
+  /// No description provided for @restoreFromBackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from backup?'**
+  String get restoreFromBackupTitle;
+
+  /// No description provided for @restoreFromBackupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This replaces ALL current data on this device with the backup. This cannot be undone.'**
+  String get restoreFromBackupBody;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

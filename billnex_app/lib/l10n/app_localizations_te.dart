@@ -1183,4 +1183,145 @@ class LTe extends L {
 
   @override
   String get apptBookedSnack => 'అపాయింట్‌మెంట్ బుక్ అయింది ✓';
+
+  @override
+  String get backupNeverBackedUp => 'ఇంకా బ్యాకప్ చేయలేదు';
+
+  @override
+  String get backupJustNow => 'ఇప్పుడే బ్యాకప్ చేశారు';
+
+  @override
+  String backupMinAgo(String mins) {
+    return '$mins నిమిషాల క్రితం బ్యాకప్ చేశారు';
+  }
+
+  @override
+  String backupHoursAgo(String hours) {
+    return '$hours గంటల క్రితం బ్యాకప్ చేశారు';
+  }
+
+  @override
+  String backupDaysAgo(String days) {
+    return '$days రోజుల క్రితం బ్యాకప్ చేశారు';
+  }
+
+  @override
+  String get backupRestoreTitle => 'బ్యాకప్ & రీస్టోర్';
+
+  @override
+  String get backupRestoreSubtitle => 'మీ దుకాణ డేటా మీదే. దాన్ని మీ ఫోన్, PC లేదా మీ సొంత Google Drive లో సేవ్ చేయండి — ఎప్పుడైనా రీస్టోర్ చేయండి.';
+
+  @override
+  String get backupCountSales => 'అమ్మకాలు';
+
+  @override
+  String get backupCountCustomers => 'కస్టమర్లు';
+
+  @override
+  String get backupCountProducts => 'ప్రొడక్ట్‌లు';
+
+  @override
+  String get backupCountSuppliers => 'సప్లయర్లు';
+
+  @override
+  String backupDataSummary(String bills, String customers, String products) {
+    return '$bills బిల్లులు · $customers కస్టమర్లు · $products ప్రొడక్ట్‌లు';
+  }
+
+  @override
+  String get saveBackupToFile => 'ఫైల్‌కి బ్యాకప్ సేవ్ చేయి';
+
+  @override
+  String get saveDialogHint => 'సేవ్ డైలాగ్‌లో Google Drive, మీ PC లేదా Files ఎంచుకోండి.';
+
+  @override
+  String get restoreFromFile => 'ఫైల్ నుండి రీస్టోర్ చేయి';
+
+  @override
+  String get inThisBackup => 'ఈ బ్యాకప్‌లో';
+
+  @override
+  String get backupRestoreFootnote => 'రీస్టోర్ చేస్తే ఈ పరికరంలోని ప్రస్తుత డేటా భర్తీ అవుతుంది. కొత్త ఫోన్ లేదా PCకి ఒక్క ట్యాప్‌లో తరలించడానికి Google Drive లో ఒక కాపీ ఉంచండి.';
+
+  @override
+  String get googleDrive => 'Google Drive';
+
+  @override
+  String get driveConnected => 'కనెక్ట్ అయింది';
+
+  @override
+  String get driveConnectPrompt => 'వన్-ట్యాప్ బ్యాకప్ కోసం మీ ఖాతాను కనెక్ట్ చేయండి';
+
+  @override
+  String get connectGoogleDrive => 'Google Drive కనెక్ట్ చేయి';
+
+  @override
+  String get backUpNow => 'ఇప్పుడే బ్యాకప్ చేయి';
+
+  @override
+  String get disconnect => 'డిస్‌కనెక్ట్ చేయి';
+
+  @override
+  String get noDriveBackups => 'ఇంకా Drive బ్యాకప్‌లు లేవు.';
+
+  @override
+  String get backupsOnYourDrive => 'మీ Drive లో బ్యాకప్‌లు';
+
+  @override
+  String get restore => 'రీస్టోర్ చేయి';
+
+  @override
+  String get backupSavedCheck => 'బ్యాకప్ సేవ్ అయింది ✓';
+
+  @override
+  String get saveCancelled => 'సేవ్ రద్దు చేయబడింది';
+
+  @override
+  String backupFailed(String err) {
+    return 'బ్యాకప్ విఫలమైంది: $err';
+  }
+
+  @override
+  String get dataRestored => 'డేటా రీస్టోర్ అయింది ✓';
+
+  @override
+  String get restoreCancelled => 'రీస్టోర్ రద్దు చేయబడింది';
+
+  @override
+  String get notBillnexBackup => 'ఆ ఫైల్ BillNex బ్యాకప్ కాదు';
+
+  @override
+  String restoreFailed(String err) {
+    return 'రీస్టోర్ విఫలమైంది: $err';
+  }
+
+  @override
+  String get googleSignInCancelled => 'Google సైన్-ఇన్ రద్దు చేయబడింది';
+
+  @override
+  String signInFailed(String err) {
+    return 'సైన్-ఇన్ విఫలమైంది: $err';
+  }
+
+  @override
+  String get backedUpToDrive => 'Google Drive కి బ్యాకప్ అయింది ✓';
+
+  @override
+  String driveBackupFailed(String err) {
+    return 'Drive బ్యాకప్ విఫలమైంది: $err';
+  }
+
+  @override
+  String get restoredFromDrive => 'Google Drive నుండి రీస్టోర్ అయింది ✓';
+
+  @override
+  String driveRestoreFailed(String err) {
+    return 'Drive రీస్టోర్ విఫలమైంది: $err';
+  }
+
+  @override
+  String get restoreFromBackupTitle => 'బ్యాకప్ నుండి రీస్టోర్ చేయాలా?';
+
+  @override
+  String get restoreFromBackupBody => 'ఇది ఈ పరికరంలోని మొత్తం ప్రస్తుత డేటాను బ్యాకప్‌తో భర్తీ చేస్తుంది. దీన్ని రద్దు చేయలేరు.';
 }
