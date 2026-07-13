@@ -38,7 +38,7 @@ class TemplatesScreen extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: kTemplates.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: cols, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 300),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: cols, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 336),
                     itemBuilder: (context, i) => _TemplateCard(state: state, template: kTemplates[i], demo: _demo),
                   );
                 },

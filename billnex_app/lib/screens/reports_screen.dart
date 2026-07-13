@@ -64,7 +64,7 @@ class ReportsScreen extends StatelessWidget {
                     crossAxisCount: cols,
                     mainAxisSpacing: 14,
                     crossAxisSpacing: 14,
-                    mainAxisExtent: 96,
+                    mainAxisExtent: 104,
                     children: [
                       _kpi(bx, 'Net sales', money(state.salesNet)),
                       _kpi(bx, 'GST collected', money(state.gstCollected)),
@@ -120,10 +120,13 @@ class ReportsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            k,
-            style: TextStyle(fontSize: 13.5, fontWeight: bold ? FontWeight.w800 : FontWeight.w500, color: bold ? null : bx.muted),
+          Expanded(
+            child: Text(
+              k,
+              style: TextStyle(fontSize: 13.5, fontWeight: bold ? FontWeight.w800 : FontWeight.w500, color: bold ? null : bx.muted),
+            ),
           ),
+          const SizedBox(width: 8),
           Money(
             v,
             style: TextStyle(fontSize: bold ? 16 : 14, fontWeight: bold ? FontWeight.w800 : FontWeight.w700),
@@ -334,6 +337,8 @@ class ReportsScreen extends StatelessWidget {
         children: [
           Text(
             k,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: bx.muted),
           ),
           const SizedBox(height: 6),

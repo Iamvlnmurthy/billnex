@@ -279,7 +279,7 @@ class _CatalogState extends State<_Catalog> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: items.length,
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 220, mainAxisSpacing: 10, crossAxisSpacing: 10, mainAxisExtent: 118),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 220, mainAxisSpacing: 10, crossAxisSpacing: 10, mainAxisExtent: 130),
             itemBuilder: (context, i) => _ProductTile(item: items[i], onTap: () => _add(context, items[i])),
           ),
       ],
@@ -342,7 +342,13 @@ class _ProductTile extends StatelessWidget {
                 children: [
                   Text(money(item.price), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
                   const SizedBox(width: 4),
-                  Text('/ ${item.unit}', style: TextStyle(fontSize: 11, color: bx.muted)),
+                  Flexible(
+                    child: Text(
+                      '/ ${item.unit}',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11, color: bx.muted),
+                    ),
+                  ),
                 ],
               ),
             ],

@@ -98,7 +98,13 @@ class _SaleRow extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(sale.invoiceNo, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+                    Flexible(
+                      child: Text(
+                        sale.invoiceNo,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     if (_isReturn)
                       StatusChip('RETURN', bx.danger, bx.dangerBg)

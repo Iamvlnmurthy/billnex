@@ -95,7 +95,14 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
         children: [
           Icon(Icons.bolt, color: bx.accent, size: 22),
           const SizedBox(width: 8),
-          Text(L.of(context).quickBill, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+          Flexible(
+            child: Text(
+              L.of(context).quickBill,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3),
+            ),
+          ),
+          const SizedBox(width: 8),
           const Spacer(),
           // mode switch
           Container(
