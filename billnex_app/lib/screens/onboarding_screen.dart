@@ -3,6 +3,7 @@ import '../data/catalog.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
+import '../l10n/app_localizations.dart';
 import 'business_setup_screen.dart';
 
 /// First-run business picker — compact, fits one viewport, with a business-type
@@ -54,7 +55,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       children: [
                         Icon(Icons.bolt, size: 14, color: bx.brand),
                         const SizedBox(width: 6),
-                        Text('Guided setup · 60 seconds', style: BxText.meta.copyWith(fontSize: 12, color: bx.brand)),
+                        Text(L.of(context).guidedSetup, style: BxText.meta.copyWith(fontSize: 12, color: bx.brand)),
                       ],
                     ),
                   ),
@@ -86,7 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   initialValue: _key,
                   isExpanded: true,
                   decoration: InputDecoration(
-                    labelText: 'Business type',
+                    labelText: L.of(context).businessType,
                     prefixIcon: _biz == null
                         ? const Icon(Icons.storefront_outlined)
                         : Padding(
@@ -95,7 +96,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                     border: const OutlineInputBorder(),
                   ),
-                  hint: const Text('Choose your trade'),
+                  hint: Text(L.of(context).chooseYourTrade),
                   items: [
                     for (final b in kBusinessTypes)
                       DropdownMenuItem(
@@ -131,7 +132,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: FilledButton.icon(
                     onPressed: _key == null ? null : _continue,
                     icon: const Icon(Icons.arrow_forward, size: 20),
-                    label: const Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    label: Text(L.of(context).continueLabel, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                     style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                   ),
                 ),
@@ -139,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 // Optional — start on a standard store and pick a trade later.
                 TextButton(
                   onPressed: () => widget.state.setupGenericStore(),
-                  child: Text('Skip — start with a standard store', style: TextStyle(fontSize: 13, color: bx.muted)),
+                  child: Text(L.of(context).skipStandardStore, style: TextStyle(fontSize: 13, color: bx.muted)),
                 ),
                 const SizedBox(height: 6),
                 _steps(bx),

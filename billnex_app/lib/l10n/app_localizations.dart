@@ -242,6 +242,198 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Good evening'**
   String get goodEvening;
+
+  /// No description provided for @quickBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Bill'**
+  String get quickBill;
+
+  /// No description provided for @tally.
+  ///
+  /// In en, this message translates to:
+  /// **'Tally'**
+  String get tally;
+
+  /// No description provided for @itemized.
+  ///
+  /// In en, this message translates to:
+  /// **'Itemized'**
+  String get itemized;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @collect.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect'**
+  String get collect;
+
+  /// No description provided for @discount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get discount;
+
+  /// No description provided for @roundOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Round off'**
+  String get roundOff;
+
+  /// No description provided for @item.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get item;
+
+  /// No description provided for @unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get unit;
+
+  /// No description provided for @qty.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get qty;
+
+  /// No description provided for @rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get rate;
+
+  /// No description provided for @addItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addItem;
+
+  /// No description provided for @frequent.
+  ///
+  /// In en, this message translates to:
+  /// **'FREQUENT'**
+  String get frequent;
+
+  /// No description provided for @cashReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash received (optional)'**
+  String get cashReceived;
+
+  /// No description provided for @returnChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Return change'**
+  String get returnChange;
+
+  /// No description provided for @upi.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI'**
+  String get upi;
+
+  /// No description provided for @khataCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Khata (credit)'**
+  String get khataCredit;
+
+  /// No description provided for @clearBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear bill'**
+  String get clearBill;
+
+  /// No description provided for @amountToCollect.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount to collect'**
+  String get amountToCollect;
+
+  /// No description provided for @punchAmounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Punch each amount, then Collect'**
+  String get punchAmounts;
+
+  /// No description provided for @noCatalogueNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'No item names or catalogue needed.'**
+  String get noCatalogueNeeded;
+
+  /// No description provided for @guidedSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Guided setup · 60 seconds'**
+  String get guidedSetup;
+
+  /// No description provided for @businessType.
+  ///
+  /// In en, this message translates to:
+  /// **'Business type'**
+  String get businessType;
+
+  /// No description provided for @chooseYourTrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your trade'**
+  String get chooseYourTrade;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @skipStandardStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip — start with a standard store'**
+  String get skipStandardStore;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @myBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'MY BUSINESS'**
+  String get myBusiness;
+
+  /// No description provided for @setupSection.
+  ///
+  /// In en, this message translates to:
+  /// **'SETUP'**
+  String get setupSection;
+
+  /// No description provided for @businessDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Business details'**
+  String get businessDetails;
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & restore'**
+  String get backupRestore;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

@@ -82,4 +82,100 @@ class LEn extends L {
 
   @override
   String get goodEvening => 'Good evening';
+
+  @override
+  String get quickBill => 'Quick Bill';
+
+  @override
+  String get tally => 'Tally';
+
+  @override
+  String get itemized => 'Itemized';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get collect => 'Collect';
+
+  @override
+  String get discount => 'Discount';
+
+  @override
+  String get roundOff => 'Round off';
+
+  @override
+  String get item => 'Item';
+
+  @override
+  String get unit => 'Unit';
+
+  @override
+  String get qty => 'Qty';
+
+  @override
+  String get rate => 'Rate';
+
+  @override
+  String get addItem => 'Add item';
+
+  @override
+  String get frequent => 'FREQUENT';
+
+  @override
+  String get cashReceived => 'Cash received (optional)';
+
+  @override
+  String get returnChange => 'Return change';
+
+  @override
+  String get upi => 'UPI';
+
+  @override
+  String get khataCredit => 'Khata (credit)';
+
+  @override
+  String get clearBill => 'Clear bill';
+
+  @override
+  String get amountToCollect => 'Amount to collect';
+
+  @override
+  String get punchAmounts => 'Punch each amount, then Collect';
+
+  @override
+  String get noCatalogueNeeded => 'No item names or catalogue needed.';
+
+  @override
+  String get guidedSetup => 'Guided setup · 60 seconds';
+
+  @override
+  String get businessType => 'Business type';
+
+  @override
+  String get chooseYourTrade => 'Choose your trade';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get skipStandardStore => 'Skip — start with a standard store';
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get myBusiness => 'MY BUSINESS';
+
+  @override
+  String get setupSection => 'SETUP';
+
+  @override
+  String get businessDetails => 'Business details';
+
+  @override
+  String get backupRestore => 'Backup & restore';
 }

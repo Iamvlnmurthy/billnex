@@ -6,6 +6,7 @@ import '../services/billing.dart';
 import '../services/pdf_service.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/common.dart';
 import '../widgets/customer_picker.dart';
 
@@ -94,7 +95,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
         children: [
           Icon(Icons.bolt, color: bx.accent, size: 22),
           const SizedBox(width: 8),
-          const Text('Quick Bill', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+          Text(L.of(context).quickBill, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
           const Spacer(),
           // mode switch
           Container(
@@ -104,7 +105,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: bx.border),
             ),
-            child: Row(children: [_modeTab(bx, 'Tally', _Mode.tally), _modeTab(bx, 'Itemized', _Mode.itemized)]),
+            child: Row(children: [_modeTab(bx, L.of(context).tally, _Mode.tally), _modeTab(bx, L.of(context).itemized, _Mode.itemized)]),
           ),
           if (_hasLines) ...[
             const SizedBox(width: 4),
@@ -175,11 +176,11 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                         Icon(Icons.calculate_outlined, size: 44, color: bx.faint),
                         const SizedBox(height: 12),
                         Text(
-                          'Punch each amount, then Collect',
+                          L.of(context).punchAmounts,
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: bx.muted),
                         ),
                         const SizedBox(height: 4),
-                        Text('No item names or catalogue needed.', style: TextStyle(fontSize: 12.5, color: bx.faint)),
+                        Text(L.of(context).noCatalogueNeeded, style: TextStyle(fontSize: 12.5, color: bx.faint)),
                       ],
                     ),
                   ),
@@ -332,7 +333,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
             ],
           ),
           Row(
-            children: [key('Add +', onTap: addLine, color: bx.accent, fg: bx.onAccent, flex: 3)],
+            children: [key('${L.of(context).add} +', onTap: addLine, color: bx.accent, fg: bx.onAccent, flex: 3)],
           ),
         ],
       ),
@@ -348,7 +349,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       children: [
         if (freq.isNotEmpty) ...[
           Text(
-            'FREQUENT',
+            L.of(context).frequent,
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.5, color: bx.faint),
           ),
           const SizedBox(height: 8),
@@ -378,7 +379,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                   textCapitalization: TextCapitalization.words,
                   onChanged: (_) => setState(() => _showSuggestions = true),
                   decoration: InputDecoration(
-                    labelText: 'Item',
+                    labelText: L.of(context).item,
                     hintText: 'Type to search stock, or leave blank for loose',
                     border: const OutlineInputBorder(),
                     isDense: true,
@@ -446,7 +447,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                 // unit toggle
                 Row(
                   children: [
-                    Text('Unit', style: TextStyle(fontSize: 13, color: bx.muted)),
+                    Text(L.of(context).unit, style: TextStyle(fontSize: 13, color: bx.muted)),
                     const SizedBox(width: 12),
                     for (final u in const ['kg', 'L', 'pc']) ...[_unitChip(bx, u), const SizedBox(width: 8)],
                   ],
@@ -484,7 +485,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Text('Amount', style: TextStyle(fontSize: 13, color: bx.muted)),
+                    Text(L.of(context).amount, style: TextStyle(fontSize: 13, color: bx.muted)),
                     const Spacer(),
                     Text(money(_editorAmount), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                   ],
@@ -493,7 +494,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                 FilledButton.icon(
                   onPressed: _editorAmount > 0 ? _addItem : null,
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add item'),
+                  label: Text(L.of(context).addItem),
                   style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
                 ),
               ],
@@ -676,7 +677,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                           Icon(Icons.local_offer_outlined, size: 15, color: bx.muted),
                           const SizedBox(width: 6),
                           Text(
-                            _discount > 0 ? 'Discount ${money(_discount)}' : 'Discount',
+                            _discount > 0 ? '${L.of(context).discount} ${money(_discount)}' : L.of(context).discount,
                             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _discount > 0 ? bx.accent : bx.muted),
                           ),
                         ],
@@ -698,7 +699,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                           Icon(_roundOff ? Icons.check_box : Icons.check_box_outline_blank, size: 18, color: _roundOff ? bx.accent : bx.faint),
                           const SizedBox(width: 6),
                           Text(
-                            'Round off${_roundOff && roundedDelta != 0 ? ' (${roundedDelta > 0 ? '+' : ''}${money(roundedDelta)})' : ''}',
+                            '${L.of(context).roundOff}${_roundOff && roundedDelta != 0 ? ' (${roundedDelta > 0 ? '+' : ''}${money(roundedDelta)})' : ''}',
                             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: bx.muted),
                           ),
                         ],
@@ -723,7 +724,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                         children: [
                           const Icon(Icons.check_circle_outline, size: 22),
                           const SizedBox(width: 10),
-                          Text(_hasLines ? 'Collect  ${money(_grand)}' : 'Collect', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                          Text(_hasLines ? '${L.of(context).collect}  ${money(_grand)}' : L.of(context).collect, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                         ],
                       ),
                     ),
@@ -925,7 +926,7 @@ class _CollectSheetState extends State<_CollectSheet> {
           Center(child: Money(widget.total, style: BxText.valueHero.copyWith(fontSize: 34))),
           const SizedBox(height: 2),
           Center(
-            child: Text('Amount to collect', style: TextStyle(fontSize: 13, color: bx.muted)),
+            child: Text(L.of(context).amountToCollect, style: TextStyle(fontSize: 13, color: bx.muted)),
           ),
           const SizedBox(height: 18),
           // cash received → change
@@ -933,13 +934,13 @@ class _CollectSheetState extends State<_CollectSheet> {
             controller: _received,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(prefixText: '₹ ', labelText: 'Cash received (optional)', border: OutlineInputBorder()),
+            decoration: InputDecoration(prefixText: '₹ ', labelText: L.of(context).cashReceived, border: const OutlineInputBorder()),
           ),
           if (_change > 0) ...[
             const SizedBox(height: 8),
             Row(
               children: [
-                Text('Return change', style: TextStyle(fontSize: 14, color: bx.muted)),
+                Text(L.of(context).returnChange, style: TextStyle(fontSize: 14, color: bx.muted)),
                 const Spacer(),
                 Text(
                   money(_change),
@@ -955,7 +956,7 @@ class _CollectSheetState extends State<_CollectSheet> {
                 child: FilledButton.icon(
                   onPressed: () => _finish('Cash'),
                   icon: const Icon(Icons.payments_outlined, size: 18),
-                  label: const Text('Cash'),
+                  label: Text(L.of(context).cash),
                   style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
                 ),
               ),
@@ -964,7 +965,7 @@ class _CollectSheetState extends State<_CollectSheet> {
                 child: OutlinedButton.icon(
                   onPressed: () => _finish('UPI'),
                   icon: const Icon(Icons.qr_code_2, size: 18),
-                  label: const Text('UPI'),
+                  label: Text(L.of(context).upi),
                   style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
                 ),
               ),
@@ -975,7 +976,7 @@ class _CollectSheetState extends State<_CollectSheet> {
             OutlinedButton.icon(
               onPressed: () => _finish('Credit'),
               icon: const Icon(Icons.account_balance_wallet_outlined, size: 18),
-              label: Text(_customer == null ? 'Khata (credit)' : 'Khata · ${_customer!.name}'),
+              label: Text(_customer == null ? L.of(context).khataCredit : 'Khata · ${_customer!.name}'),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
             ),
           ],

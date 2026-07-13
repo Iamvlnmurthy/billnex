@@ -82,4 +82,100 @@ class LHi extends L {
 
   @override
   String get goodEvening => 'नमस्ते';
+
+  @override
+  String get quickBill => 'क्विक बिल';
+
+  @override
+  String get tally => 'टैली';
+
+  @override
+  String get itemized => 'आइटम-वार';
+
+  @override
+  String get amount => 'राशि';
+
+  @override
+  String get add => 'जोड़ें';
+
+  @override
+  String get collect => 'वसूल करें';
+
+  @override
+  String get discount => 'छूट';
+
+  @override
+  String get roundOff => 'राउंड ऑफ';
+
+  @override
+  String get item => 'वस्तु';
+
+  @override
+  String get unit => 'इकाई';
+
+  @override
+  String get qty => 'मात्रा';
+
+  @override
+  String get rate => 'दर';
+
+  @override
+  String get addItem => 'वस्तु जोड़ें';
+
+  @override
+  String get frequent => 'अक्सर';
+
+  @override
+  String get cashReceived => 'नकद प्राप्त (वैकल्पिक)';
+
+  @override
+  String get returnChange => 'बाकी लौटाएं';
+
+  @override
+  String get upi => 'UPI';
+
+  @override
+  String get khataCredit => 'खाता (उधार)';
+
+  @override
+  String get clearBill => 'बिल साफ़ करें';
+
+  @override
+  String get amountToCollect => 'वसूलने की राशि';
+
+  @override
+  String get punchAmounts => 'हर राशि दर्ज करें, फिर वसूल करें';
+
+  @override
+  String get noCatalogueNeeded => 'वस्तु के नाम या कैटलॉग की ज़रूरत नहीं।';
+
+  @override
+  String get guidedSetup => 'निर्देशित सेटअप · 60 सेकंड';
+
+  @override
+  String get businessType => 'व्यवसाय प्रकार';
+
+  @override
+  String get chooseYourTrade => 'अपना व्यापार चुनें';
+
+  @override
+  String get continueLabel => 'जारी रखें';
+
+  @override
+  String get skipStandardStore => 'छोड़ें — मानक स्टोर से शुरू करें';
+
+  @override
+  String get menu => 'मेन्यू';
+
+  @override
+  String get myBusiness => 'मेरा व्यवसाय';
+
+  @override
+  String get setupSection => 'सेटअप';
+
+  @override
+  String get businessDetails => 'व्यवसाय विवरण';
+
+  @override
+  String get backupRestore => 'बैकअप और रिस्टोर';
 }
