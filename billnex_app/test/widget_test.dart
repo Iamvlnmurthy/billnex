@@ -346,6 +346,40 @@ void main() {
     expect(() => s.importData({'app': 'SomethingElse'}), throwsFormatException);
   });
 
+  test('restore rejects a newer backup version and a corrupt payload without mutating', () async {
+    final s = AppState(persistence: InMemoryPersistence());
+    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Real Shop'));
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 10, nowMs: 1);
+    s.addProduct(s.stockItems.first);
+    s.postSale(paymentMode: 'Cash', nowMs: 2);
+
+    // newer version → rejected
+    expect(() => s.importData({'app': 'BillNex', 'backupVersion': 99}), throwsFormatException);
+    // corrupt row (sales entry missing required fields) → rejected, and the
+    // parse-first design means existing data is untouched
+    expect(
+      () => s.importData({
+        'app': 'BillNex',
+        'backupVersion': 1,
+        'sales': [
+          {'garbage': true},
+        ],
+      }),
+      throwsFormatException,
+    );
+    expect(s.shopName, 'Real Shop'); // unchanged
+    expect(s.billCount, 1); // unchanged
+    expect(s.stockItems.length, 1); // unchanged
+  });
+
+  test('startup tolerates a corrupt persisted blob (boots with defaults)', () async {
+    SharedPreferences.setMockInitialValues({'bx_sales': 'not-json{{'});
+    final s = AppState(persistence: Store());
+    await s.init(); // must not throw
+    expect(s.ready, true);
+    expect(s.sales, isEmpty); // corrupt section skipped
+  });
+
   test('UPI intent builds a valid pay deep link', () {
     final uri = Uri.parse(UpiService.buildIntent(payeeVpa: 'billnex@upi', payeeName: 'Kirana Store', amount: 1302.5, txnRef: 'INV-2048', note: 'Bill'));
     expect(uri.scheme, 'upi');

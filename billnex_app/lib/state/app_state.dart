@@ -168,35 +168,49 @@ class AppState extends ChangeNotifier {
   List<StockMovement> movementsFor(String sku) => _moves.where((m) => m.sku == sku).toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
 
   /// Restore persisted session (preset, flags, templates, sales) at startup.
+  /// Loads one persisted section, tolerating a corrupt blob: on any failure the
+  /// section is skipped (booting with defaults) instead of aborting startup.
+  Future<void> _load(Future<void> Function() section) async {
+    try {
+      await section();
+    } catch (_) {
+      /* corrupt/partial data for this section — skip so the app still opens */
+    }
+  }
+
   Future<void> init() async {
-    final biz = await _store.loadBiz();
-    if (biz != null && kBusinessTypes.any((b) => b.key == biz)) {
-      _bizKey = biz;
-      final savedFlags = await _store.loadFlags();
-      _flags
-        ..clear()
-        ..addEntries(kCapabilities.map((c) => MapEntry(c.key, savedFlags[c.key] ?? false)));
-      _template = await _store.loadTemplate() ?? defaultTemplateFor(biz);
-      _posTemplate = await _store.loadPosTemplate() ?? defaultPosTemplateFor(biz);
-    }
-    _seq = await _store.loadSeq();
-    _rcptSeq = await _store.loadRcptSeq();
-    _purSeq = await _store.loadPurSeq();
-    _sales.addAll(await _store.loadSales());
-    _customers.addAll(await _store.loadCustomers());
-    _ledger.addAll(await _store.loadLedger());
-    _suppliers.addAll(await _store.loadSuppliers());
-    _purchases.addAll(await _store.loadPurchases());
-    _payables.addAll(await _store.loadPayables());
-    _outbox.addAll(await _store.loadOutbox());
-    _audit.addAll(await _store.loadAudit());
-    _appts.addAll(await _store.loadAppointments());
-    _profile = await _store.loadProfile();
-    final savedStock = await _store.loadStock();
-    if (savedStock != null) {
-      _stock.addEntries(savedStock.map((s) => MapEntry(s.sku, s)));
-      _moves.addAll(await _store.loadMoves());
-    }
+    await _load(() async {
+      final biz = await _store.loadBiz();
+      if (biz != null && kBusinessTypes.any((b) => b.key == biz)) {
+        _bizKey = biz;
+        final savedFlags = await _store.loadFlags();
+        _flags
+          ..clear()
+          ..addEntries(kCapabilities.map((c) => MapEntry(c.key, savedFlags[c.key] ?? false)));
+        _template = await _store.loadTemplate() ?? defaultTemplateFor(biz);
+        _posTemplate = await _store.loadPosTemplate() ?? defaultPosTemplateFor(biz);
+      }
+    });
+    await _load(() async => _seq = await _store.loadSeq());
+    await _load(() async => _rcptSeq = await _store.loadRcptSeq());
+    await _load(() async => _purSeq = await _store.loadPurSeq());
+    await _load(() async => _sales.addAll(await _store.loadSales()));
+    await _load(() async => _customers.addAll(await _store.loadCustomers()));
+    await _load(() async => _ledger.addAll(await _store.loadLedger()));
+    await _load(() async => _suppliers.addAll(await _store.loadSuppliers()));
+    await _load(() async => _purchases.addAll(await _store.loadPurchases()));
+    await _load(() async => _payables.addAll(await _store.loadPayables()));
+    await _load(() async => _outbox.addAll(await _store.loadOutbox()));
+    await _load(() async => _audit.addAll(await _store.loadAudit()));
+    await _load(() async => _appts.addAll(await _store.loadAppointments()));
+    await _load(() async => _profile = await _store.loadProfile());
+    await _load(() async {
+      final savedStock = await _store.loadStock();
+      if (savedStock != null) {
+        _stock.addEntries(savedStock.map((s) => MapEntry(s.sku, s)));
+        _moves.addAll(await _store.loadMoves());
+      }
+    });
     // Real installs start with an EMPTY catalogue — no demo data. Demo items are
     // only seeded via seedDemo() (?demo=1) for previews.
     _ready = true;
@@ -1132,13 +1146,52 @@ class AppState extends ChangeNotifier {
   bool get backupDue => billCount > 0 && (_lastBackupMs == null || _sales.any((s) => s.epochMs > _lastBackupMs!));
 
   /// Replace all in-memory + persisted data with a backup snapshot (restore).
-  /// Throws [FormatException] if the payload isn't a BillNex backup.
+  /// Throws [FormatException] if the payload isn't a valid BillNex backup.
+  ///
+  /// The whole backup is parsed into locals FIRST, so a single malformed row
+  /// aborts the restore before any live data is touched (no half-replaced
+  /// state). A backup from a newer app version is also rejected up front.
   Future<void> importData(Map<String, dynamic> d) async {
     if (d['app'] != 'BillNex' || d['backupVersion'] == null) {
       throw const FormatException('Not a BillNex backup file');
     }
+    final ver = (d['backupVersion'] as num?)?.toInt();
+    if (ver == null || ver > backupVersion) {
+      throw FormatException('Backup version $ver is newer than this app supports ($backupVersion). Update BillNex first.');
+    }
+
+    // ---- Parse EVERYTHING into locals before mutating any state ----
+    List<Map<String, dynamic>> rows(String k) => ((d[k] as List?) ?? const []).cast<Map<String, dynamic>>();
+    final BusinessProfile? profile;
+    final List<Sale> sales;
+    final List<Customer> customers;
+    final List<LedgerEntry> ledger;
+    final List<StockItem> stock;
+    final List<StockMovement> moves;
+    final List<Supplier> suppliers;
+    final List<Purchase> purchases;
+    final List<PayableEntry> payables;
+    final List<Appointment> appts;
+    final List<AuditEvent> audit;
+    try {
+      profile = d['profile'] == null ? null : BusinessProfile.fromJson((d['profile'] as Map).cast<String, dynamic>());
+      sales = rows('sales').map(Sale.fromJson).toList();
+      customers = rows('customers').map(Customer.fromJson).toList();
+      ledger = rows('ledger').map(LedgerEntry.fromJson).toList();
+      stock = rows('stock').map(StockItem.fromJson).toList();
+      moves = rows('moves').map(StockMovement.fromJson).toList();
+      suppliers = rows('suppliers').map(Supplier.fromJson).toList();
+      purchases = rows('purchases').map(Purchase.fromJson).toList();
+      payables = rows('payables').map(PayableEntry.fromJson).toList();
+      appts = rows('appointments').map(Appointment.fromJson).toList();
+      audit = rows('audit').map(AuditEvent.fromJson).toList();
+    } catch (e) {
+      throw FormatException('Backup is corrupt or incomplete — restore aborted, your data is unchanged ($e)');
+    }
+
+    // ---- All parsed OK: now apply atomically ----
     _bizKey = d['business'] as String?;
-    _profile = d['profile'] == null ? null : BusinessProfile.fromJson((d['profile'] as Map).cast<String, dynamic>());
+    _profile = profile;
     _store.saveProfile(_profile);
     _flags
       ..clear()
@@ -1149,38 +1202,36 @@ class AppState extends ChangeNotifier {
     _rcptSeq = (d['rcptSeq'] as num?)?.toInt() ?? _rcptSeq;
     _purSeq = (d['purSeq'] as num?)?.toInt() ?? _purSeq;
 
-    List<Map<String, dynamic>> rows(String k) => ((d[k] as List?) ?? const []).cast<Map<String, dynamic>>();
-
     _sales
       ..clear()
-      ..addAll(rows('sales').map(Sale.fromJson));
+      ..addAll(sales);
     _customers
       ..clear()
-      ..addAll(rows('customers').map(Customer.fromJson));
+      ..addAll(customers);
     _ledger
       ..clear()
-      ..addAll(rows('ledger').map(LedgerEntry.fromJson));
+      ..addAll(ledger);
     _stock
       ..clear()
-      ..addEntries(rows('stock').map(StockItem.fromJson).map((s) => MapEntry(s.sku, s)));
+      ..addEntries(stock.map((s) => MapEntry(s.sku, s)));
     _moves
       ..clear()
-      ..addAll(rows('moves').map(StockMovement.fromJson));
+      ..addAll(moves);
     _suppliers
       ..clear()
-      ..addAll(rows('suppliers').map(Supplier.fromJson));
+      ..addAll(suppliers);
     _purchases
       ..clear()
-      ..addAll(rows('purchases').map(Purchase.fromJson));
+      ..addAll(purchases);
     _payables
       ..clear()
-      ..addAll(rows('payables').map(PayableEntry.fromJson));
+      ..addAll(payables);
     _appts
       ..clear()
-      ..addAll(rows('appointments').map(Appointment.fromJson));
+      ..addAll(appts);
     _audit
       ..clear()
-      ..addAll(rows('audit').map(AuditEvent.fromJson));
+      ..addAll(audit);
 
     // Persist the restored state.
     _persistSession();
