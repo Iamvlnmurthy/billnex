@@ -45,6 +45,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
   final _qtyC = TextEditingController(text: '1');
   final _rateC = TextEditingController();
   String _unit = 'kg';
+  bool _showSuggestions = false;
 
   // Shared footer
   double _discount = 0;
@@ -333,13 +334,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               scrollDirection: Axis.horizontal,
               itemCount: freq.length,
               separatorBuilder: (_, _) => const SizedBox(width: 8),
-              itemBuilder: (context, i) => ActionChip(
-                label: Text('${freq[i].name} · ${money(freq[i].rate)}'),
-                onPressed: () => setState(() {
-                  _nameC.text = freq[i].name;
-                  _rateC.text = qtyLabel(freq[i].rate);
-                }),
-              ),
+              itemBuilder: (context, i) => ActionChip(label: Text('${freq[i].name} · ${money(freq[i].rate)}'), onPressed: () => _pick(freq[i].name, freq[i].rate, freq[i].unit)),
             ),
           ),
           const SizedBox(height: 14),
@@ -357,31 +352,70 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                 TextField(
                   controller: _nameC,
                   textCapitalization: TextCapitalization.words,
-                  onChanged: (_) => setState(() {}),
+                  onChanged: (_) => setState(() => _showSuggestions = true),
                   decoration: InputDecoration(
                     labelText: 'Item',
-                    hintText: 'e.g. Sugar (leave blank for loose)',
+                    hintText: 'Type to search stock, or leave blank for loose',
                     border: const OutlineInputBorder(),
                     isDense: true,
-                    suffixIcon: _nameC.text.isEmpty ? null : IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setState(() => _nameC.clear())),
+                    suffixIcon: _nameC.text.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.close, size: 18),
+                            onPressed: () => setState(() {
+                              _nameC.clear();
+                              _showSuggestions = false;
+                            }),
+                          ),
                   ),
                 ),
-                if (suggestions.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      for (final sug in suggestions)
-                        ActionChip(
-                          visualDensity: VisualDensity.compact,
-                          label: Text('${sug.name} · ${money(sug.rate)}', style: const TextStyle(fontSize: 12)),
-                          onPressed: () => setState(() {
-                            _nameC.text = sug.name;
-                            _rateC.text = qtyLabel(sug.rate);
-                          }),
-                        ),
-                    ],
+                // Live filtered dropdown of matching inventory / past items.
+                if (_showSuggestions && suggestions.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    constraints: const BoxConstraints(maxHeight: 232),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: bx.border),
+                      boxShadow: bx.cardShadow,
+                    ),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount: suggestions.length,
+                      separatorBuilder: (_, _) => Divider(height: 1, color: bx.border),
+                      itemBuilder: (context, i) {
+                        final sug = suggestions[i];
+                        return InkWell(
+                          onTap: () => _pick(sug.name, sug.rate, sug.unit),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                            child: Row(
+                              children: [
+                                Icon(Icons.inventory_2_outlined, size: 18, color: bx.brand),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    sug.name,
+                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (sug.inStock) ...[
+                                  Text('${qtyLabel(sug.stock)} ${sug.unit}', style: TextStyle(fontSize: 11.5, color: sug.stock <= 0 ? bx.danger : bx.muted)),
+                                  const SizedBox(width: 10),
+                                ],
+                                Text(
+                                  '${money(sug.rate)}/${sug.unit == 'pc' ? 'pc' : sug.unit}',
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: bx.accent),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
                 const SizedBox(height: 12),
@@ -565,12 +599,24 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
     );
   }
 
+  /// Fills the editor from a picked suggestion / frequent item and closes the
+  /// dropdown so the owner can move straight to quantity.
+  void _pick(String name, double rate, String unit) {
+    setState(() {
+      _nameC.text = name;
+      _rateC.text = qtyLabel(rate);
+      _unit = unit;
+      _showSuggestions = false;
+    });
+  }
+
   void _addItem() {
     setState(() {
       _items.add(_QLine(name: _nameC.text.trim(), unit: _unit, qty: _editorQty, rate: _editorRate));
       _nameC.clear();
       _qtyC.text = '1';
       _rateC.clear();
+      _showSuggestions = false;
     });
   }
 

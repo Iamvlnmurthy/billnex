@@ -662,22 +662,7 @@ class AppState extends ChangeNotifier {
     return sale;
   }
 
-  /// Passive catalogue — learned from posted bills (+ any real catalogue), so
-  /// Quick Bill autofills the last rate for a name with zero setup.
-  Map<String, double> _learnedRates() {
-    final m = <String, double>{};
-    for (final it in _stock.values) {
-      m[it.name] = it.price; // seed from catalogue where present
-    }
-    for (final s in _sales) {
-      // iterate oldest→newest so the most recent rate wins
-      for (final l in s.lines) {
-        if (l.name.trim().isNotEmpty && l.name != 'Item') m[l.name] = l.price;
-      }
-    }
-    return m;
-  }
-
+  /// How often each item name has been billed — ranks suggestions/frequents.
   Map<String, int> _nameFrequency() {
     final m = <String, int>{};
     for (final s in _sales) {
@@ -688,22 +673,57 @@ class AppState extends ChangeNotifier {
     return m;
   }
 
-  /// Name suggestions matching [prefix], most-used first, with the last rate.
-  List<({String name, double rate})> quickSuggest(String prefix, {int limit = 6}) {
+  /// Maps a free-text stock unit ('kg', 'Piece', 'Litre'…) to a Quick Bill
+  /// base unit (kg / L / pc) so a picked catalogue item gets the right presets.
+  static String baseUnitOf(String rawUnit) {
+    final u = rawUnit.toLowerCase();
+    if (u.contains('kg') || u == 'g' || u == 'gm' || u.contains('gram')) return 'kg';
+    if (u.contains('ml') || u.contains('lit') || u == 'l' || u == 'ltr') return 'L';
+    return 'pc';
+  }
+
+  /// Combined Quick Bill catalogue: every real inventory item + every learned
+  /// name from posted bills, each with its last rate, unit, and stock.
+  Map<String, ({double rate, String unit, bool inStock, double stock})> _quickCatalogue() {
+    final m = <String, ({double rate, String unit, bool inStock, double stock})>{};
+    for (final it in _stock.values) {
+      m[it.name] = (rate: it.price, unit: baseUnitOf(it.unit), inStock: it.stockTracked, stock: it.qty);
+    }
+    for (final s in _sales) {
+      for (final l in s.lines) {
+        if (l.name.trim().isEmpty || l.name == 'Item') continue;
+        final ex = m[l.name];
+        m[l.name] = (rate: l.price, unit: ex?.unit ?? 'pc', inStock: ex?.inStock ?? false, stock: ex?.stock ?? 0);
+      }
+    }
+    return m;
+  }
+
+  /// Suggestions matching [prefix] — searches the whole inventory + learned
+  /// names. Prefix matches rank first, then most-billed, then alphabetical.
+  List<({String name, double rate, String unit, bool inStock, double stock})> quickSuggest(String prefix, {int limit = 8}) {
     final q = prefix.trim().toLowerCase();
     if (q.isEmpty) return const [];
-    final rates = _learnedRates();
+    final cat = _quickCatalogue();
     final freq = _nameFrequency();
-    final names = rates.keys.where((n) => n.toLowerCase().contains(q)).toList()..sort((a, b) => (freq[b] ?? 0).compareTo(freq[a] ?? 0));
-    return names.take(limit).map((n) => (name: n, rate: rates[n]!)).toList();
+    final rows = cat.entries.where((e) => e.key.toLowerCase().contains(q)).map((e) => (name: e.key, rate: e.value.rate, unit: e.value.unit, inStock: e.value.inStock, stock: e.value.stock)).toList();
+    rows.sort((a, b) {
+      final ap = a.name.toLowerCase().startsWith(q) ? 0 : 1;
+      final bp = b.name.toLowerCase().startsWith(q) ? 0 : 1;
+      if (ap != bp) return ap - bp;
+      final f = (freq[b.name] ?? 0).compareTo(freq[a.name] ?? 0);
+      if (f != 0) return f;
+      return a.name.compareTo(b.name);
+    });
+    return rows.take(limit).toList();
   }
 
   /// The shop's most-billed items for the one-tap frequent strip.
-  List<({String name, double rate})> frequentItems({int limit = 12}) {
-    final rates = _learnedRates();
+  List<({String name, double rate, String unit})> frequentItems({int limit = 12}) {
+    final cat = _quickCatalogue();
     final freq = _nameFrequency();
-    final names = rates.keys.toList()..sort((a, b) => (freq[b] ?? 0).compareTo(freq[a] ?? 0));
-    return names.where((n) => (freq[n] ?? 0) > 0).take(limit).map((n) => (name: n, rate: rates[n]!)).toList();
+    final names = cat.keys.toList()..sort((a, b) => (freq[b] ?? 0).compareTo(freq[a] ?? 0));
+    return names.where((n) => (freq[n] ?? 0) > 0).take(limit).map((n) => (name: n, rate: cat[n]!.rate, unit: cat[n]!.unit)).toList();
   }
 
   double get todaySales => _sales.fold(0, (a, s) => a + s.total);
