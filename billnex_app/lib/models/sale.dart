@@ -30,6 +30,7 @@ class Sale {
   final String? sellerGstin; // captured at post time so reprints stay correct
   final String? sellerPhone;
   final String? sellerAddress;
+  final String? sourceInvoice; // the bill this credit note reverses (returns)
 
   const Sale({
     required this.invoiceNo,
@@ -47,7 +48,10 @@ class Sale {
     this.sellerGstin,
     this.sellerPhone,
     this.sellerAddress,
+    this.sourceInvoice,
   });
+
+  bool get isReturn => paymentMode == 'Return';
 
   double get cgst => gst / 2;
   double get sgst => gst / 2;
@@ -87,6 +91,7 @@ class Sale {
     'sg': sellerGstin,
     'sp': sellerPhone,
     'sa': sellerAddress,
+    'src': sourceInvoice,
   };
 
   factory Sale.fromJson(Map<String, dynamic> j) => Sale(
@@ -105,5 +110,6 @@ class Sale {
     sellerGstin: j['sg'] as String?,
     sellerPhone: j['sp'] as String?,
     sellerAddress: j['sa'] as String?,
+    sourceInvoice: j['src'] as String?,
   );
 }

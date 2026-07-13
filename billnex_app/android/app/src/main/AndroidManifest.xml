@@ -1,10 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Release builds need INTERNET for Google Drive backup + sync (was only
+         in the debug/profile manifests, so release backup/sync failed). -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <application
         android:label="BillNex"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"><!-- keep local merchant data out of OS auto-backup -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

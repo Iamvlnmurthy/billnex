@@ -742,7 +742,9 @@ class AppState extends ChangeNotifier {
   int get billCount => _sales.length;
 
   /// Whether a bill has already been returned (guards double credit notes).
-  bool isReturned(String invoiceNo) => _moves.any((m) => m.ref.startsWith('#RET') && (m.reason ?? '').contains(invoiceNo));
+  /// Uses the credit note's recorded source invoice so it works even for
+  /// services / items that create no stock movement.
+  bool isReturned(String invoiceNo) => _sales.any((s) => s.isReturn && s.sourceInvoice == invoiceNo);
 
   /// Sale Return / Credit Note (BNX returns) — reverses a posted bill: restocks
   /// every line and records a negative-total credit note so reports net out.
@@ -755,17 +757,20 @@ class AppState extends ChangeNotifier {
       epochMs: nowMs,
       businessName: shopName,
       templateId: _template,
-      lines: original.lines,
+      // Negative quantities so item-sales, HSN and COGS reports net the
+      // returned goods OUT instead of adding them again.
+      lines: [for (final l in original.lines) SaleLine(l.name, -l.qty, l.price, gstRate: l.gstRate, discount: -l.discount)],
       subtotal: -original.subtotal,
       gst: -original.gst,
       total: -original.total,
-      discount: original.discount,
+      discount: -original.discount,
       roundOff: -original.roundOff,
       taxInclusive: original.taxInclusive,
       paymentMode: 'Return',
       sellerGstin: _profile?.gstin,
       sellerPhone: _profile?.phone,
       sellerAddress: _profile?.address,
+      sourceInvoice: original.invoiceNo,
     );
     _sales.add(ret);
     var stockTouched = false;
@@ -872,7 +877,12 @@ class AppState extends ChangeNotifier {
   List<({int epochMs, String type, String ref, String party, double inAmt, double outAmt})> dayBook() {
     final rows = <({int epochMs, String type, String ref, String party, double inAmt, double outAmt})>[];
     for (final s in _sales) {
-      rows.add((epochMs: s.epochMs, type: s.paymentMode == 'Credit' ? 'Credit sale' : 'Sale', ref: s.invoiceNo, party: s.paymentMode, inAmt: s.paymentMode == 'Credit' ? 0 : s.total, outAmt: 0));
+      if (s.isReturn) {
+        // Refund of cash out to the customer (total is negative).
+        rows.add((epochMs: s.epochMs, type: 'Return (refund)', ref: s.invoiceNo, party: s.sourceInvoice ?? '', inAmt: 0, outAmt: -s.total));
+      } else {
+        rows.add((epochMs: s.epochMs, type: s.paymentMode == 'Credit' ? 'Credit sale' : 'Sale', ref: s.invoiceNo, party: s.paymentMode, inAmt: s.paymentMode == 'Credit' ? 0 : s.total, outAmt: 0));
+      }
     }
     for (final e in _ledger.where((e) => e.kind == LedgerKind.collection)) {
       final name = _customers.where((c) => c.id == e.customerId).map((c) => c.name).firstOrNull ?? 'Customer';

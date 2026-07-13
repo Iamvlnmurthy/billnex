@@ -516,6 +516,22 @@ void main() {
     expect(s.stockOf('Rice'), 10); // restocked
     expect(s.salesNet, closeTo(net - sale.total, 0.001)); // nets out
     expect(s.isReturned(sale.invoiceNo), true); // guarded against double return
+    // reports net the returned goods OUT, not add them
+    expect(s.itemSales().where((r) => r.name == 'Rice').fold<double>(0, (a, r) => a + r.qty), 0);
+    expect(s.hsnSummary().fold<double>(0, (a, r) => a + r.qty), 0);
+    expect(s.dayBook().any((r) => r.type == 'Return (refund)' && r.outAmt == sale.total), true);
+  });
+
+  test('service return uses source invoice and cannot be repeated', () {
+    final s = AppState();
+    s.applyPreset('salon');
+    s.addStockItem(name: 'Haircut', unit: 'service', price: 200, stockTracked: false, nowMs: 1);
+    s.addProduct(s.stockItems.first);
+    final sale = s.postSale(paymentMode: 'Cash', nowMs: 2);
+    expect(s.isReturned(sale.invoiceNo), false);
+    s.returnSale(sale, nowMs: 3);
+    // No stock movement for a service, but the credit note records the source
+    expect(s.isReturned(sale.invoiceNo), true);
   });
 
   test('reports: P&L, HSN summary and day book compute from posted data', () {
