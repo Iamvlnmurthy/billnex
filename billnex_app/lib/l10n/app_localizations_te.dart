@@ -992,6 +992,29 @@ class LTe extends L {
   String get printFail => 'ప్రింట్ కాలేదు';
 
   @override
+  String get getStarted => 'ప్రారంభించండి';
+
+  @override
+  String get splashTagline => 'ఒక్క ట్యాప్‌లో సులభ వ్యాపార నిర్వహణ';
+
+  @override
+  String get enterPin => 'PIN నమోదు చేయండి';
+
+  @override
+  String get tooManyAttempts => 'చాలా ఎక్కువ ప్రయత్నాలు';
+
+  @override
+  String get wrongPin => 'తప్పు PIN';
+
+  @override
+  String lockedTryIn(String sec) {
+    return 'లాక్ · $secసెకన్లలో మళ్లీ ప్రయత్నించండి';
+  }
+
+  @override
+  String get appLocked => 'బిల్‌నెక్స్ లాక్ చేయబడింది';
+
+  @override
   String get newPurchase => 'కొత్త కొనుగోలు';
 
   @override

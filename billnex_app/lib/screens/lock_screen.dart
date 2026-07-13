@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 /// Full-screen PIN gate shown at launch when an app-lock PIN is set.
 class LockScreen extends StatefulWidget {
@@ -44,9 +45,10 @@ class _LockScreenState extends State<LockScreen> {
     }
     final wait = await widget.auth.lockoutSeconds();
     if (!mounted) return;
+    final l = L.of(context);
     setState(() {
       _entry = '';
-      _error = wait > 0 ? 'Too many attempts' : 'Wrong PIN';
+      _error = wait > 0 ? l.tooManyAttempts : l.wrongPin;
       _lockout = wait;
     });
     if (wait > 0) {
@@ -62,6 +64,7 @@ class _LockScreenState extends State<LockScreen> {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -80,9 +83,9 @@ class _LockScreenState extends State<LockScreen> {
                   child: const Icon(Icons.lock_outline, color: Colors.white, size: 26),
                 ),
                 const SizedBox(height: 18),
-                const Text('Enter PIN', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                Text(l.enterPin, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 4),
-                Text(_lockout > 0 ? 'Locked · try in ${_lockout}s' : (_error ?? 'BillNex is locked'), style: TextStyle(fontSize: 13, color: _error != null ? bx.danger : bx.muted)),
+                Text(_lockout > 0 ? l.lockedTryIn('$_lockout') : (_error ?? l.appLocked), style: TextStyle(fontSize: 13, color: _error != null ? bx.danger : bx.muted)),
                 const SizedBox(height: 22),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

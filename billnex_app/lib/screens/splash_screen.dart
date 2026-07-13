@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 /// First-run splash — mirrors the Stitch `mobile_onboarding_business_type`
 /// reference: centered brand mark, wordmark, "Get Started" CTA.
@@ -10,6 +11,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -56,12 +58,12 @@ class SplashScreen extends StatelessWidget {
                 child: FilledButton(
                   onPressed: onGetStarted,
                   style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  child: const Text('Get Started', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  child: Text(l.getStarted, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                 ),
               ),
               const SizedBox(height: 14),
               Text(
-                'Seamless business management in one tap',
+                l.splashTagline,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13.5, color: bx.muted),
               ),

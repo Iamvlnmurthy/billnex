@@ -992,6 +992,29 @@ class LEn extends L {
   String get printFail => 'Couldn\'t print';
 
   @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get splashTagline => 'Seamless business management in one tap';
+
+  @override
+  String get enterPin => 'Enter PIN';
+
+  @override
+  String get tooManyAttempts => 'Too many attempts';
+
+  @override
+  String get wrongPin => 'Wrong PIN';
+
+  @override
+  String lockedTryIn(String sec) {
+    return 'Locked · try in ${sec}s';
+  }
+
+  @override
+  String get appLocked => 'BillNex is locked';
+
+  @override
   String get newPurchase => 'New purchase';
 
   @override

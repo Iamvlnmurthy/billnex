@@ -1887,6 +1887,48 @@ abstract class L {
   /// **'Couldn\'t print'**
   String get printFail;
 
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// No description provided for @splashTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Seamless business management in one tap'**
+  String get splashTagline;
+
+  /// No description provided for @enterPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN'**
+  String get enterPin;
+
+  /// No description provided for @tooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts'**
+  String get tooManyAttempts;
+
+  /// No description provided for @wrongPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong PIN'**
+  String get wrongPin;
+
+  /// No description provided for @lockedTryIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked · try in {sec}s'**
+  String lockedTryIn(String sec);
+
+  /// No description provided for @appLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'BillNex is locked'**
+  String get appLocked;
+
   /// No description provided for @newPurchase.
   ///
   /// In en, this message translates to:

@@ -992,6 +992,29 @@ class LHi extends L {
   String get printFail => 'प्रिंट नहीं हो सका';
 
   @override
+  String get getStarted => 'शुरू करें';
+
+  @override
+  String get splashTagline => 'एक टैप में आसान व्यवसाय प्रबंधन';
+
+  @override
+  String get enterPin => 'PIN दर्ज करें';
+
+  @override
+  String get tooManyAttempts => 'बहुत अधिक प्रयास';
+
+  @override
+  String get wrongPin => 'गलत PIN';
+
+  @override
+  String lockedTryIn(String sec) {
+    return 'लॉक · $secसे में पुनः प्रयास करें';
+  }
+
+  @override
+  String get appLocked => 'बिलनेक्स लॉक है';
+
+  @override
   String get newPurchase => 'नई खरीद';
 
   @override
