@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/customer.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import 'common.dart';
 
 /// Bottom sheet to search/select an existing customer or add a new one.
@@ -161,7 +162,7 @@ class _AddFormState extends State<_AddForm> {
         children: [
           Row(
             children: [
-              IconButton(tooltip: 'Back', onPressed: widget.onCancel, icon: const Icon(Icons.arrow_back)),
+              IconButton(tooltip: L.of(context).backLabel, onPressed: widget.onCancel, icon: const Icon(Icons.arrow_back)),
               const Text('New customer', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
             ],
           ),

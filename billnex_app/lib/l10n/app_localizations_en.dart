@@ -949,6 +949,49 @@ class LEn extends L {
   String get decreaseQty => 'Decrease quantity';
 
   @override
+  String get switchRole => 'Switch role';
+
+  @override
+  String get securityAudit => 'Security & audit';
+
+  @override
+  String get toggleTheme => 'Toggle theme';
+
+  @override
+  String get clearLabel => 'Clear';
+
+  @override
+  String get toggleFlash => 'Toggle flash';
+
+  @override
+  String get switchCamera => 'Switch camera';
+
+  @override
+  String get backLabel => 'Back';
+
+  @override
+  String get removeLine => 'Remove line';
+
+  @override
+  String get scanBarcode => 'Scan barcode';
+
+  @override
+  String get notSupportedDevice => 'Not supported on this device';
+
+  @override
+  String qbSalePosted(String inv, String mode, String amt) {
+    return '$inv · $mode $amt';
+  }
+
+  @override
+  String qbReturnSuffix(String amt) {
+    return ' · return $amt';
+  }
+
+  @override
+  String get printFail => 'Couldn\'t print';
+
+  @override
   String get newPurchase => 'New purchase';
 
   @override

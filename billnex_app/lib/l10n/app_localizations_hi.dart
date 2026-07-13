@@ -949,6 +949,49 @@ class LHi extends L {
   String get decreaseQty => 'मात्रा घटाएं';
 
   @override
+  String get switchRole => 'भूमिका बदलें';
+
+  @override
+  String get securityAudit => 'सुरक्षा और ऑडिट';
+
+  @override
+  String get toggleTheme => 'थीम बदलें';
+
+  @override
+  String get clearLabel => 'साफ़ करें';
+
+  @override
+  String get toggleFlash => 'फ़्लैश चालू/बंद';
+
+  @override
+  String get switchCamera => 'कैमरा बदलें';
+
+  @override
+  String get backLabel => 'वापस';
+
+  @override
+  String get removeLine => 'पंक्ति हटाएं';
+
+  @override
+  String get scanBarcode => 'बारकोड स्कैन करें';
+
+  @override
+  String get notSupportedDevice => 'इस डिवाइस पर समर्थित नहीं';
+
+  @override
+  String qbSalePosted(String inv, String mode, String amt) {
+    return '$inv · $mode $amt';
+  }
+
+  @override
+  String qbReturnSuffix(String amt) {
+    return ' · वापसी $amt';
+  }
+
+  @override
+  String get printFail => 'प्रिंट नहीं हो सका';
+
+  @override
   String get newPurchase => 'नई खरीद';
 
   @override

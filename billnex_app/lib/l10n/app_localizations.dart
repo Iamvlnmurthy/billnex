@@ -1809,6 +1809,84 @@ abstract class L {
   /// **'Decrease quantity'**
   String get decreaseQty;
 
+  /// No description provided for @switchRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch role'**
+  String get switchRole;
+
+  /// No description provided for @securityAudit.
+  ///
+  /// In en, this message translates to:
+  /// **'Security & audit'**
+  String get securityAudit;
+
+  /// No description provided for @toggleTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle theme'**
+  String get toggleTheme;
+
+  /// No description provided for @clearLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearLabel;
+
+  /// No description provided for @toggleFlash.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle flash'**
+  String get toggleFlash;
+
+  /// No description provided for @switchCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch camera'**
+  String get switchCamera;
+
+  /// No description provided for @backLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get backLabel;
+
+  /// No description provided for @removeLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get removeLine;
+
+  /// No description provided for @scanBarcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan barcode'**
+  String get scanBarcode;
+
+  /// No description provided for @notSupportedDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Not supported on this device'**
+  String get notSupportedDevice;
+
+  /// No description provided for @qbSalePosted.
+  ///
+  /// In en, this message translates to:
+  /// **'{inv} · {mode} {amt}'**
+  String qbSalePosted(String inv, String mode, String amt);
+
+  /// No description provided for @qbReturnSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' · return {amt}'**
+  String qbReturnSuffix(String amt);
+
+  /// No description provided for @printFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t print'**
+  String get printFail;
+
   /// No description provided for @newPurchase.
   ///
   /// In en, this message translates to:

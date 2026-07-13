@@ -949,6 +949,49 @@ class LTe extends L {
   String get decreaseQty => 'పరిమాణం తగ్గించు';
 
   @override
+  String get switchRole => 'పాత్ర మార్చు';
+
+  @override
+  String get securityAudit => 'భద్రత & ఆడిట్';
+
+  @override
+  String get toggleTheme => 'థీమ్ మార్చు';
+
+  @override
+  String get clearLabel => 'క్లియర్ చేయి';
+
+  @override
+  String get toggleFlash => 'ఫ్లాష్ ఆన్/ఆఫ్';
+
+  @override
+  String get switchCamera => 'కెమెరా మార్చు';
+
+  @override
+  String get backLabel => 'వెనుకకు';
+
+  @override
+  String get removeLine => 'లైన్ తీసివేయి';
+
+  @override
+  String get scanBarcode => 'బార్‌కోడ్ స్కాన్ చేయండి';
+
+  @override
+  String get notSupportedDevice => 'ఈ పరికరంలో మద్దతు లేదు';
+
+  @override
+  String qbSalePosted(String inv, String mode, String amt) {
+    return '$inv · $mode $amt';
+  }
+
+  @override
+  String qbReturnSuffix(String amt) {
+    return ' · రిటర్న్ $amt';
+  }
+
+  @override
+  String get printFail => 'ప్రింట్ కాలేదు';
+
+  @override
   String get newPurchase => 'కొత్త కొనుగోలు';
 
   @override

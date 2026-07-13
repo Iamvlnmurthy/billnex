@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import '../l10n/app_localizations.dart';
 
 /// Full-screen camera barcode scanner. Pops with the scanned code, or the
 /// sentinel '__manual__' if the user chooses to type it instead, or null.
@@ -33,22 +34,23 @@ class _ScannerScreenState extends State<ScannerScreen> {
       await action();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not supported on this device')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L.of(context).notSupportedDevice)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: const Text('Scan barcode'),
+        title: Text(l.scanBarcode),
         actions: [
-          IconButton(tooltip: 'Toggle flash', onPressed: () => _safe(_controller.toggleTorch), icon: const Icon(Icons.flash_on)),
-          IconButton(tooltip: 'Switch camera', onPressed: () => _safe(_controller.switchCamera), icon: const Icon(Icons.cameraswitch)),
+          IconButton(tooltip: l.toggleFlash, onPressed: () => _safe(_controller.toggleTorch), icon: const Icon(Icons.flash_on)),
+          IconButton(tooltip: l.switchCamera, onPressed: () => _safe(_controller.switchCamera), icon: const Icon(Icons.cameraswitch)),
         ],
       ),
       body: Stack(

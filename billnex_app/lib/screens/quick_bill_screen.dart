@@ -117,7 +117,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           if (_hasLines) ...[
             const SizedBox(width: 4),
             PopupMenuButton<String>(
-              tooltip: 'More',
+              tooltip: L.of(context).more,
               icon: Icon(Icons.more_vert, color: bx.muted),
               onSelected: (v) {
                 switch (v) {
@@ -221,7 +221,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                             borderRadius: BorderRadius.circular(22),
                             child: Semantics(
                               button: true,
-                              label: 'Remove line',
+                              label: L.of(context).removeLine,
                               child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
                             ),
                           ),
@@ -397,7 +397,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                     suffixIcon: _nameC.text.isEmpty
                         ? null
                         : IconButton(
-                            tooltip: 'Clear',
+                            tooltip: L.of(context).clearLabel,
                             icon: const Icon(Icons.close, size: 18),
                             onPressed: () => setState(() {
                               _nameC.clear();
@@ -631,7 +631,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
             borderRadius: BorderRadius.circular(22),
             child: Semantics(
               button: true,
-              label: 'Remove line',
+              label: L.of(context).removeLine,
               child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
             ),
           ),
@@ -848,12 +848,13 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
     final sale = state.postCustomSale(lines: lines, paymentMode: result.mode, billDiscount: _discount, roundOff: _roundOff, customer: result.customer, nowMs: DateTime.now().millisecondsSinceEpoch);
     _confirmClear();
     if (!mounted) return;
+    final l = L.of(context);
     messenger.showSnackBar(
       SnackBar(
-        content: Text('${sale.invoiceNo} · ${result.mode} ${money(sale.total)}${result.change > 0 ? ' · return ${money(result.change)}' : ''} ✓'),
+        content: Text('${l.qbSalePosted(sale.invoiceNo, result.mode, money(sale.total))}${result.change > 0 ? l.qbReturnSuffix(money(result.change)) : ''} ✓'),
         action: SnackBarAction(
-          label: 'Print',
-          onPressed: () => PdfService.run(context, () => PdfService.printSale(sale), failure: "Couldn't print"),
+          label: l.navPrint,
+          onPressed: () => PdfService.run(context, () => PdfService.printSale(sale), failure: l.printFail),
         ),
       ),
     );
