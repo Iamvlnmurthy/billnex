@@ -9,6 +9,7 @@ import '../models/appointment.dart';
 import '../models/business_profile.dart';
 import '../services/store.dart';
 import '../services/persistence.dart';
+import '../services/buffered_store.dart';
 import '../services/sync_service.dart';
 import '../services/billing.dart';
 
@@ -34,9 +35,16 @@ class CartLine {
 class AppState extends ChangeNotifier {
   /// Persistence engine — injectable (defaults to [Store]); a Drift/SQLite or
   /// remote backend can be passed in without changing any business logic.
-  final Persistence _store;
+  final BufferedStore _store;
   final SyncService _sync;
-  AppState({Persistence? persistence, SyncService? sync}) : _store = persistence ?? Store(), _sync = sync ?? const NoopSyncService();
+  AppState({Persistence? persistence, SyncService? sync}) : _store = BufferedStore(persistence ?? Store()), _sync = sync ?? const NoopSyncService();
+
+  /// Await all pending disk writes. Call on app pause/detach so an in-flight
+  /// save (e.g. a just-posted sale) is durable before the process can be killed.
+  Future<void> flush() => _store.flush();
+
+  /// Surfaces the last persistence write error, if any (null when healthy).
+  Object? get lastWriteError => _store.lastError;
 
   // ---- lifecycle ----
   bool _ready = false;

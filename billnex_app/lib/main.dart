@@ -76,7 +76,7 @@ class BillNexApp extends StatefulWidget {
   State<BillNexApp> createState() => _BillNexAppState();
 }
 
-class _BillNexAppState extends State<BillNexApp> {
+class _BillNexAppState extends State<BillNexApp> with WidgetsBindingObserver {
   late final AppState _state = widget.state;
   late final ValueNotifier<ThemeMode> _themeMode = widget.themeMode;
   late final ValueNotifier<Locale?> _locale = widget.locale;
@@ -86,8 +86,18 @@ class _BillNexAppState extends State<BillNexApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _themeMode.addListener(_persistTheme);
     _locale.addListener(_persistLocale);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState s) {
+    // Backgrounded/closing → drain pending disk writes so a just-posted sale is
+    // durable before the OS can kill the process. Best-effort; never throws.
+    if (s == AppLifecycleState.paused || s == AppLifecycleState.hidden || s == AppLifecycleState.detached) {
+      _state.flush();
+    }
   }
 
   void _persistTheme() {
@@ -102,6 +112,7 @@ class _BillNexAppState extends State<BillNexApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _themeMode.removeListener(_persistTheme);
     _locale.removeListener(_persistLocale);
     _state.dispose();
