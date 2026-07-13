@@ -56,5 +56,16 @@
   "myBusiness": "నా వ్యాపారం",
   "setupSection": "సెటప్",
   "businessDetails": "వ్యాపార వివరాలు",
-  "backupRestore": "బ్యాకప్ & రీస్టోర్"
+  "backupRestore": "బ్యాకప్ & రీస్టోర్",
+  "everythingInOnePlace": "అన్నీ ఒకే చోట",
+  "inventoryPurchasesSection": "నిల్వ & కొనుగోళ్లు",
+  "reportsSection": "నివేదికలు",
+  "billingCounter": "బిల్లింగ్ కౌంటర్",
+  "salesInvoices": "అమ్మకాలు & బిల్లులు",
+  "customersKhata": "వినియోగదారులు & ఖాతా",
+  "itemsStock": "వస్తువులు & నిల్వ",
+  "purchasesSuppliers": "కొనుగోళ్లు & సరఫరాదారులు",
+  "reportsAnalytics": "నివేదికలు & విశ్లేషణ",
+  "featuresToggles": "ఫీచర్లు & టోగుల్స్",
+  "printTemplates": "ప్రింట్ టెంప్లేట్లు"
 }

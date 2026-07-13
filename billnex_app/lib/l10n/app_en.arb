@@ -56,5 +56,16 @@
   "myBusiness": "MY BUSINESS",
   "setupSection": "SETUP",
   "businessDetails": "Business details",
-  "backupRestore": "Backup & restore"
+  "backupRestore": "Backup & restore",
+  "everythingInOnePlace": "everything in one place",
+  "inventoryPurchasesSection": "INVENTORY & PURCHASES",
+  "reportsSection": "REPORTS",
+  "billingCounter": "Billing counter",
+  "salesInvoices": "Sales & invoices",
+  "customersKhata": "Customers & khata",
+  "itemsStock": "Items & stock",
+  "purchasesSuppliers": "Purchases & suppliers",
+  "reportsAnalytics": "Reports & analytics",
+  "featuresToggles": "Features & toggles",
+  "printTemplates": "Print templates"
 }

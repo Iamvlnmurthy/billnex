@@ -434,6 +434,72 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Backup & restore'**
   String get backupRestore;
+
+  /// No description provided for @everythingInOnePlace.
+  ///
+  /// In en, this message translates to:
+  /// **'everything in one place'**
+  String get everythingInOnePlace;
+
+  /// No description provided for @inventoryPurchasesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'INVENTORY & PURCHASES'**
+  String get inventoryPurchasesSection;
+
+  /// No description provided for @reportsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'REPORTS'**
+  String get reportsSection;
+
+  /// No description provided for @billingCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing counter'**
+  String get billingCounter;
+
+  /// No description provided for @salesInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales & invoices'**
+  String get salesInvoices;
+
+  /// No description provided for @customersKhata.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers & khata'**
+  String get customersKhata;
+
+  /// No description provided for @itemsStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Items & stock'**
+  String get itemsStock;
+
+  /// No description provided for @purchasesSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases & suppliers'**
+  String get purchasesSuppliers;
+
+  /// No description provided for @reportsAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports & analytics'**
+  String get reportsAnalytics;
+
+  /// No description provided for @featuresToggles.
+  ///
+  /// In en, this message translates to:
+  /// **'Features & toggles'**
+  String get featuresToggles;
+
+  /// No description provided for @printTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Print templates'**
+  String get printTemplates;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

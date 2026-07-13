@@ -178,4 +178,37 @@ class LEn extends L {
 
   @override
   String get backupRestore => 'Backup & restore';
+
+  @override
+  String get everythingInOnePlace => 'everything in one place';
+
+  @override
+  String get inventoryPurchasesSection => 'INVENTORY & PURCHASES';
+
+  @override
+  String get reportsSection => 'REPORTS';
+
+  @override
+  String get billingCounter => 'Billing counter';
+
+  @override
+  String get salesInvoices => 'Sales & invoices';
+
+  @override
+  String get customersKhata => 'Customers & khata';
+
+  @override
+  String get itemsStock => 'Items & stock';
+
+  @override
+  String get purchasesSuppliers => 'Purchases & suppliers';
+
+  @override
+  String get reportsAnalytics => 'Reports & analytics';
+
+  @override
+  String get featuresToggles => 'Features & toggles';
+
+  @override
+  String get printTemplates => 'Print templates';
 }

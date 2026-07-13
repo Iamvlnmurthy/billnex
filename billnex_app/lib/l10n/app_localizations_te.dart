@@ -178,4 +178,37 @@ class LTe extends L {
 
   @override
   String get backupRestore => 'బ్యాకప్ & రీస్టోర్';
+
+  @override
+  String get everythingInOnePlace => 'అన్నీ ఒకే చోట';
+
+  @override
+  String get inventoryPurchasesSection => 'నిల్వ & కొనుగోళ్లు';
+
+  @override
+  String get reportsSection => 'నివేదికలు';
+
+  @override
+  String get billingCounter => 'బిల్లింగ్ కౌంటర్';
+
+  @override
+  String get salesInvoices => 'అమ్మకాలు & బిల్లులు';
+
+  @override
+  String get customersKhata => 'వినియోగదారులు & ఖాతా';
+
+  @override
+  String get itemsStock => 'వస్తువులు & నిల్వ';
+
+  @override
+  String get purchasesSuppliers => 'కొనుగోళ్లు & సరఫరాదారులు';
+
+  @override
+  String get reportsAnalytics => 'నివేదికలు & విశ్లేషణ';
+
+  @override
+  String get featuresToggles => 'ఫీచర్లు & టోగుల్స్';
+
+  @override
+  String get printTemplates => 'ప్రింట్ టెంప్లేట్లు';
 }

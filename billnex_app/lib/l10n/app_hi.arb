@@ -56,5 +56,16 @@
   "myBusiness": "मेरा व्यवसाय",
   "setupSection": "सेटअप",
   "businessDetails": "व्यवसाय विवरण",
-  "backupRestore": "बैकअप और रिस्टोर"
+  "backupRestore": "बैकअप और रिस्टोर",
+  "everythingInOnePlace": "सब कुछ एक जगह",
+  "inventoryPurchasesSection": "स्टॉक और खरीद",
+  "reportsSection": "रिपोर्ट",
+  "billingCounter": "बिलिंग काउंटर",
+  "salesInvoices": "बिक्री और बिल",
+  "customersKhata": "ग्राहक और खाता",
+  "itemsStock": "वस्तुएँ और स्टॉक",
+  "purchasesSuppliers": "खरीद और आपूर्तिकर्ता",
+  "reportsAnalytics": "रिपोर्ट और विश्लेषण",
+  "featuresToggles": "फ़ीचर और टॉगल",
+  "printTemplates": "प्रिंट टेम्पलेट"
 }

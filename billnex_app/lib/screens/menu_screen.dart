@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/business_profile.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import 'backup_screen.dart';
 import 'business_setup_screen.dart';
 import 'nav.dart';
@@ -16,43 +17,41 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
 
     // Only show destinations the current role can actually open.
     bool can(NavId id) => state.roleCanAccess(id.name);
 
     final business = <_Entry>[
-      _Entry(NavId.billing, 'Billing counter', Icons.point_of_sale_outlined),
-      _Entry(NavId.sales, 'Sales & invoices', Icons.receipt_long_outlined),
-      if (state.isOn('creditLedger')) _Entry(NavId.customers, 'Customers & khata', Icons.groups_outlined),
-      if (state.isOn('appointments')) _Entry(NavId.appointments, 'Appointments', Icons.event_outlined),
+      _Entry(NavId.billing, l.billingCounter, Icons.point_of_sale_outlined),
+      _Entry(NavId.sales, l.salesInvoices, Icons.receipt_long_outlined),
+      if (state.isOn('creditLedger')) _Entry(NavId.customers, l.customersKhata, Icons.groups_outlined),
+      if (state.isOn('appointments')) _Entry(NavId.appointments, l.navAppointments, Icons.event_outlined),
     ].where((e) => can(e.id!)).toList();
 
     final stockGroup = <_Entry>[
-      _Entry(NavId.inventory, 'Items & stock', Icons.inventory_2_outlined),
-      _Entry(NavId.purchasing, 'Purchases & suppliers', Icons.local_shipping_outlined),
+      _Entry(NavId.inventory, l.itemsStock, Icons.inventory_2_outlined),
+      _Entry(NavId.purchasing, l.purchasesSuppliers, Icons.local_shipping_outlined),
     ].where((e) => can(e.id!)).toList();
 
-    final insights = <_Entry>[_Entry(NavId.reports, 'Reports & analytics', Icons.bar_chart_outlined)].where((e) => can(e.id!)).toList();
+    final insights = <_Entry>[_Entry(NavId.reports, l.reportsAnalytics, Icons.bar_chart_outlined)].where((e) => can(e.id!)).toList();
 
-    final setup = <_Entry>[
-      if (can(NavId.features)) _Entry(NavId.features, 'Features & toggles', Icons.tune_outlined),
-      if (can(NavId.print)) _Entry(NavId.print, 'Print templates', Icons.print_outlined),
-    ];
+    final setup = <_Entry>[if (can(NavId.features)) _Entry(NavId.features, l.featuresToggles, Icons.tune_outlined), if (can(NavId.print)) _Entry(NavId.print, l.printTemplates, Icons.print_outlined)];
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 40),
       children: [
-        const Text('Menu', style: BxText.pageTitle),
+        Text(l.menu, style: BxText.pageTitle),
         const SizedBox(height: 4),
-        Text('${state.shopName} · everything in one place', style: BxText.body.copyWith(color: bx.muted)),
+        Text('${state.shopName} · ${l.everythingInOnePlace}', style: BxText.body.copyWith(color: bx.muted)),
         const SizedBox(height: 20),
-        if (business.isNotEmpty) _group(context, 'MY BUSINESS', business),
-        if (stockGroup.isNotEmpty) _group(context, 'INVENTORY & PURCHASES', stockGroup),
-        if (insights.isNotEmpty) _group(context, 'REPORTS', insights),
-        _group(context, 'SETUP', [
+        if (business.isNotEmpty) _group(context, l.myBusiness, business),
+        if (stockGroup.isNotEmpty) _group(context, l.inventoryPurchasesSection, stockGroup),
+        if (insights.isNotEmpty) _group(context, l.reportsSection, insights),
+        _group(context, l.setupSection, [
           ...setup,
-          _Entry.action('Business details', Icons.store_outlined, () => _openBusiness(context)),
-          _Entry.action('Backup & restore', Icons.backup_outlined, () => _openBackup(context)),
+          _Entry.action(l.businessDetails, Icons.store_outlined, () => _openBusiness(context)),
+          _Entry.action(l.backupRestore, Icons.backup_outlined, () => _openBackup(context)),
         ]),
       ],
     );

@@ -178,4 +178,37 @@ class LHi extends L {
 
   @override
   String get backupRestore => 'बैकअप और रिस्टोर';
+
+  @override
+  String get everythingInOnePlace => 'सब कुछ एक जगह';
+
+  @override
+  String get inventoryPurchasesSection => 'स्टॉक और खरीद';
+
+  @override
+  String get reportsSection => 'रिपोर्ट';
+
+  @override
+  String get billingCounter => 'बिलिंग काउंटर';
+
+  @override
+  String get salesInvoices => 'बिक्री और बिल';
+
+  @override
+  String get customersKhata => 'ग्राहक और खाता';
+
+  @override
+  String get itemsStock => 'वस्तुएँ और स्टॉक';
+
+  @override
+  String get purchasesSuppliers => 'खरीद और आपूर्तिकर्ता';
+
+  @override
+  String get reportsAnalytics => 'रिपोर्ट और विश्लेषण';
+
+  @override
+  String get featuresToggles => 'फ़ीचर और टॉगल';
+
+  @override
+  String get printTemplates => 'प्रिंट टेम्पलेट';
 }
