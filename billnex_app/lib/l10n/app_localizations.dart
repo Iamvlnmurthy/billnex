@@ -1220,6 +1220,204 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Damage / correction'**
   String get damageCorrection;
+
+  /// No description provided for @reportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports & Analytics'**
+  String get reportsTitle;
+
+  /// No description provided for @reportsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything below is computed live from posted transactions.'**
+  String get reportsSubtitle;
+
+  /// No description provided for @exportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Export PDF'**
+  String get exportPdf;
+
+  /// No description provided for @exportReportFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t export the report'**
+  String get exportReportFail;
+
+  /// No description provided for @kpiNetSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Net sales'**
+  String get kpiNetSales;
+
+  /// No description provided for @kpiGstCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'GST collected'**
+  String get kpiGstCollected;
+
+  /// No description provided for @kpiBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills'**
+  String get kpiBills;
+
+  /// No description provided for @kpiAvgBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg bill'**
+  String get kpiAvgBill;
+
+  /// No description provided for @kpiItemsSold.
+  ///
+  /// In en, this message translates to:
+  /// **'Items sold'**
+  String get kpiItemsSold;
+
+  /// No description provided for @kpiReceivable.
+  ///
+  /// In en, this message translates to:
+  /// **'Receivable'**
+  String get kpiReceivable;
+
+  /// No description provided for @kpiPayable.
+  ///
+  /// In en, this message translates to:
+  /// **'Payable'**
+  String get kpiPayable;
+
+  /// No description provided for @kpiStockAtCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock @ cost'**
+  String get kpiStockAtCost;
+
+  /// No description provided for @profitLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit & Loss'**
+  String get profitLoss;
+
+  /// No description provided for @plSalesTaxable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales (taxable)'**
+  String get plSalesTaxable;
+
+  /// No description provided for @plCogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost of goods sold'**
+  String get plCogs;
+
+  /// No description provided for @plGrossProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Gross profit'**
+  String get plGrossProfit;
+
+  /// No description provided for @plGstNote.
+  ///
+  /// In en, this message translates to:
+  /// **'GST collected {amt} is a pass-through, not income.'**
+  String plGstNote(String amt);
+
+  /// No description provided for @hsnSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale summary by HSN'**
+  String get hsnSummaryTitle;
+
+  /// No description provided for @csv.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV'**
+  String get csv;
+
+  /// No description provided for @noSalesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No sales yet'**
+  String get noSalesYet;
+
+  /// No description provided for @hsnCol.
+  ///
+  /// In en, this message translates to:
+  /// **'HSN'**
+  String get hsnCol;
+
+  /// No description provided for @gstCol.
+  ///
+  /// In en, this message translates to:
+  /// **'GST'**
+  String get gstCol;
+
+  /// No description provided for @taxableCol.
+  ///
+  /// In en, this message translates to:
+  /// **'TAXABLE'**
+  String get taxableCol;
+
+  /// No description provided for @taxCol.
+  ///
+  /// In en, this message translates to:
+  /// **'TAX'**
+  String get taxCol;
+
+  /// No description provided for @dayBookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Day book'**
+  String get dayBookTitle;
+
+  /// No description provided for @noTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions yet'**
+  String get noTransactions;
+
+  /// No description provided for @paymentMixTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment mix'**
+  String get paymentMixTitle;
+
+  /// No description provided for @topItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Top items'**
+  String get topItems;
+
+  /// No description provided for @qtySold.
+  ///
+  /// In en, this message translates to:
+  /// **'{qty} sold'**
+  String qtySold(String qty);
+
+  /// No description provided for @saveFileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save {file}'**
+  String saveFileTitle(String file);
+
+  /// No description provided for @exportCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Export cancelled'**
+  String get exportCancelled;
+
+  /// No description provided for @savedFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {file} ✓'**
+  String savedFile(String file);
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed: {err}'**
+  String exportFailed(String err);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

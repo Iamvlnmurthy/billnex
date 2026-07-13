@@ -7,6 +7,7 @@ import '../services/pdf_service.dart';
 import '../services/billing.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../l10n/app_localizations.dart';
 
 class ReportsScreen extends StatelessWidget {
   final AppState state;
@@ -15,6 +16,7 @@ class ReportsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final mix = state.paymentMix();
     final items = state.itemSales();
     final mixTotal = mix.values.fold<double>(0, (a, b) => a + b);
@@ -28,8 +30,8 @@ class ReportsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               PageHeader(
-                'Reports & Analytics',
-                'Everything below is computed live from posted transactions.',
+                l.reportsTitle,
+                l.reportsSubtitle,
                 trailing: FilledButton.icon(
                   onPressed: () => PdfService.run(
                     context,
@@ -48,10 +50,10 @@ class ReportsScreen extends StatelessWidget {
                       paymentMix: mix,
                       items: items,
                     ),
-                    failure: "Couldn't export the report",
+                    failure: l.exportReportFail,
                   ),
                   icon: const Icon(Icons.ios_share, size: 18),
-                  label: const Text('Export PDF'),
+                  label: Text(l.exportPdf),
                 ),
               ),
               // KPI grid
@@ -66,14 +68,14 @@ class ReportsScreen extends StatelessWidget {
                     crossAxisSpacing: 14,
                     mainAxisExtent: 104,
                     children: [
-                      _kpi(bx, 'Net sales', money(state.salesNet)),
-                      _kpi(bx, 'GST collected', money(state.gstCollected)),
-                      _kpi(bx, 'Bills', '${state.billCount}'),
-                      _kpi(bx, 'Avg bill', money(state.avgBill)),
-                      _kpi(bx, 'Items sold', qtyLabel(state.itemsSold)),
-                      _kpi(bx, 'Receivable', money(state.totalReceivable)),
-                      _kpi(bx, 'Payable', money(state.totalPayable)),
-                      _kpi(bx, 'Stock @ cost', money(state.stockValueAtCost)),
+                      _kpi(bx, l.kpiNetSales, money(state.salesNet)),
+                      _kpi(bx, l.kpiGstCollected, money(state.gstCollected)),
+                      _kpi(bx, l.kpiBills, '${state.billCount}'),
+                      _kpi(bx, l.kpiAvgBill, money(state.avgBill)),
+                      _kpi(bx, l.kpiItemsSold, qtyLabel(state.itemsSold)),
+                      _kpi(bx, l.kpiReceivable, money(state.totalReceivable)),
+                      _kpi(bx, l.kpiPayable, money(state.totalPayable)),
+                      _kpi(bx, l.kpiStockAtCost, money(state.stockValueAtCost)),
                     ],
                   );
                 },
@@ -114,6 +116,7 @@ class ReportsScreen extends StatelessWidget {
   // ── Profit & Loss ──────────────────────────────────────────────────────
   Widget _plCard(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final pl = state.profitAndLoss();
     Widget row(String k, double v, {bool bold = false, Color? color}) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -141,14 +144,14 @@ class ReportsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Profit & Loss', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+            Text(l.profitLoss, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
             const SizedBox(height: 10),
-            row('Sales (taxable)', pl.sales),
-            row('Cost of goods sold', -pl.cogs, color: bx.danger),
+            row(l.plSalesTaxable, pl.sales),
+            row(l.plCogs, -pl.cogs, color: bx.danger),
             Divider(color: bx.border, height: 18),
-            row('Gross profit', pl.grossProfit, bold: true, color: pl.grossProfit >= 0 ? bx.pos : bx.danger),
+            row(l.plGrossProfit, pl.grossProfit, bold: true, color: pl.grossProfit >= 0 ? bx.pos : bx.danger),
             const SizedBox(height: 4),
-            Text('GST collected ${money(pl.gst)} is a pass-through, not income.', style: TextStyle(fontSize: 11.5, color: bx.faint)),
+            Text(l.plGstNote(money(pl.gst)), style: TextStyle(fontSize: 11.5, color: bx.faint)),
           ],
         ),
       ),
@@ -158,6 +161,7 @@ class ReportsScreen extends StatelessWidget {
   // ── Sale Summary by HSN ────────────────────────────────────────────────
   Widget _hsnCard(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final rows = state.hsnSummary();
     return Card(
       child: Padding(
@@ -167,27 +171,26 @@ class ReportsScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Expanded(
-                  child: Text('Sale summary by HSN', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                Expanded(
+                  child: Text(l.hsnSummaryTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                 ),
-                if (rows.isNotEmpty)
-                  TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-HSN-summary.csv', state.hsnCsv()), icon: const Icon(Icons.download, size: 16), label: const Text('CSV')),
+                if (rows.isNotEmpty) TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-HSN-summary.csv', state.hsnCsv()), icon: const Icon(Icons.download, size: 16), label: Text(l.csv)),
               ],
             ),
             const SizedBox(height: 8),
             if (rows.isEmpty)
-              Text('No sales yet', style: TextStyle(color: bx.muted))
+              Text(l.noSalesYet, style: TextStyle(color: bx.muted))
             else ...[
               Row(
                 children: [
                   Expanded(
                     flex: 3,
-                    child: Text('HSN', style: BxText.meta.copyWith(color: bx.faint)),
+                    child: Text(l.hsnCol, style: BxText.meta.copyWith(color: bx.faint)),
                   ),
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'GST',
+                      l.gstCol,
                       textAlign: TextAlign.right,
                       style: BxText.meta.copyWith(color: bx.faint),
                     ),
@@ -195,7 +198,7 @@ class ReportsScreen extends StatelessWidget {
                   Expanded(
                     flex: 3,
                     child: Text(
-                      'TAXABLE',
+                      l.taxableCol,
                       textAlign: TextAlign.right,
                       style: BxText.meta.copyWith(color: bx.faint),
                     ),
@@ -203,7 +206,7 @@ class ReportsScreen extends StatelessWidget {
                   Expanded(
                     flex: 3,
                     child: Text(
-                      'TAX',
+                      l.taxCol,
                       textAlign: TextAlign.right,
                       style: BxText.meta.copyWith(color: bx.faint),
                     ),
@@ -260,6 +263,7 @@ class ReportsScreen extends StatelessWidget {
   // ── Day Book ───────────────────────────────────────────────────────────
   Widget _dayBookCard(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final rows = state.dayBook();
     return Card(
       child: Padding(
@@ -269,16 +273,15 @@ class ReportsScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Expanded(
-                  child: Text('Day book', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                Expanded(
+                  child: Text(l.dayBookTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                 ),
-                if (rows.isNotEmpty)
-                  TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-daybook.csv', state.dayBookCsv()), icon: const Icon(Icons.download, size: 16), label: const Text('CSV')),
+                if (rows.isNotEmpty) TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-daybook.csv', state.dayBookCsv()), icon: const Icon(Icons.download, size: 16), label: Text(l.csv)),
               ],
             ),
             const SizedBox(height: 4),
             if (rows.isEmpty)
-              Text('No transactions yet', style: TextStyle(color: bx.muted))
+              Text(l.noTransactions, style: TextStyle(color: bx.muted))
             else
               for (final r in rows.take(20))
                 Container(
@@ -319,12 +322,13 @@ class ReportsScreen extends StatelessWidget {
   }
 
   Future<void> _exportCsv(BuildContext context, String fileName, String csv) async {
+    final l = L.of(context);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final path = await FilePicker.platform.saveFile(dialogTitle: 'Save $fileName', fileName: fileName, bytes: Uint8List.fromList(utf8.encode(csv)));
-      messenger.showSnackBar(SnackBar(content: Text(path == null ? 'Export cancelled' : 'Saved $fileName ✓')));
+      final path = await FilePicker.platform.saveFile(dialogTitle: l.saveFileTitle(fileName), fileName: fileName, bytes: Uint8List.fromList(utf8.encode(csv)));
+      messenger.showSnackBar(SnackBar(content: Text(path == null ? l.exportCancelled : l.savedFile(fileName))));
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('Export failed: $e')));
+      messenger.showSnackBar(SnackBar(content: Text(l.exportFailed('$e'))));
     }
   }
 
@@ -354,6 +358,7 @@ class ReportsScreen extends StatelessWidget {
 
   Widget _paymentMixCard(BuildContext context, Map<String, double> mix, double total) {
     final bx = context.bx;
+    final l = L.of(context);
     final colors = {'Cash': bx.pos, 'UPI': bx.accent, 'Credit': bx.warn, 'Bank': bx.brand};
     return Card(
       child: Padding(
@@ -361,10 +366,10 @@ class ReportsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Payment mix', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+            Text(l.paymentMixTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
             const SizedBox(height: 14),
             if (mix.isEmpty)
-              Text('No sales yet', style: TextStyle(color: bx.muted))
+              Text(l.noSalesYet, style: TextStyle(color: bx.muted))
             else
               ...mix.entries.map((e) {
                 final frac = total == 0 ? 0.0 : e.value / total;
@@ -401,21 +406,22 @@ class ReportsScreen extends StatelessWidget {
 
   Widget _itemsCard(BuildContext context, List<({String name, double qty, double value})> items) {
     final bx = context.bx;
+    final l = L.of(context);
     final top = items.take(8).toList();
     return Card(
       child: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text('Top items', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+              child: Text(l.topItems, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
             ),
           ),
           if (top.isEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 24),
-              child: Text('No sales yet', style: TextStyle(color: bx.muted)),
+              child: Text(l.noSalesYet, style: TextStyle(color: bx.muted)),
             )
           else
             for (int i = 0; i < top.length; i++)
@@ -440,7 +446,7 @@ class ReportsScreen extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Text('${qtyLabel(top[i].qty)} sold', style: TextStyle(fontSize: 12, color: bx.muted)),
+                    Text(l.qtySold(qtyLabel(top[i].qty)), style: TextStyle(fontSize: 12, color: bx.muted)),
                     const SizedBox(width: 12),
                     Text(money(top[i].value), style: const TextStyle(fontWeight: FontWeight.w800)),
                   ],

@@ -613,4 +613,113 @@ class LEn extends L {
 
   @override
   String get damageCorrection => 'Damage / correction';
+
+  @override
+  String get reportsTitle => 'Reports & Analytics';
+
+  @override
+  String get reportsSubtitle => 'Everything below is computed live from posted transactions.';
+
+  @override
+  String get exportPdf => 'Export PDF';
+
+  @override
+  String get exportReportFail => 'Couldn\'t export the report';
+
+  @override
+  String get kpiNetSales => 'Net sales';
+
+  @override
+  String get kpiGstCollected => 'GST collected';
+
+  @override
+  String get kpiBills => 'Bills';
+
+  @override
+  String get kpiAvgBill => 'Avg bill';
+
+  @override
+  String get kpiItemsSold => 'Items sold';
+
+  @override
+  String get kpiReceivable => 'Receivable';
+
+  @override
+  String get kpiPayable => 'Payable';
+
+  @override
+  String get kpiStockAtCost => 'Stock @ cost';
+
+  @override
+  String get profitLoss => 'Profit & Loss';
+
+  @override
+  String get plSalesTaxable => 'Sales (taxable)';
+
+  @override
+  String get plCogs => 'Cost of goods sold';
+
+  @override
+  String get plGrossProfit => 'Gross profit';
+
+  @override
+  String plGstNote(String amt) {
+    return 'GST collected $amt is a pass-through, not income.';
+  }
+
+  @override
+  String get hsnSummaryTitle => 'Sale summary by HSN';
+
+  @override
+  String get csv => 'CSV';
+
+  @override
+  String get noSalesYet => 'No sales yet';
+
+  @override
+  String get hsnCol => 'HSN';
+
+  @override
+  String get gstCol => 'GST';
+
+  @override
+  String get taxableCol => 'TAXABLE';
+
+  @override
+  String get taxCol => 'TAX';
+
+  @override
+  String get dayBookTitle => 'Day book';
+
+  @override
+  String get noTransactions => 'No transactions yet';
+
+  @override
+  String get paymentMixTitle => 'Payment mix';
+
+  @override
+  String get topItems => 'Top items';
+
+  @override
+  String qtySold(String qty) {
+    return '$qty sold';
+  }
+
+  @override
+  String saveFileTitle(String file) {
+    return 'Save $file';
+  }
+
+  @override
+  String get exportCancelled => 'Export cancelled';
+
+  @override
+  String savedFile(String file) {
+    return 'Saved $file ✓';
+  }
+
+  @override
+  String exportFailed(String err) {
+    return 'Export failed: $err';
+  }
 }

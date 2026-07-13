@@ -613,4 +613,113 @@ class LHi extends L {
 
   @override
   String get damageCorrection => 'क्षति / सुधार';
+
+  @override
+  String get reportsTitle => 'रिपोर्ट और विश्लेषण';
+
+  @override
+  String get reportsSubtitle => 'नीचे सब कुछ पोस्ट किए गए लेनदेन से लाइव गणना किया गया है।';
+
+  @override
+  String get exportPdf => 'PDF निर्यात करें';
+
+  @override
+  String get exportReportFail => 'रिपोर्ट निर्यात नहीं हो सकी';
+
+  @override
+  String get kpiNetSales => 'शुद्ध बिक्री';
+
+  @override
+  String get kpiGstCollected => 'GST एकत्रित';
+
+  @override
+  String get kpiBills => 'बिल';
+
+  @override
+  String get kpiAvgBill => 'औसत बिल';
+
+  @override
+  String get kpiItemsSold => 'बिकी वस्तुएं';
+
+  @override
+  String get kpiReceivable => 'प्राप्य';
+
+  @override
+  String get kpiPayable => 'देय';
+
+  @override
+  String get kpiStockAtCost => 'स्टॉक (लागत)';
+
+  @override
+  String get profitLoss => 'लाभ और हानि';
+
+  @override
+  String get plSalesTaxable => 'बिक्री (कर-योग्य)';
+
+  @override
+  String get plCogs => 'बेची वस्तुओं की लागत';
+
+  @override
+  String get plGrossProfit => 'सकल लाभ';
+
+  @override
+  String plGstNote(String amt) {
+    return 'एकत्रित GST $amt पास-थ्रू है, आय नहीं।';
+  }
+
+  @override
+  String get hsnSummaryTitle => 'HSN अनुसार बिक्री सारांश';
+
+  @override
+  String get csv => 'CSV';
+
+  @override
+  String get noSalesYet => 'अभी कोई बिक्री नहीं';
+
+  @override
+  String get hsnCol => 'HSN';
+
+  @override
+  String get gstCol => 'GST';
+
+  @override
+  String get taxableCol => 'कर-योग्य';
+
+  @override
+  String get taxCol => 'कर';
+
+  @override
+  String get dayBookTitle => 'दैनिक बही';
+
+  @override
+  String get noTransactions => 'अभी कोई लेनदेन नहीं';
+
+  @override
+  String get paymentMixTitle => 'भुगतान मिश्रण';
+
+  @override
+  String get topItems => 'शीर्ष वस्तुएं';
+
+  @override
+  String qtySold(String qty) {
+    return '$qty बिके';
+  }
+
+  @override
+  String saveFileTitle(String file) {
+    return '$file सहेजें';
+  }
+
+  @override
+  String get exportCancelled => 'निर्यात रद्द';
+
+  @override
+  String savedFile(String file) {
+    return '$file सहेजा गया ✓';
+  }
+
+  @override
+  String exportFailed(String err) {
+    return 'निर्यात विफल: $err';
+  }
 }

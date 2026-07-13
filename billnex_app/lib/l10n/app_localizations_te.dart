@@ -613,4 +613,113 @@ class LTe extends L {
 
   @override
   String get damageCorrection => 'నష్టం / సవరణ';
+
+  @override
+  String get reportsTitle => 'నివేదికలు & విశ్లేషణ';
+
+  @override
+  String get reportsSubtitle => 'కింద ఉన్నదంతా పోస్ట్ చేసిన లావాదేవీల నుండి లైవ్‌గా లెక్కించబడింది.';
+
+  @override
+  String get exportPdf => 'PDF ఎగుమతి';
+
+  @override
+  String get exportReportFail => 'నివేదిక ఎగుమతి చేయలేకపోయాము';
+
+  @override
+  String get kpiNetSales => 'నికర అమ్మకాలు';
+
+  @override
+  String get kpiGstCollected => 'GST వసూలు';
+
+  @override
+  String get kpiBills => 'బిల్లులు';
+
+  @override
+  String get kpiAvgBill => 'సగటు బిల్లు';
+
+  @override
+  String get kpiItemsSold => 'అమ్మిన వస్తువులు';
+
+  @override
+  String get kpiReceivable => 'రావలసినది';
+
+  @override
+  String get kpiPayable => 'చెల్లించవలసినది';
+
+  @override
+  String get kpiStockAtCost => 'స్టాక్ (ధర)';
+
+  @override
+  String get profitLoss => 'లాభం & నష్టం';
+
+  @override
+  String get plSalesTaxable => 'అమ్మకాలు (పన్ను వర్తించే)';
+
+  @override
+  String get plCogs => 'అమ్మిన వస్తువుల ధర';
+
+  @override
+  String get plGrossProfit => 'స్థూల లాభం';
+
+  @override
+  String plGstNote(String amt) {
+    return 'వసూలు చేసిన GST $amt పాస్-త్రూ, ఆదాయం కాదు.';
+  }
+
+  @override
+  String get hsnSummaryTitle => 'HSN వారీగా అమ్మకాల సారాంశం';
+
+  @override
+  String get csv => 'CSV';
+
+  @override
+  String get noSalesYet => 'ఇంకా అమ్మకాలు లేవు';
+
+  @override
+  String get hsnCol => 'HSN';
+
+  @override
+  String get gstCol => 'GST';
+
+  @override
+  String get taxableCol => 'పన్ను వర్తించే';
+
+  @override
+  String get taxCol => 'పన్ను';
+
+  @override
+  String get dayBookTitle => 'డే బుక్';
+
+  @override
+  String get noTransactions => 'ఇంకా లావాదేవీలు లేవు';
+
+  @override
+  String get paymentMixTitle => 'చెల్లింపు మిశ్రమం';
+
+  @override
+  String get topItems => 'టాప్ వస్తువులు';
+
+  @override
+  String qtySold(String qty) {
+    return '$qty అమ్ముడయ్యాయి';
+  }
+
+  @override
+  String saveFileTitle(String file) {
+    return '$file సేవ్ చేయి';
+  }
+
+  @override
+  String get exportCancelled => 'ఎగుమతి రద్దు';
+
+  @override
+  String savedFile(String file) {
+    return '$file సేవ్ అయింది ✓';
+  }
+
+  @override
+  String exportFailed(String err) {
+    return 'ఎగుమతి విఫలం: $err';
+  }
 }
