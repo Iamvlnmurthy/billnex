@@ -1,16 +1,29 @@
-/// A single posted line on a sale.
+/// A single posted line on a sale. Snapshots the item's SKU, HSN and cost at
+/// post time so reports/returns stay correct even if the catalogue later
+/// changes or the SKU differs from the display name.
 class SaleLine {
   final String name;
   final double qty; // supports weighed/loose goods (e.g. 0.5 kg)
   final double price;
   final double gstRate;
   final double discount;
-  const SaleLine(this.name, this.qty, this.price, {this.gstRate = 5, this.discount = 0});
+  final String sku; // stable catalogue key (defaults to name)
+  final String hsn; // HSN/SAC at post time ('' if none)
+  final double cost; // unit cost at post time (for COGS)
+  SaleLine(this.name, this.qty, this.price, {this.gstRate = 5, this.discount = 0, String? sku, this.hsn = '', this.cost = 0}) : sku = sku ?? name;
   double get amount => price * qty;
 
-  Map<String, dynamic> toJson() => {'n': name, 'q': qty, 'p': price, 'g': gstRate, 'd': discount};
-  factory SaleLine.fromJson(Map<String, dynamic> j) =>
-      SaleLine(j['n'] as String, (j['q'] as num).toDouble(), (j['p'] as num).toDouble(), gstRate: (j['g'] as num?)?.toDouble() ?? 5, discount: (j['d'] as num?)?.toDouble() ?? 0);
+  Map<String, dynamic> toJson() => {'n': name, 'q': qty, 'p': price, 'g': gstRate, 'd': discount, 'sku': sku, 'hsn': hsn, 'c': cost};
+  factory SaleLine.fromJson(Map<String, dynamic> j) => SaleLine(
+    j['n'] as String,
+    (j['q'] as num).toDouble(),
+    (j['p'] as num).toDouble(),
+    gstRate: (j['g'] as num?)?.toDouble() ?? 5,
+    discount: (j['d'] as num?)?.toDouble() ?? 0,
+    sku: j['sku'] as String?,
+    hsn: (j['hsn'] as String?) ?? '',
+    cost: (j['c'] as num?)?.toDouble() ?? 0,
+  );
 }
 
 /// An immutable posted sale (PRD: no silent deletion; reversal via document).

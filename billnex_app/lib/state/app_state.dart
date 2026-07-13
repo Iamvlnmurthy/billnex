@@ -566,7 +566,7 @@ class AppState extends ChangeNotifier {
       epochMs: nowMs,
       businessName: shopName,
       templateId: _template,
-      lines: _cart.map((l) => SaleLine(l.name, l.qty, l.price, gstRate: l.gstRate, discount: l.lineDiscount)).toList(),
+      lines: _cart.map((l) => SaleLine(l.name, l.qty, l.price, gstRate: l.gstRate, discount: l.lineDiscount, sku: l.sku, hsn: _stock[l.sku]?.hsn ?? '', cost: _stock[l.sku]?.cost ?? 0)).toList(),
       subtotal: b.taxable,
       gst: b.tax,
       total: b.total,
@@ -629,7 +629,11 @@ class AppState extends ChangeNotifier {
       billDiscount: billDiscount,
       roundToUnit: roundOff,
     );
-    final saleLines = lines.map((l) => SaleLine(l.name.trim().isEmpty ? 'Item' : l.name.trim(), l.qty, l.rate, gstRate: l.gstRate)).toList();
+    final saleLines = lines.map((l) {
+      final key = l.name.trim();
+      final item = _stock[key];
+      return SaleLine(key.isEmpty ? 'Item' : key, l.qty, l.rate, gstRate: l.gstRate, sku: key, hsn: item?.hsn ?? '', cost: item?.cost ?? 0);
+    }).toList();
     final sale = Sale(
       invoiceNo: invoiceNo,
       epochMs: nowMs,
@@ -759,7 +763,7 @@ class AppState extends ChangeNotifier {
       templateId: _template,
       // Negative quantities so item-sales, HSN and COGS reports net the
       // returned goods OUT instead of adding them again.
-      lines: [for (final l in original.lines) SaleLine(l.name, -l.qty, l.price, gstRate: l.gstRate, discount: -l.discount)],
+      lines: [for (final l in original.lines) SaleLine(l.name, -l.qty, l.price, gstRate: l.gstRate, discount: -l.discount, sku: l.sku, hsn: l.hsn, cost: l.cost)],
       subtotal: -original.subtotal,
       gst: -original.gst,
       total: -original.total,
@@ -775,7 +779,7 @@ class AppState extends ChangeNotifier {
     _sales.add(ret);
     var stockTouched = false;
     for (final l in original.lines) {
-      final item = _stock[l.name];
+      final item = _stock[l.sku]; // by SKU, robust when SKU != display name
       if (item != null && item.stockTracked) {
         item.qty += l.qty; // put it back on the shelf
         _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.adjustment, delta: l.qty, ref: no, reason: 'Return ${original.invoiceNo}'));
@@ -835,7 +839,7 @@ class AppState extends ChangeNotifier {
     final m = <String, ({double qty, double taxable, double tax})>{};
     for (final s in _sales) {
       for (final l in s.lines) {
-        final hsn = _stock[l.name]?.hsn ?? '—';
+        final hsn = l.hsn.isNotEmpty ? l.hsn : '—'; // snapshot at post time
         final key = '$hsn|${l.gstRate}';
         final gross = l.amount - l.discount;
         final taxable = s.taxInclusive ? gross / (1 + l.gstRate / 100) : gross;
@@ -859,7 +863,7 @@ class AppState extends ChangeNotifier {
     var c = 0.0;
     for (final s in _sales) {
       for (final l in s.lines) {
-        c += (_stock[l.name]?.cost ?? 0) * l.qty;
+        c += l.cost * l.qty; // cost snapshot at post time
       }
     }
     return _r2(c);

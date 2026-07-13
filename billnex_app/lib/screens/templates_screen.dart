@@ -56,7 +56,7 @@ Sale _sampleSale(AppState state, String templateId) => Sale(
   epochMs: DateTime.now().millisecondsSinceEpoch,
   businessName: state.shopName,
   templateId: templateId,
-  lines: const [SaleLine('Product one', 2, 310), SaleLine('Service item', 1, 620)],
+  lines: [SaleLine('Product one', 2, 310), SaleLine('Service item', 1, 620)],
   subtotal: 1240,
   gst: 62,
   total: 1302,

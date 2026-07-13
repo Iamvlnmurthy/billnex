@@ -362,7 +362,7 @@ void main() {
   });
 
   test('e-invoice payload has correct GST split and doc no', () {
-    const sale = Sale(invoiceNo: '#INV-9', epochMs: 1720000000000, businessName: 'Shop', templateId: 'classic', lines: [SaleLine('A', 2, 50)], subtotal: 100, gst: 6, total: 106, paymentMode: 'Cash');
+    final sale = Sale(invoiceNo: '#INV-9', epochMs: 1720000000000, businessName: 'Shop', templateId: 'classic', lines: [SaleLine('A', 2, 50)], subtotal: 100, gst: 6, total: 106, paymentMode: 'Cash');
     final p = EInvoiceService.buildPayload(sale: sale, sellerGstin: '36ABCDE1234F1Z5', sellerLegalName: 'Shop', sellerStateCode: '36');
     expect(p['DocDtls']['No'], 'INV-9');
     expect(p['ValDtls']['CgstVal'], 3.0);
@@ -372,7 +372,7 @@ void main() {
   });
 
   test('Sale JSON round-trips', () {
-    const sale = Sale(
+    final sale = Sale(
       invoiceNo: '#INV-9',
       epochMs: 1720000000000,
       businessName: 'Test Shop',
@@ -520,6 +520,21 @@ void main() {
     expect(s.itemSales().where((r) => r.name == 'Rice').fold<double>(0, (a, r) => a + r.qty), 0);
     expect(s.hsnSummary().fold<double>(0, (a, r) => a + r.qty), 0);
     expect(s.dayBook().any((r) => r.type == 'Return (refund)' && r.outAmt == sale.total), true);
+  });
+
+  test('SaleLine snapshots HSN + cost; reports survive catalogue deletion', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 60, cost: 40, qty: 10, hsn: '1006', nowMs: 1);
+    s.addProduct(s.stockItems.first);
+    s.addProduct(s.stockItems.first); // 2 kg
+    s.postSale(paymentMode: 'Cash', nowMs: 2);
+    // delete the product from the catalogue
+    s.deleteStockItem('Rice', nowMs: 3);
+    expect(s.stockItems, isEmpty);
+    // reports still know the HSN and cost because the line snapshotted them
+    expect(s.hsnSummary().single.hsn, '1006');
+    expect(s.cogs, 80);
   });
 
   test('service return uses source invoice and cannot be repeated', () {

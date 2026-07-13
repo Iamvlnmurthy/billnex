@@ -10,6 +10,13 @@ class SyncResult {
   const SyncResult({this.accepted = 0, this.duplicates = 0, this.rev = 0});
 }
 
+/// EXPERIMENTAL — NOT wired end-to-end. BillNex's shipping data model is
+/// per-shop local storage + the merchant's own device/Google-Drive backup (no
+/// central multi-device sync). This seam and the `backend/` Supabase functions
+/// are a prototype only: URLs, payload shapes and pull/apply are not complete,
+/// and the client is not authenticated in `main.dart`. Do not present sync as a
+/// production feature until it is finished and covered by contract tests.
+///
 /// The server-sync seam (PRD §14). [AppState.syncNow] flushes the local outbox;
 /// a real backend implementation POSTs those events to `/sync/push` (see
 /// `backend/openapi.yaml`). Kept behind an interface so the app runs fully
