@@ -1795,4 +1795,68 @@ class LEn extends L {
 
   @override
   String get prioCould => 'Could';
+
+  @override
+  String get dataIoMenu => 'Data import / export';
+
+  @override
+  String get dataIoTitle => 'Data import / export';
+
+  @override
+  String get dataIoSubtitle => 'Export your data as CSV, or bring products & customers in from a spreadsheet.';
+
+  @override
+  String get dataIoExportSection => 'Export (CSV)';
+
+  @override
+  String get dataIoImportSection => 'Import (CSV)';
+
+  @override
+  String get dataIoExportHint => 'Saved as a spreadsheet-ready .csv file you can open in Excel or Sheets.';
+
+  @override
+  String get dataIoImportHint => 'Pick a .csv file. Existing items are skipped, never overwritten.';
+
+  @override
+  String get exportInventoryCsv => 'Export inventory (CSV)';
+
+  @override
+  String get exportCustomersCsv => 'Export customers (CSV)';
+
+  @override
+  String get exportSalesCsv => 'Export sales (CSV)';
+
+  @override
+  String get importInventoryCsv => 'Import inventory (CSV)';
+
+  @override
+  String get importCustomersCsv => 'Import customers (CSV)';
+
+  @override
+  String get exportNothing => 'Nothing to export yet.';
+
+  @override
+  String get importConfirmTitle => 'Import from CSV?';
+
+  @override
+  String get importConfirmBody => 'Rows will be added to your existing data. Duplicates are skipped. This can\'t be undone.';
+
+  @override
+  String get importConfirmBtn => 'Import';
+
+  @override
+  String importSummary(int added, int skipped, int failed) {
+    return 'Added $added · skipped $skipped · $failed failed';
+  }
+
+  @override
+  String get importNothing => 'Nothing to import — the file had no valid rows.';
+
+  @override
+  String get importResultTitle => 'Import complete';
+
+  @override
+  String csvImportFailed(String err) {
+    return 'Import failed: $err';
+  }
 }

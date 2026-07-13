@@ -1795,4 +1795,68 @@ class LTe extends L {
 
   @override
   String get prioCould => 'ఐచ్ఛికం';
+
+  @override
+  String get dataIoMenu => 'డేటా ఇంపోర్ట్ / ఎక్స్‌పోర్ట్';
+
+  @override
+  String get dataIoTitle => 'డేటా ఇంపోర్ట్ / ఎక్స్‌పోర్ట్';
+
+  @override
+  String get dataIoSubtitle => 'మీ డేటాను CSVగా ఎక్స్‌పోర్ట్ చేయండి, లేదా స్ప్రెడ్‌షీట్ నుండి ఉత్పత్తులు & కస్టమర్‌లను తీసుకురండి.';
+
+  @override
+  String get dataIoExportSection => 'ఎక్స్‌పోర్ట్ (CSV)';
+
+  @override
+  String get dataIoImportSection => 'ఇంపోర్ట్ (CSV)';
+
+  @override
+  String get dataIoExportHint => 'ఎక్సెల్ లేదా షీట్స్‌లో తెరవగల .csv ఫైల్‌గా సేవ్ చేయబడింది.';
+
+  @override
+  String get dataIoImportHint => '.csv ఫైల్‌ను ఎంచుకోండి. ఇప్పటికే ఉన్న అంశాలు దాటవేయబడతాయి, ఎప్పుడూ అధిలిఖించబడవు.';
+
+  @override
+  String get exportInventoryCsv => 'ఇన్వెంటరీ ఎక్స్‌పోర్ట్ (CSV)';
+
+  @override
+  String get exportCustomersCsv => 'కస్టమర్‌లు ఎక్స్‌పోర్ట్ (CSV)';
+
+  @override
+  String get exportSalesCsv => 'అమ్మకాలు ఎక్స్‌పోర్ట్ (CSV)';
+
+  @override
+  String get importInventoryCsv => 'ఇన్వెంటరీ ఇంపోర్ట్ (CSV)';
+
+  @override
+  String get importCustomersCsv => 'కస్టమర్‌లు ఇంపోర్ట్ (CSV)';
+
+  @override
+  String get exportNothing => 'ఎక్స్‌పోర్ట్ చేయడానికి ఇంకా ఏమీ లేదు.';
+
+  @override
+  String get importConfirmTitle => 'CSV నుండి ఇంపోర్ట్ చేయాలా?';
+
+  @override
+  String get importConfirmBody => 'వరుసలు మీ ప్రస్తుత డేటాకు జోడించబడతాయి. నకిలీలు దాటవేయబడతాయి. దీన్ని రద్దు చేయలేరు.';
+
+  @override
+  String get importConfirmBtn => 'ఇంపోర్ట్';
+
+  @override
+  String importSummary(int added, int skipped, int failed) {
+    return '$added జోడించబడ్డాయి · $skipped దాటవేయబడ్డాయి · $failed విఫలమయ్యాయి';
+  }
+
+  @override
+  String get importNothing => 'ఇంపోర్ట్ చేయడానికి ఏమీ లేదు — ఫైల్‌లో చెల్లుబాటు అయ్యే వరుసలు లేవు.';
+
+  @override
+  String get importResultTitle => 'ఇంపోర్ట్ పూర్తయింది';
+
+  @override
+  String csvImportFailed(String err) {
+    return 'ఇంపోర్ట్ విఫలమైంది: $err';
+  }
 }

@@ -1795,4 +1795,68 @@ class LHi extends L {
 
   @override
   String get prioCould => 'वैकल्पिक';
+
+  @override
+  String get dataIoMenu => 'डेटा इम्पोर्ट / एक्सपोर्ट';
+
+  @override
+  String get dataIoTitle => 'डेटा इम्पोर्ट / एक्सपोर्ट';
+
+  @override
+  String get dataIoSubtitle => 'अपना डेटा CSV में एक्सपोर्ट करें, या स्प्रेडशीट से प्रोडक्ट और ग्राहक इम्पोर्ट करें।';
+
+  @override
+  String get dataIoExportSection => 'एक्सपोर्ट (CSV)';
+
+  @override
+  String get dataIoImportSection => 'इम्पोर्ट (CSV)';
+
+  @override
+  String get dataIoExportHint => 'एक्सेल या शीट्स में खुलने वाली .csv फ़ाइल के रूप में सहेजा गया।';
+
+  @override
+  String get dataIoImportHint => '.csv फ़ाइल चुनें। मौजूदा आइटम छोड़ दिए जाते हैं, कभी अधिलेखित नहीं होते।';
+
+  @override
+  String get exportInventoryCsv => 'इन्वेंटरी एक्सपोर्ट (CSV)';
+
+  @override
+  String get exportCustomersCsv => 'ग्राहक एक्सपोर्ट (CSV)';
+
+  @override
+  String get exportSalesCsv => 'बिक्री एक्सपोर्ट (CSV)';
+
+  @override
+  String get importInventoryCsv => 'इन्वेंटरी इम्पोर्ट (CSV)';
+
+  @override
+  String get importCustomersCsv => 'ग्राहक इम्पोर्ट (CSV)';
+
+  @override
+  String get exportNothing => 'अभी एक्सपोर्ट करने के लिए कुछ नहीं है।';
+
+  @override
+  String get importConfirmTitle => 'CSV से इम्पोर्ट करें?';
+
+  @override
+  String get importConfirmBody => 'पंक्तियाँ आपके मौजूदा डेटा में जोड़ी जाएँगी। डुप्लिकेट छोड़ दिए जाते हैं। इसे पूर्ववत नहीं किया जा सकता।';
+
+  @override
+  String get importConfirmBtn => 'इम्पोर्ट';
+
+  @override
+  String importSummary(int added, int skipped, int failed) {
+    return '$added जोड़े · $skipped छोड़े · $failed विफल';
+  }
+
+  @override
+  String get importNothing => 'इम्पोर्ट करने के लिए कुछ नहीं — फ़ाइल में कोई मान्य पंक्ति नहीं थी।';
+
+  @override
+  String get importResultTitle => 'इम्पोर्ट पूरा हुआ';
+
+  @override
+  String csvImportFailed(String err) {
+    return 'इम्पोर्ट विफल: $err';
+  }
 }

@@ -3404,6 +3404,126 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Could'**
   String get prioCould;
+
+  /// No description provided for @dataIoMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Data import / export'**
+  String get dataIoMenu;
+
+  /// No description provided for @dataIoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data import / export'**
+  String get dataIoTitle;
+
+  /// No description provided for @dataIoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export your data as CSV, or bring products & customers in from a spreadsheet.'**
+  String get dataIoSubtitle;
+
+  /// No description provided for @dataIoExportSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Export (CSV)'**
+  String get dataIoExportSection;
+
+  /// No description provided for @dataIoImportSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Import (CSV)'**
+  String get dataIoImportSection;
+
+  /// No description provided for @dataIoExportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved as a spreadsheet-ready .csv file you can open in Excel or Sheets.'**
+  String get dataIoExportHint;
+
+  /// No description provided for @dataIoImportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a .csv file. Existing items are skipped, never overwritten.'**
+  String get dataIoImportHint;
+
+  /// No description provided for @exportInventoryCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export inventory (CSV)'**
+  String get exportInventoryCsv;
+
+  /// No description provided for @exportCustomersCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export customers (CSV)'**
+  String get exportCustomersCsv;
+
+  /// No description provided for @exportSalesCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export sales (CSV)'**
+  String get exportSalesCsv;
+
+  /// No description provided for @importInventoryCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Import inventory (CSV)'**
+  String get importInventoryCsv;
+
+  /// No description provided for @importCustomersCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Import customers (CSV)'**
+  String get importCustomersCsv;
+
+  /// No description provided for @exportNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to export yet.'**
+  String get exportNothing;
+
+  /// No description provided for @importConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from CSV?'**
+  String get importConfirmTitle;
+
+  /// No description provided for @importConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Rows will be added to your existing data. Duplicates are skipped. This can\'t be undone.'**
+  String get importConfirmBody;
+
+  /// No description provided for @importConfirmBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importConfirmBtn;
+
+  /// No description provided for @importSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {added} · skipped {skipped} · {failed} failed'**
+  String importSummary(int added, int skipped, int failed);
+
+  /// No description provided for @importNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to import — the file had no valid rows.'**
+  String get importNothing;
+
+  /// No description provided for @importResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import complete'**
+  String get importResultTitle;
+
+  /// No description provided for @csvImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed: {err}'**
+  String csvImportFailed(String err);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

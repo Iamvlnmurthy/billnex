@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import 'backup_screen.dart';
 import 'business_setup_screen.dart';
+import 'data_io_screen.dart';
 import 'nav.dart';
 
 /// The grouped "Menu" hub (Vyapar-style) — the home for everything that isn't
@@ -52,6 +53,7 @@ class MenuScreen extends StatelessWidget {
           ...setup,
           _Entry.action(l.businessDetails, Icons.store_outlined, () => _openBusiness(context)),
           _Entry.action(l.backupRestore, Icons.backup_outlined, () => _openBackup(context)),
+          _Entry.action(l.dataIoTitle, Icons.import_export, () => _openDataIo(context)),
         ]),
       ],
     );
@@ -119,6 +121,18 @@ class MenuScreen extends StatelessWidget {
         builder: (_) => Scaffold(
           appBar: AppBar(title: const Text('Backup & Restore')),
           body: BackupScreen(state: state),
+        ),
+      ),
+    );
+  }
+
+  void _openDataIo(BuildContext context) {
+    final title = L.of(context).dataIoTitle;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(title: Text(title)),
+          body: DataIoScreen(state: state),
         ),
       ),
     );
