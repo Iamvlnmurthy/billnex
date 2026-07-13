@@ -315,4 +315,71 @@ class LTe extends L {
 
   @override
   String get pending => 'పెండింగ్';
+
+  @override
+  String get salesTitle => 'అమ్మకాలు';
+
+  @override
+  String salesSubtitle(int count, String total) {
+    return '$count బిల్లులు · మొత్తం $total · ప్రతి బిల్లు మార్చలేనిది, మళ్లీ ప్రింట్ చేయదగినది.';
+  }
+
+  @override
+  String get auditedReprint => 'ఆడిటెడ్ రీప్రింట్';
+
+  @override
+  String get salesEmptyTitle => 'ఇంకా బిల్లులు లేవు';
+
+  @override
+  String get salesEmptySubtitle => 'బిల్లింగ్ నుండి అమ్మకం పోస్ట్ చేయండి — ఇది ఇక్కడ కనిపిస్తుంది.';
+
+  @override
+  String get returnDialogTitle => 'ఈ బిల్లును తిరిగి ఇవ్వాలా?';
+
+  @override
+  String returnDialogBody(String inv, String amount) {
+    return '$inv ($amount) కోసం క్రెడిట్ నోట్ సృష్టించండి. వస్తువులు తిరిగి నిల్వలోకి వెళ్తాయి.';
+  }
+
+  @override
+  String get returnCreditKhataNote => '\n\nఇది అరువు బిల్లు — వినియోగదారు ఖాతాను విడిగా సర్దుబాటు చేయండి.';
+
+  @override
+  String get returnAction => 'తిరిగి ఇవ్వు';
+
+  @override
+  String returnSnack(String ret, String inv) {
+    return '$ret · $inv కోసం క్రెడిట్ నోట్ ✓';
+  }
+
+  @override
+  String get chipReturn => 'రిటర్న్';
+
+  @override
+  String chipPaidMode(String mode) {
+    return 'చెల్లించారు · $mode';
+  }
+
+  @override
+  String saleItemsLine(String date, String items) {
+    return '$date · $items వస్తువులు';
+  }
+
+  @override
+  String get more => 'మరిన్ని';
+
+  @override
+  String get reprint => 'మళ్లీ ప్రింట్';
+
+  @override
+  String get sharePdf => 'PDF షేర్ చేయి';
+
+  @override
+  String get returnCreditNote => 'రిటర్న్ / క్రెడిట్ నోట్';
+
+  @override
+  String get reprintFail => 'మళ్లీ ప్రింట్ కాలేదు — ప్రింటర్ తనిఖీ చేయండి';
+
+  @override
+  String get shareFail => 'PDF షేర్ చేయలేకపోయింది';
 }

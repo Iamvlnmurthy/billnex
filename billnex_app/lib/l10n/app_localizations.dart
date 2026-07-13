@@ -692,6 +692,120 @@ abstract class L {
   /// In en, this message translates to:
   /// **'PENDING'**
   String get pending;
+
+  /// No description provided for @salesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get salesTitle;
+
+  /// No description provided for @salesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} bills · {total} total · every bill is immutable and reprintable.'**
+  String salesSubtitle(int count, String total);
+
+  /// No description provided for @auditedReprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Audited reprint'**
+  String get auditedReprint;
+
+  /// No description provided for @salesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills yet'**
+  String get salesEmptyTitle;
+
+  /// No description provided for @salesEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a sale from Billing — it appears here.'**
+  String get salesEmptySubtitle;
+
+  /// No description provided for @returnDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Return this bill?'**
+  String get returnDialogTitle;
+
+  /// No description provided for @returnDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a credit note for {inv} ({amount}). Items go back into stock.'**
+  String returnDialogBody(String inv, String amount);
+
+  /// No description provided for @returnCreditKhataNote.
+  ///
+  /// In en, this message translates to:
+  /// **'\n\nThis was a credit bill — adjust the customer\'s khata separately.'**
+  String get returnCreditKhataNote;
+
+  /// No description provided for @returnAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get returnAction;
+
+  /// No description provided for @returnSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'{ret} · credit note for {inv} ✓'**
+  String returnSnack(String ret, String inv);
+
+  /// No description provided for @chipReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'RETURN'**
+  String get chipReturn;
+
+  /// No description provided for @chipPaidMode.
+  ///
+  /// In en, this message translates to:
+  /// **'PAID · {mode}'**
+  String chipPaidMode(String mode);
+
+  /// No description provided for @saleItemsLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {items} items'**
+  String saleItemsLine(String date, String items);
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// No description provided for @reprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reprint'**
+  String get reprint;
+
+  /// No description provided for @sharePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Share PDF'**
+  String get sharePdf;
+
+  /// No description provided for @returnCreditNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Return / credit note'**
+  String get returnCreditNote;
+
+  /// No description provided for @reprintFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reprint — check the printer'**
+  String get reprintFail;
+
+  /// No description provided for @shareFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share the PDF'**
+  String get shareFail;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

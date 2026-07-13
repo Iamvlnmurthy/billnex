@@ -154,6 +154,8 @@ class StatusChip extends StatelessWidget {
     decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(4)),
     child: Text(
       label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: fg),
     ),
   );

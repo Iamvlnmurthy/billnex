@@ -6,6 +6,7 @@ import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/empty_state.dart';
+import '../l10n/app_localizations.dart';
 import 'customers_screen.dart' show StatusChip;
 
 class SalesScreen extends StatelessWidget {
@@ -14,6 +15,7 @@ class SalesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final sales = state.sales;
     return ListView(
       padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
@@ -23,10 +25,10 @@ class SalesScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              PageHeader('Sales', '${state.billCount} bills · ${money(state.todaySales)} total · every bill is immutable and reprintable.', trailing: const Badge2('Audited reprint')),
+              PageHeader(l.salesTitle, l.salesSubtitle(state.billCount, money(state.todaySales)), trailing: Badge2(l.auditedReprint)),
               if (sales.isEmpty)
-                const Card(
-                  child: EmptyState(illustration: 'empty-no-sales', title: 'No bills yet', subtitle: 'Post a sale from Billing — it appears here.'),
+                Card(
+                  child: EmptyState(illustration: 'empty-no-sales', title: l.salesEmptyTitle, subtitle: l.salesEmptySubtitle),
                 )
               else
                 Card(
@@ -51,24 +53,25 @@ class _SaleRow extends StatelessWidget {
   bool get _isReturn => sale.paymentMode == 'Return';
 
   Future<void> _return(BuildContext context) async {
+    final l = L.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final ok = await confirmDialog(
       context,
-      title: 'Return this bill?',
-      message:
-          'Create a credit note for ${sale.invoiceNo} (${money(sale.total)}). Items go back into stock.${sale.paymentMode == 'Credit' ? '\n\nThis was a credit bill — adjust the customer\'s khata separately.' : ''}',
-      confirmLabel: 'Return',
+      title: l.returnDialogTitle,
+      message: l.returnDialogBody(sale.invoiceNo, money(sale.total)) + (sale.paymentMode == 'Credit' ? l.returnCreditKhataNote : ''),
+      confirmLabel: l.returnAction,
       destructive: true,
     );
     if (ok) {
       final ret = state.returnSale(sale, nowMs: DateTime.now().millisecondsSinceEpoch);
-      messenger.showSnackBar(SnackBar(content: Text('${ret.invoiceNo} · credit note for ${sale.invoiceNo} ✓')));
+      messenger.showSnackBar(SnackBar(content: Text(l.returnSnack(ret.invoiceNo, sale.invoiceNo))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     return Container(
       decoration: BoxDecoration(
         border: first ? null : Border(top: BorderSide(color: bx.border)),
@@ -98,15 +101,15 @@ class _SaleRow extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     if (_isReturn)
-                      StatusChip('RETURN', bx.danger, bx.dangerBg)
+                      Flexible(child: StatusChip(l.chipReturn, bx.danger, bx.dangerBg))
                     else if (sale.paymentMode == 'Credit')
-                      StatusChip('PENDING', bx.warn, bx.warnBg)
+                      Flexible(child: StatusChip(l.pending, bx.warn, bx.warnBg))
                     else
-                      StatusChip('PAID · ${sale.paymentMode}', bx.pos, bx.posBg),
+                      Flexible(child: StatusChip(l.chipPaidMode(sale.paymentMode), bx.pos, bx.posBg)),
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text('${sale.dateLabel} · ${qtyLabel(sale.itemCount)} items', style: TextStyle(fontSize: 12, color: bx.muted)),
+                Text(l.saleItemsLine(sale.dateLabel, qtyLabel(sale.itemCount)), style: TextStyle(fontSize: 12, color: bx.muted)),
               ],
             ),
           ),
@@ -116,31 +119,31 @@ class _SaleRow extends StatelessWidget {
             color: _isReturn ? bx.danger : null,
           ),
           PopupMenuButton<String>(
-            tooltip: 'More',
+            tooltip: l.more,
             icon: Icon(Icons.more_vert, size: 20, color: bx.muted),
             onSelected: (v) {
               switch (v) {
                 case 'print':
-                  PdfService.run(context, () => PdfService.printSale(sale), failure: "Couldn't reprint — check the printer");
+                  PdfService.run(context, () => PdfService.printSale(sale), failure: l.reprintFail);
                 case 'share':
-                  PdfService.run(context, () => PdfService.shareSale(sale), failure: "Couldn't share the PDF");
+                  PdfService.run(context, () => PdfService.shareSale(sale), failure: l.shareFail);
                 case 'return':
                   _return(context);
               }
             },
             itemBuilder: (ctx) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'print',
-                child: ListTile(dense: true, leading: Icon(Icons.print_outlined), title: Text('Reprint')),
+                child: ListTile(dense: true, leading: const Icon(Icons.print_outlined), title: Text(l.reprint)),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'share',
-                child: ListTile(dense: true, leading: Icon(Icons.ios_share), title: Text('Share PDF')),
+                child: ListTile(dense: true, leading: const Icon(Icons.ios_share), title: Text(l.sharePdf)),
               ),
               if (!_isReturn && !state.isReturned(sale.invoiceNo))
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'return',
-                  child: ListTile(dense: true, leading: Icon(Icons.assignment_return_outlined), title: Text('Return / credit note')),
+                  child: ListTile(dense: true, leading: const Icon(Icons.assignment_return_outlined), title: Text(l.returnCreditNote)),
                 ),
             ],
           ),

@@ -315,4 +315,71 @@ class LEn extends L {
 
   @override
   String get pending => 'PENDING';
+
+  @override
+  String get salesTitle => 'Sales';
+
+  @override
+  String salesSubtitle(int count, String total) {
+    return '$count bills · $total total · every bill is immutable and reprintable.';
+  }
+
+  @override
+  String get auditedReprint => 'Audited reprint';
+
+  @override
+  String get salesEmptyTitle => 'No bills yet';
+
+  @override
+  String get salesEmptySubtitle => 'Post a sale from Billing — it appears here.';
+
+  @override
+  String get returnDialogTitle => 'Return this bill?';
+
+  @override
+  String returnDialogBody(String inv, String amount) {
+    return 'Create a credit note for $inv ($amount). Items go back into stock.';
+  }
+
+  @override
+  String get returnCreditKhataNote => '\n\nThis was a credit bill — adjust the customer\'s khata separately.';
+
+  @override
+  String get returnAction => 'Return';
+
+  @override
+  String returnSnack(String ret, String inv) {
+    return '$ret · credit note for $inv ✓';
+  }
+
+  @override
+  String get chipReturn => 'RETURN';
+
+  @override
+  String chipPaidMode(String mode) {
+    return 'PAID · $mode';
+  }
+
+  @override
+  String saleItemsLine(String date, String items) {
+    return '$date · $items items';
+  }
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get reprint => 'Reprint';
+
+  @override
+  String get sharePdf => 'Share PDF';
+
+  @override
+  String get returnCreditNote => 'Return / credit note';
+
+  @override
+  String get reprintFail => 'Couldn\'t reprint — check the printer';
+
+  @override
+  String get shareFail => 'Couldn\'t share the PDF';
 }

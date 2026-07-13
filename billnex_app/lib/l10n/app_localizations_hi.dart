@@ -315,4 +315,71 @@ class LHi extends L {
 
   @override
   String get pending => 'बाकी';
+
+  @override
+  String get salesTitle => 'बिक्री';
+
+  @override
+  String salesSubtitle(int count, String total) {
+    return '$count बिल · कुल $total · हर बिल अपरिवर्तनीय और पुनः प्रिंट-योग्य है।';
+  }
+
+  @override
+  String get auditedReprint => 'ऑडिटेड पुनः प्रिंट';
+
+  @override
+  String get salesEmptyTitle => 'अभी कोई बिल नहीं';
+
+  @override
+  String get salesEmptySubtitle => 'बिलिंग से बिक्री पोस्ट करें — यह यहाँ दिखेगी।';
+
+  @override
+  String get returnDialogTitle => 'इस बिल को लौटाएं?';
+
+  @override
+  String returnDialogBody(String inv, String amount) {
+    return '$inv ($amount) के लिए क्रेडिट नोट बनाएं। वस्तुएं वापस स्टॉक में जाएंगी।';
+  }
+
+  @override
+  String get returnCreditKhataNote => '\n\nयह एक उधार बिल था — ग्राहक का खाता अलग से समायोजित करें।';
+
+  @override
+  String get returnAction => 'लौटाएं';
+
+  @override
+  String returnSnack(String ret, String inv) {
+    return '$ret · $inv के लिए क्रेडिट नोट ✓';
+  }
+
+  @override
+  String get chipReturn => 'वापसी';
+
+  @override
+  String chipPaidMode(String mode) {
+    return 'चुकता · $mode';
+  }
+
+  @override
+  String saleItemsLine(String date, String items) {
+    return '$date · $items वस्तुएं';
+  }
+
+  @override
+  String get more => 'और';
+
+  @override
+  String get reprint => 'पुनः प्रिंट';
+
+  @override
+  String get sharePdf => 'PDF शेयर करें';
+
+  @override
+  String get returnCreditNote => 'वापसी / क्रेडिट नोट';
+
+  @override
+  String get reprintFail => 'पुनः प्रिंट नहीं हो सका — प्रिंटर जांचें';
+
+  @override
+  String get shareFail => 'PDF शेयर नहीं हो सका';
 }
