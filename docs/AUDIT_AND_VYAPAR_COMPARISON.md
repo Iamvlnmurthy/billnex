@@ -1,5 +1,7 @@
 # BillNex — Click-Target Bug Audit + Vyapar UI/UX/Feature Comparison
 
+> **Status:** Part A (the bug audit) was **resolved in v0.7.0** — all ~60 findings are fixed; treat that section as a historical record, not open work. Part B (the Vyapar comparison) is the live roadmap: typography pass, 4-tab nav, and compact onboarding shipped in v0.9.0–v0.10.0; document types and deeper reports are in progress.
+
 _Audit date: 2026-07-13 · Reference: Vyapar v27.7.2 (Simply Vyapar Apps)_
 _Method: every `onTap`/`onPressed`/`onChanged`/`onSubmitted` across all 18 screens traced end-to-end (handler → state method → persistence → edge cases → touch-target size)._
 

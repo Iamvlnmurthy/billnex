@@ -25,6 +25,7 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
   late final _addr = TextEditingController(text: widget.existing?.address ?? '');
   late final _state = TextEditingController(text: widget.existing?.stateCode ?? '36');
   late bool _taxIncl = widget.existing?.taxInclusive ?? true;
+  late String _type = widget.bizType; // editable — can be chosen/changed here
 
   bool get _editing => widget.existing != null;
 
@@ -39,7 +40,7 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
   void _save() {
     if (!_form.currentState!.validate()) return;
     final p = BusinessProfile(
-      bizType: widget.bizType,
+      bizType: _type,
       shopName: _shop.text.trim(),
       owner: _owner.text.trim(),
       phone: _phone.text.trim(),
@@ -59,7 +60,7 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
-    final biz = businessByKey(widget.bizType);
+    final typeChanged = _editing && _type != widget.existing!.bizType;
     return Scaffold(
       appBar: AppBar(title: Text(_editing ? 'Business details' : 'Set up your business')),
       body: Form(
@@ -72,27 +73,35 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(color: bx.brand.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-                        child: Icon(biz.icon, color: bx.brand),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(biz.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                            Text('${biz.edition} · tell us about your shop', style: TextStyle(fontSize: 12.5, color: bx.muted)),
-                          ],
+                  // Business type is editable — choose it here (or change it
+                  // later); the features re-align to it, data is untouched.
+                  DropdownButtonFormField<String>(
+                    initialValue: _type,
+                    isExpanded: true,
+                    decoration: const InputDecoration(labelText: 'Business type', border: OutlineInputBorder()),
+                    items: [
+                      for (final b in kBusinessTypes)
+                        DropdownMenuItem(
+                          value: b.key,
+                          child: Text('${b.name}  ·  ${b.edition}', overflow: TextOverflow.ellipsis),
                         ),
-                      ),
                     ],
+                    onChanged: (v) => setState(() => _type = v ?? _type),
                   ),
-                  const SizedBox(height: 20),
+                  if (typeChanged)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline, size: 15, color: bx.accent),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text('Features will re-align to this type. Your items, customers and bills stay as they are.', style: TextStyle(fontSize: 12, color: bx.muted)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 16),
                   _field(_shop, 'Shop / business name *', hint: 'e.g. Rajesh Kirana Store', validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null, autofocus: !_editing),
                   _field(_owner, 'Owner name', hint: 'e.g. Rajesh Kumar'),
                   _field(

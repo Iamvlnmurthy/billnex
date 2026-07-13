@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:file_picker/file_picker.dart';
 import '../state/app_state.dart';
 import '../services/pdf_service.dart';
 import '../services/billing.dart';
@@ -95,11 +98,231 @@ class ReportsScreen extends StatelessWidget {
                   return Column(children: [mixCard, const SizedBox(height: 16), itemsCard]);
                 },
               ),
+              const SizedBox(height: 16),
+              _plCard(context),
+              const SizedBox(height: 16),
+              _hsnCard(context),
+              const SizedBox(height: 16),
+              _dayBookCard(context),
             ],
           ),
         ),
       ],
     );
+  }
+
+  // ── Profit & Loss ──────────────────────────────────────────────────────
+  Widget _plCard(BuildContext context) {
+    final bx = context.bx;
+    final pl = state.profitAndLoss();
+    Widget row(String k, double v, {bool bold = false, Color? color}) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            k,
+            style: TextStyle(fontSize: 13.5, fontWeight: bold ? FontWeight.w800 : FontWeight.w500, color: bold ? null : bx.muted),
+          ),
+          Money(
+            v,
+            style: TextStyle(fontSize: bold ? 16 : 14, fontWeight: bold ? FontWeight.w800 : FontWeight.w700),
+            color: color,
+          ),
+        ],
+      ),
+    );
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text('Profit & Loss', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 10),
+            row('Sales (taxable)', pl.sales),
+            row('Cost of goods sold', -pl.cogs, color: bx.danger),
+            Divider(color: bx.border, height: 18),
+            row('Gross profit', pl.grossProfit, bold: true, color: pl.grossProfit >= 0 ? bx.pos : bx.danger),
+            const SizedBox(height: 4),
+            Text('GST collected ${money(pl.gst)} is a pass-through, not income.', style: TextStyle(fontSize: 11.5, color: bx.faint)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Sale Summary by HSN ────────────────────────────────────────────────
+  Widget _hsnCard(BuildContext context) {
+    final bx = context.bx;
+    final rows = state.hsnSummary();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: Text('Sale summary by HSN', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                ),
+                if (rows.isNotEmpty)
+                  TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-HSN-summary.csv', state.hsnCsv()), icon: const Icon(Icons.download, size: 16), label: const Text('CSV')),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (rows.isEmpty)
+              Text('No sales yet', style: TextStyle(color: bx.muted))
+            else ...[
+              Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Text('HSN', style: BxText.meta.copyWith(color: bx.faint)),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      'GST',
+                      textAlign: TextAlign.right,
+                      style: BxText.meta.copyWith(color: bx.faint),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      'TAXABLE',
+                      textAlign: TextAlign.right,
+                      style: BxText.meta.copyWith(color: bx.faint),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      'TAX',
+                      textAlign: TextAlign.right,
+                      style: BxText.meta.copyWith(color: bx.faint),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              for (final r in rows)
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(top: BorderSide(color: bx.border)),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 9),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(r.hsn, style: const TextStyle(fontWeight: FontWeight.w600)),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          '${r.rate.toStringAsFixed(0)}%',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(color: bx.muted),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          money(r.taxable),
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          money(r.tax),
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Day Book ───────────────────────────────────────────────────────────
+  Widget _dayBookCard(BuildContext context) {
+    final bx = context.bx;
+    final rows = state.dayBook();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: Text('Day book', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                ),
+                if (rows.isNotEmpty)
+                  TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-daybook.csv', state.dayBookCsv()), icon: const Icon(Icons.download, size: 16), label: const Text('CSV')),
+              ],
+            ),
+            const SizedBox(height: 4),
+            if (rows.isEmpty)
+              Text('No transactions yet', style: TextStyle(color: bx.muted))
+            else
+              for (final r in rows.take(20))
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(top: BorderSide(color: bx.border)),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${r.type} · ${r.ref}', style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+                            Text(r.party, style: TextStyle(fontSize: 11.5, color: bx.muted)),
+                          ],
+                        ),
+                      ),
+                      if (r.inAmt > 0)
+                        Money(
+                          r.inAmt,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                          color: bx.pos,
+                        ),
+                      if (r.outAmt > 0)
+                        Money(
+                          r.outAmt,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                          color: bx.danger,
+                        ),
+                    ],
+                  ),
+                ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _exportCsv(BuildContext context, String fileName, String csv) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final path = await FilePicker.platform.saveFile(dialogTitle: 'Save $fileName', fileName: fileName, bytes: Uint8List.fromList(utf8.encode(csv)));
+      messenger.showSnackBar(SnackBar(content: Text(path == null ? 'Export cancelled' : 'Saved $fileName ✓')));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('Export failed: $e')));
+    }
   }
 
   Widget _kpi(BxColors bx, String k, String v) => Card(

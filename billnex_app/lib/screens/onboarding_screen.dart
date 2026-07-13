@@ -135,7 +135,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 4),
+                // Optional — start on a standard store and pick a trade later.
+                TextButton(
+                  onPressed: () => widget.state.setupGenericStore(),
+                  child: Text('Skip — start with a standard store', style: TextStyle(fontSize: 13, color: bx.muted)),
+                ),
+                const SizedBox(height: 6),
                 _steps(bx),
               ],
             ),

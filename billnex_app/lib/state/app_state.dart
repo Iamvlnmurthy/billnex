@@ -224,11 +224,30 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Save profile edits. If the business type changed (e.g. the merchant picks
+  /// a real trade after starting on the generic store), re-align the feature
+  /// flags to the new preset — WITHOUT touching inventory, customers, sales or
+  /// any other data.
   void updateProfile(BusinessProfile p) {
+    final typeChanged = _bizKey != p.bizType;
     _profile = p;
     _bizKey = p.bizType;
+    if (typeChanged) {
+      final biz = businessByKey(p.bizType);
+      _flags
+        ..clear()
+        ..addEntries(kCapabilities.map((c) => MapEntry(c.key, biz.on.contains(c.key))));
+      _store.saveFlags(_flags);
+      _store.saveBiz(p.bizType);
+    }
     _store.saveProfile(p);
     notifyListeners();
+  }
+
+  /// A "standard store" default for merchants who skip business-type selection.
+  /// Generic retail config; the type can be aligned later from Business details.
+  void setupGenericStore() {
+    setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'My Store'));
   }
 
   // ---- feature flags ----
@@ -756,6 +775,87 @@ class AppState extends ChangeNotifier {
   }
 
   double get stockValueAtCost => _stock.values.fold(0.0, (a, i) => a + i.qty * i.cost);
+
+  /// GSTR-ready Sale Summary by HSN (BNX GST reports). Groups every sold line
+  /// by its HSN/SAC (looked up from the catalogue; '—' when unknown) and rate.
+  List<({String hsn, double rate, double qty, double taxable, double tax})> hsnSummary() {
+    final m = <String, ({double qty, double taxable, double tax})>{};
+    for (final s in _sales) {
+      for (final l in s.lines) {
+        final hsn = _stock[l.name]?.hsn ?? '—';
+        final key = '$hsn|${l.gstRate}';
+        final gross = l.amount - l.discount;
+        final taxable = s.taxInclusive ? gross / (1 + l.gstRate / 100) : gross;
+        final tax = s.taxInclusive ? gross - taxable : gross * l.gstRate / 100;
+        final ex = m[key];
+        m[key] = (qty: (ex?.qty ?? 0) + l.qty, taxable: (ex?.taxable ?? 0) + taxable, tax: (ex?.tax ?? 0) + tax);
+      }
+    }
+    final rows = m.entries.map((e) {
+      final parts = e.key.split('|');
+      return (hsn: parts[0], rate: double.parse(parts[1]), qty: e.value.qty, taxable: _r2(e.value.taxable), tax: _r2(e.value.tax));
+    }).toList();
+    rows.sort((a, b) => b.taxable.compareTo(a.taxable));
+    return rows;
+  }
+
+  static double _r2(double v) => (v * 100).round() / 100;
+
+  /// Cost of goods sold — catalogue cost × quantity for every sold line.
+  double get cogs {
+    var c = 0.0;
+    for (final s in _sales) {
+      for (final l in s.lines) {
+        c += (_stock[l.name]?.cost ?? 0) * l.qty;
+      }
+    }
+    return _r2(c);
+  }
+
+  /// Simple Profit & Loss (BNX reports): taxable sales − COGS = gross profit.
+  ({double sales, double cogs, double grossProfit, double gst}) profitAndLoss() {
+    final sales = salesGross; // net taxable of all bills
+    final cost = cogs;
+    return (sales: sales, cogs: cost, grossProfit: _r2(sales - cost), gst: gstCollected);
+  }
+
+  /// Day Book — every posted transaction in time order (BNX day book). Sales &
+  /// collections are money-in; purchases & supplier payments are money-out.
+  List<({int epochMs, String type, String ref, String party, double inAmt, double outAmt})> dayBook() {
+    final rows = <({int epochMs, String type, String ref, String party, double inAmt, double outAmt})>[];
+    for (final s in _sales) {
+      rows.add((epochMs: s.epochMs, type: s.paymentMode == 'Credit' ? 'Credit sale' : 'Sale', ref: s.invoiceNo, party: s.paymentMode, inAmt: s.paymentMode == 'Credit' ? 0 : s.total, outAmt: 0));
+    }
+    for (final e in _ledger.where((e) => e.kind == LedgerKind.collection)) {
+      final name = _customers.where((c) => c.id == e.customerId).map((c) => c.name).firstOrNull ?? 'Customer';
+      rows.add((epochMs: e.epochMs, type: 'Collection', ref: e.ref, party: name, inAmt: e.credit, outAmt: 0));
+    }
+    for (final p in _purchases) {
+      rows.add((epochMs: p.epochMs, type: 'Purchase', ref: p.purchaseNo, party: _suppliers.where((s) => s.id == p.supplierId).map((s) => s.name).firstOrNull ?? 'Supplier', inAmt: 0, outAmt: p.total));
+    }
+    rows.sort((a, b) => b.epochMs.compareTo(a.epochMs));
+    return rows;
+  }
+
+  /// Day Book as CSV text (BNX-0311 export).
+  String dayBookCsv() {
+    final b = StringBuffer('Date,Type,Ref,Party,In,Out\n');
+    for (final r in dayBook()) {
+      final d = DateTime.fromMillisecondsSinceEpoch(r.epochMs);
+      final date = '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+      b.writeln('$date,${r.type},${r.ref},"${r.party}",${r.inAmt.toStringAsFixed(2)},${r.outAmt.toStringAsFixed(2)}');
+    }
+    return b.toString();
+  }
+
+  /// HSN summary as CSV text (for GST filing).
+  String hsnCsv() {
+    final b = StringBuffer('HSN/SAC,GST %,Qty,Taxable,Tax\n');
+    for (final r in hsnSummary()) {
+      b.writeln('${r.hsn},${r.rate.toStringAsFixed(0)},${r.qty},${r.taxable.toStringAsFixed(2)},${r.tax.toStringAsFixed(2)}');
+    }
+    return b.toString();
+  }
 
   // -----------------------------------------------------------------------
   // Customers & credit ledger

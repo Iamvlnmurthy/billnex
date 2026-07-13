@@ -480,6 +480,45 @@ void main() {
     expect(exact.total, 10.4);
   });
 
+  test('business type is optional; changing it later re-aligns features but keeps data', () {
+    final s = AppState(persistence: InMemoryPersistence());
+    // skip selection → generic standard store
+    s.setupGenericStore();
+    expect(s.onboarded, true);
+    expect(s.bizKey, 'kirana');
+    // add real data
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 50, qty: 10, nowMs: 1);
+    final cust = s.addCustomer(name: 'A', mobile: '9');
+    // later: pick pharmacy from Business details
+    s.updateProfile(const BusinessProfile(bizType: 'pharmacy', shopName: 'My Store'));
+    expect(s.bizKey, 'pharmacy');
+    final ph = businessByKey('pharmacy');
+    for (final cap in kCapabilities) {
+      expect(s.isOn(cap.key), ph.on.contains(cap.key)); // features re-aligned
+    }
+    // data untouched
+    expect(s.stockItems.length, 1);
+    expect(s.customers.any((c) => c.id == cust.id), true);
+  });
+
+  test('reports: P&L, HSN summary and day book compute from posted data', () {
+    final s = AppState();
+    s.applyPreset('kirana');
+    s.addStockItem(name: 'Rice', unit: 'kg', price: 60, cost: 40, qty: 100, hsn: '1006', nowMs: 1);
+    s.addProduct(s.stockItems.first);
+    s.addProduct(s.stockItems.first); // qty 2 → sell 2 kg
+    s.postSale(paymentMode: 'Cash', nowMs: 2);
+    final pl = s.profitAndLoss();
+    expect(pl.cogs, 80); // 2 × ₹40 cost
+    expect(pl.grossProfit, closeTo(pl.sales - 80, 0.01));
+    final hsn = s.hsnSummary();
+    expect(hsn.single.hsn, '1006');
+    expect(hsn.single.qty, 2);
+    expect(s.dayBook().single.type, 'Sale');
+    expect(s.dayBookCsv(), isNotEmpty);
+    expect(s.hsnCsv(), contains('1006'));
+  });
+
   test('purchase GST uses each item\'s own slab', () {
     final s = AppState();
     s.applyPreset('kirana');
