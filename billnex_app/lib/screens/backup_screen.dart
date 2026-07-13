@@ -287,18 +287,11 @@ class _BackupScreenState extends State<BackupScreen> {
     setState(() => _driveFiles = const []);
   }
 
-  Future<bool> _confirmRestore(BuildContext context) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Restore from backup?'),
-        content: const Text('This replaces ALL current data on this device with the backup. This cannot be undone.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restore')),
-        ],
-      ),
-    );
-    return ok == true;
-  }
+  Future<bool> _confirmRestore(BuildContext context) => confirmDialog(
+    context,
+    title: 'Restore from backup?',
+    message: 'This replaces ALL current data on this device with the backup. This cannot be undone.',
+    confirmLabel: 'Restore',
+    destructive: true,
+  );
 }

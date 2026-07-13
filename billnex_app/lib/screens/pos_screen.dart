@@ -548,18 +548,13 @@ class _CartPanel extends StatelessWidget {
       }
       if (state.overLimit(customer, state.total)) {
         if (!context.mounted) return;
-        final proceed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Credit limit exceeded'),
-            content: Text('${customer!.name} would exceed the ${money(customer.creditLimit)} limit. Post anyway?'),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-              FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Override')),
-            ],
-          ),
+        final proceed = await confirmDialog(
+          context,
+          title: 'Credit limit exceeded',
+          message: '${customer.name} would exceed the ${money(customer.creditLimit)} limit. Post anyway?',
+          confirmLabel: 'Override',
         );
-        if (proceed != true) return;
+        if (!proceed) return;
       }
     }
     final sale = state.postSale(paymentMode: mode, nowMs: DateTime.now().millisecondsSinceEpoch, customer: customer);

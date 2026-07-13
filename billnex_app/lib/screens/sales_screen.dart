@@ -52,24 +52,15 @@ class _SaleRow extends StatelessWidget {
 
   Future<void> _return(BuildContext context) async {
     final messenger = ScaffoldMessenger.of(context);
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Return this bill?'),
-        content: Text(
+    final ok = await confirmDialog(
+      context,
+      title: 'Return this bill?',
+      message:
           'Create a credit note for ${sale.invoiceNo} (${money(sale.total)}). Items go back into stock.${sale.paymentMode == 'Credit' ? '\n\nThis was a credit bill — adjust the customer\'s khata separately.' : ''}',
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: ctx.bx.danger),
-            child: const Text('Return'),
-          ),
-        ],
-      ),
+      confirmLabel: 'Return',
+      destructive: true,
     );
-    if (ok == true) {
+    if (ok) {
       final ret = state.returnSale(sale, nowMs: DateTime.now().millisecondsSinceEpoch);
       messenger.showSnackBar(SnackBar(content: Text('${ret.invoiceNo} · credit note for ${sale.invoiceNo} ✓')));
     }
