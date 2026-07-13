@@ -47,8 +47,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
         foregroundColor: Colors.white,
         title: const Text('Scan barcode'),
         actions: [
-          IconButton(onPressed: () => _safe(_controller.toggleTorch), icon: const Icon(Icons.flash_on)),
-          IconButton(onPressed: () => _safe(_controller.switchCamera), icon: const Icon(Icons.cameraswitch)),
+          IconButton(tooltip: 'Toggle flash', onPressed: () => _safe(_controller.toggleTorch), icon: const Icon(Icons.flash_on)),
+          IconButton(tooltip: 'Switch camera', onPressed: () => _safe(_controller.switchCamera), icon: const Icon(Icons.cameraswitch)),
         ],
       ),
       body: Stack(

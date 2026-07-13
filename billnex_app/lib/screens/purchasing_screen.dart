@@ -266,6 +266,7 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
                     const SizedBox(width: 8),
                     Text(money(_lines[i].amount), style: const TextStyle(fontWeight: FontWeight.w700)),
                     IconButton(
+                      tooltip: 'Remove item',
                       visualDensity: VisualDensity.compact,
                       onPressed: () => setState(() => _lines.removeAt(i)),
                       icon: Icon(Icons.close, size: 16, color: bx.faint),

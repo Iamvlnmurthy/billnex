@@ -393,6 +393,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                     suffixIcon: _nameC.text.isEmpty
                         ? null
                         : IconButton(
+                            tooltip: 'Clear',
                             icon: const Icon(Icons.close, size: 18),
                             onPressed: () => setState(() {
                               _nameC.clear();

@@ -161,7 +161,7 @@ class _AddFormState extends State<_AddForm> {
         children: [
           Row(
             children: [
-              IconButton(onPressed: widget.onCancel, icon: const Icon(Icons.arrow_back)),
+              IconButton(tooltip: 'Back', onPressed: widget.onCancel, icon: const Icon(Icons.arrow_back)),
               const Text('New customer', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
             ],
           ),

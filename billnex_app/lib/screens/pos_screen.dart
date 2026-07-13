@@ -235,6 +235,7 @@ class _CatalogState extends State<_Catalog> {
                     suffixIcon: _q.isEmpty
                         ? null
                         : IconButton(
+                            tooltip: 'Clear search',
                             icon: const Icon(Icons.close, size: 18),
                             onPressed: () => setState(() {
                               _q = '';
@@ -670,23 +671,27 @@ class _CartRow extends StatelessWidget {
     }
   }
 
-  Widget _stepBtn(BxColors bx, IconData ic, VoidCallback onTap) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(22),
-    child: SizedBox(
-      width: 44,
-      height: 44,
-      child: Center(
-        child: Container(
-          width: 28,
-          height: 28,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: bx.surface2,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: bx.border),
+  Widget _stepBtn(BxColors bx, IconData ic, VoidCallback onTap) => Semantics(
+    button: true,
+    label: ic == Icons.add ? 'Increase quantity' : 'Decrease quantity',
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: SizedBox(
+        width: 44,
+        height: 44,
+        child: Center(
+          child: Container(
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: bx.surface2,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: bx.border),
+            ),
+            child: Icon(ic, size: 16),
           ),
-          child: Icon(ic, size: 16),
         ),
       ),
     ),
