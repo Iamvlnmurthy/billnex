@@ -325,5 +325,12 @@
   "paySupplierTitle": "{name} को भुगतान करें",
   "payableColon": "देय: {amt}",
   "recordPayment": "भुगतान दर्ज करें",
-  "paidToSnack": "{name} को {amt} भुगतान किया ✓"
+  "paidToSnack": "{name} को {amt} भुगतान किया ✓",
+  "featuresSubtitle": "सब कुछ एक मास्टर स्विच के साथ श्रेणी के अनुसार समूहित है। प्रीसेट वाली सुविधाएँ {name} के लिए अपने-आप आवंटित की गई हैं — किसी को भी बदल सकते हैं।",
+  "featuresEnabledCount": "{total} में से {on} चालू",
+  "enableAll": "सभी चालू करें",
+  "disableAll": "सभी बंद करें",
+  "proBadge": "Pro",
+  "presetBadge": "प्रीसेट",
+  "proPlan": "Pro प्लान"
 }

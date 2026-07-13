@@ -1085,4 +1085,29 @@ class LEn extends L {
   String paidToSnack(String amt, String name) {
     return 'Paid $amt to $name ✓';
   }
+
+  @override
+  String featuresSubtitle(String name) {
+    return 'Everything is grouped by category with a master switch. Preset-enabled items were auto-allotted for $name — override anything.';
+  }
+
+  @override
+  String featuresEnabledCount(int on, int total) {
+    return '$on of $total enabled';
+  }
+
+  @override
+  String get enableAll => 'Enable all';
+
+  @override
+  String get disableAll => 'Disable all';
+
+  @override
+  String get proBadge => 'Pro';
+
+  @override
+  String get presetBadge => 'preset';
+
+  @override
+  String get proPlan => 'Pro plan';
 }

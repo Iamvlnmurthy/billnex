@@ -1085,4 +1085,29 @@ class LHi extends L {
   String paidToSnack(String amt, String name) {
     return '$name को $amt भुगतान किया ✓';
   }
+
+  @override
+  String featuresSubtitle(String name) {
+    return 'सब कुछ एक मास्टर स्विच के साथ श्रेणी के अनुसार समूहित है। प्रीसेट वाली सुविधाएँ $name के लिए अपने-आप आवंटित की गई हैं — किसी को भी बदल सकते हैं।';
+  }
+
+  @override
+  String featuresEnabledCount(int on, int total) {
+    return '$total में से $on चालू';
+  }
+
+  @override
+  String get enableAll => 'सभी चालू करें';
+
+  @override
+  String get disableAll => 'सभी बंद करें';
+
+  @override
+  String get proBadge => 'Pro';
+
+  @override
+  String get presetBadge => 'प्रीसेट';
+
+  @override
+  String get proPlan => 'Pro प्लान';
 }

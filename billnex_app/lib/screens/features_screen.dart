@@ -3,6 +3,7 @@ import '../data/catalog.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../l10n/app_localizations.dart';
 
 class FeaturesScreen extends StatelessWidget {
   final AppState state;
@@ -11,6 +12,7 @@ class FeaturesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final biz = state.business!;
+    final l = L.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
       children: [
@@ -18,7 +20,7 @@ class FeaturesScreen extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 1180),
           child: Column(
             children: [
-              PageHeader('Features', 'Everything is grouped by category with a master switch. Preset-enabled items were auto-allotted for ${biz.name} — override anything.'),
+              PageHeader(l.navFeatures, l.featuresSubtitle(biz.name)),
               for (final cat in kCategories) ...[_CategoryCard(state: state, cat: cat), const SizedBox(height: 16)],
             ],
           ),
@@ -36,6 +38,7 @@ class _CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final caps = kCapabilities.where((c) => c.category == cat.key).toList();
     final on = state.enabledInCategory(cat.key);
     // "Enable/Disable all" only toggles unlockable caps, so base its label on
@@ -63,11 +66,11 @@ class _CategoryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(cat.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                      Text('$on of ${caps.length} enabled', style: TextStyle(fontSize: 12, color: bx.muted)),
+                      Text(l.featuresEnabledCount(on, caps.length), style: TextStyle(fontSize: 12, color: bx.muted)),
                     ],
                   ),
                 ),
-                TextButton(onPressed: () => state.toggleCategory(cat.key), child: Text(allOn ? 'Disable all' : 'Enable all')),
+                TextButton(onPressed: () => state.toggleCategory(cat.key), child: Text(allOn ? l.disableAll : l.enableAll)),
               ],
             ),
           ),
@@ -86,6 +89,7 @@ class _FeatureRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final locked = state.isLocked(cap.key);
     final preset = state.isPreset(cap.key);
 
@@ -107,8 +111,8 @@ class _FeatureRow extends StatelessWidget {
                   children: [
                     Text(cap.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                     Pill.priority(cap.priority, context),
-                    if (cap.pro) Pill('Pro', color: bx.accent),
-                    if (preset) Pill('preset', color: bx.pos, icon: Icons.check),
+                    if (cap.pro) Pill(l.proBadge, color: bx.accent),
+                    if (preset) Pill(l.presetBadge, color: bx.pos, icon: Icons.check),
                   ],
                 ),
                 const SizedBox(height: 2),
@@ -123,7 +127,7 @@ class _FeatureRow extends StatelessWidget {
                 Icon(Icons.lock_outline, size: 15, color: bx.accent),
                 const SizedBox(width: 5),
                 Text(
-                  'Pro plan',
+                  l.proPlan,
                   style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: bx.accent),
                 ),
               ],

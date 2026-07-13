@@ -325,5 +325,12 @@
   "paySupplierTitle": "{name}కు చెల్లించు",
   "payableColon": "చెల్లించవలసినది: {amt}",
   "recordPayment": "చెల్లింపు నమోదు చేయి",
-  "paidToSnack": "{name}కు {amt} చెల్లించారు ✓"
+  "paidToSnack": "{name}కు {amt} చెల్లించారు ✓",
+  "featuresSubtitle": "ప్రతిదీ ఒక మాస్టర్ స్విచ్‌తో వర్గం వారీగా సమూహపరచబడింది. ప్రీసెట్ ఫీచర్లు {name} కోసం ఆటోమేటిక్‌గా కేటాయించబడ్డాయి — దేనినైనా మార్చవచ్చు.",
+  "featuresEnabledCount": "{total}లో {on} ప్రారంభించబడ్డాయి",
+  "enableAll": "అన్నీ ప్రారంభించు",
+  "disableAll": "అన్నీ ఆపివేయి",
+  "proBadge": "Pro",
+  "presetBadge": "ప్రీసెట్",
+  "proPlan": "Pro ప్లాన్"
 }

@@ -2048,6 +2048,48 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Paid {amt} to {name} ✓'**
   String paidToSnack(String amt, String name);
+
+  /// No description provided for @featuresSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is grouped by category with a master switch. Preset-enabled items were auto-allotted for {name} — override anything.'**
+  String featuresSubtitle(String name);
+
+  /// No description provided for @featuresEnabledCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{on} of {total} enabled'**
+  String featuresEnabledCount(int on, int total);
+
+  /// No description provided for @enableAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable all'**
+  String get enableAll;
+
+  /// No description provided for @disableAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable all'**
+  String get disableAll;
+
+  /// No description provided for @proBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro'**
+  String get proBadge;
+
+  /// No description provided for @presetBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'preset'**
+  String get presetBadge;
+
+  /// No description provided for @proPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro plan'**
+  String get proPlan;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

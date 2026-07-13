@@ -1085,4 +1085,29 @@ class LTe extends L {
   String paidToSnack(String amt, String name) {
     return '$nameకు $amt చెల్లించారు ✓';
   }
+
+  @override
+  String featuresSubtitle(String name) {
+    return 'ప్రతిదీ ఒక మాస్టర్ స్విచ్‌తో వర్గం వారీగా సమూహపరచబడింది. ప్రీసెట్ ఫీచర్లు $name కోసం ఆటోమేటిక్‌గా కేటాయించబడ్డాయి — దేనినైనా మార్చవచ్చు.';
+  }
+
+  @override
+  String featuresEnabledCount(int on, int total) {
+    return '$totalలో $on ప్రారంభించబడ్డాయి';
+  }
+
+  @override
+  String get enableAll => 'అన్నీ ప్రారంభించు';
+
+  @override
+  String get disableAll => 'అన్నీ ఆపివేయి';
+
+  @override
+  String get proBadge => 'Pro';
+
+  @override
+  String get presetBadge => 'ప్రీసెట్';
+
+  @override
+  String get proPlan => 'Pro ప్లాన్';
 }

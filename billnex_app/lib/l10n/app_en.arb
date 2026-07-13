@@ -374,5 +374,14 @@
   "@payableColon": { "placeholders": { "amt": { "type": "String" } } },
   "recordPayment": "Record payment",
   "paidToSnack": "Paid {amt} to {name} ✓",
-  "@paidToSnack": { "placeholders": { "amt": { "type": "String" }, "name": { "type": "String" } } }
+  "@paidToSnack": { "placeholders": { "amt": { "type": "String" }, "name": { "type": "String" } } },
+  "featuresSubtitle": "Everything is grouped by category with a master switch. Preset-enabled items were auto-allotted for {name} — override anything.",
+  "@featuresSubtitle": { "placeholders": { "name": { "type": "String" } } },
+  "featuresEnabledCount": "{on} of {total} enabled",
+  "@featuresEnabledCount": { "placeholders": { "on": { "type": "int" }, "total": { "type": "int" } } },
+  "enableAll": "Enable all",
+  "disableAll": "Disable all",
+  "proBadge": "Pro",
+  "presetBadge": "preset",
+  "proPlan": "Pro plan"
 }
