@@ -10,7 +10,7 @@ String navLabel(BuildContext context, NavId id) {
   final l = L.of(context);
   return switch (id) {
     NavId.dash => l.navDashboard,
-    NavId.quickbill => 'Quick Bill',
+    NavId.quickbill => l.quickBill,
     NavId.billing => l.navBilling,
     NavId.appointments => l.navAppointments,
     NavId.sales => l.navSales,
@@ -20,7 +20,7 @@ String navLabel(BuildContext context, NavId id) {
     NavId.reports => l.navReports,
     NavId.features => l.navFeatures,
     NavId.print => l.navPrint,
-    NavId.menu => 'Menu',
+    NavId.menu => l.menu,
   };
 }
 
