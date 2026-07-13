@@ -383,5 +383,13 @@
   "disableAll": "Disable all",
   "proBadge": "Pro",
   "presetBadge": "preset",
-  "proPlan": "Pro plan"
+  "proPlan": "Pro plan",
+  "templatesSubtitle": "11 ready designs for regular A4 printers and thermal rolls. Set one default per business — WYSIWYG with the live receipt in Billing.",
+  "demoProductLine": "Product one",
+  "demoServiceLine": "Service item",
+  "printSample": "Print sample",
+  "printSampleFail": "Couldn't print the sample",
+  "defaultLabel": "Default",
+  "defaultTemplateSet": "Default template set",
+  "setDefault": "Set default"
 }

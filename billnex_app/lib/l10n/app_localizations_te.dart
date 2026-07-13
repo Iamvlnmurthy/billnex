@@ -1110,4 +1110,28 @@ class LTe extends L {
 
   @override
   String get proPlan => 'Pro ప్లాన్';
+
+  @override
+  String get templatesSubtitle => 'సాధారణ A4 ప్రింటర్లు మరియు థర్మల్ రోల్స్ కోసం 11 సిద్ధమైన డిజైన్లు. ప్రతి వ్యాపారానికి ఒక డిఫాల్ట్‌ను ఎంచుకోండి — బిల్లింగ్‌లోని లైవ్ రసీదులా అచ్చం కనిపిస్తుంది.';
+
+  @override
+  String get demoProductLine => 'ఉత్పత్తి ఒకటి';
+
+  @override
+  String get demoServiceLine => 'సేవా వస్తువు';
+
+  @override
+  String get printSample => 'నమూనా ప్రింట్ చేయి';
+
+  @override
+  String get printSampleFail => 'నమూనా ప్రింట్ చేయలేకపోయాము';
+
+  @override
+  String get defaultLabel => 'డిఫాల్ట్';
+
+  @override
+  String get defaultTemplateSet => 'డిఫాల్ట్ టెంప్లేట్ సెట్ చేయబడింది';
+
+  @override
+  String get setDefault => 'డిఫాల్ట్‌గా చేయి';
 }

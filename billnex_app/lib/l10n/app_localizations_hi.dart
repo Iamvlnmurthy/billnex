@@ -1110,4 +1110,28 @@ class LHi extends L {
 
   @override
   String get proPlan => 'Pro प्लान';
+
+  @override
+  String get templatesSubtitle => 'सामान्य A4 प्रिंटर और थर्मल रोल के लिए 11 तैयार डिज़ाइन। हर व्यवसाय के लिए एक डिफ़ॉल्ट चुनें — बिलिंग की लाइव रसीद जैसा ही दिखेगा।';
+
+  @override
+  String get demoProductLine => 'उत्पाद एक';
+
+  @override
+  String get demoServiceLine => 'सेवा वस्तु';
+
+  @override
+  String get printSample => 'नमूना प्रिंट करें';
+
+  @override
+  String get printSampleFail => 'नमूना प्रिंट नहीं हो सका';
+
+  @override
+  String get defaultLabel => 'डिफ़ॉल्ट';
+
+  @override
+  String get defaultTemplateSet => 'डिफ़ॉल्ट टेम्पलेट सेट हो गया';
+
+  @override
+  String get setDefault => 'डिफ़ॉल्ट बनाएं';
 }

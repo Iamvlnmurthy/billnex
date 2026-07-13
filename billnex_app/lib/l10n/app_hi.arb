@@ -332,5 +332,13 @@
   "disableAll": "सभी बंद करें",
   "proBadge": "Pro",
   "presetBadge": "प्रीसेट",
-  "proPlan": "Pro प्लान"
+  "proPlan": "Pro प्लान",
+  "templatesSubtitle": "सामान्य A4 प्रिंटर और थर्मल रोल के लिए 11 तैयार डिज़ाइन। हर व्यवसाय के लिए एक डिफ़ॉल्ट चुनें — बिलिंग की लाइव रसीद जैसा ही दिखेगा।",
+  "demoProductLine": "उत्पाद एक",
+  "demoServiceLine": "सेवा वस्तु",
+  "printSample": "नमूना प्रिंट करें",
+  "printSampleFail": "नमूना प्रिंट नहीं हो सका",
+  "defaultLabel": "डिफ़ॉल्ट",
+  "defaultTemplateSet": "डिफ़ॉल्ट टेम्पलेट सेट हो गया",
+  "setDefault": "डिफ़ॉल्ट बनाएं"
 }

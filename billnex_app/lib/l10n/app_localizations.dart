@@ -2090,6 +2090,54 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Pro plan'**
   String get proPlan;
+
+  /// No description provided for @templatesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'11 ready designs for regular A4 printers and thermal rolls. Set one default per business — WYSIWYG with the live receipt in Billing.'**
+  String get templatesSubtitle;
+
+  /// No description provided for @demoProductLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Product one'**
+  String get demoProductLine;
+
+  /// No description provided for @demoServiceLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Service item'**
+  String get demoServiceLine;
+
+  /// No description provided for @printSample.
+  ///
+  /// In en, this message translates to:
+  /// **'Print sample'**
+  String get printSample;
+
+  /// No description provided for @printSampleFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t print the sample'**
+  String get printSampleFail;
+
+  /// No description provided for @defaultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get defaultLabel;
+
+  /// No description provided for @defaultTemplateSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Default template set'**
+  String get defaultTemplateSet;
+
+  /// No description provided for @setDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set default'**
+  String get setDefault;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

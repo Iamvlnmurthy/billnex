@@ -1110,4 +1110,28 @@ class LEn extends L {
 
   @override
   String get proPlan => 'Pro plan';
+
+  @override
+  String get templatesSubtitle => '11 ready designs for regular A4 printers and thermal rolls. Set one default per business — WYSIWYG with the live receipt in Billing.';
+
+  @override
+  String get demoProductLine => 'Product one';
+
+  @override
+  String get demoServiceLine => 'Service item';
+
+  @override
+  String get printSample => 'Print sample';
+
+  @override
+  String get printSampleFail => 'Couldn\'t print the sample';
+
+  @override
+  String get defaultLabel => 'Default';
+
+  @override
+  String get defaultTemplateSet => 'Default template set';
+
+  @override
+  String get setDefault => 'Set default';
 }

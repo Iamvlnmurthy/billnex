@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../data/catalog.dart';
 import '../state/app_state.dart';
 import '../models/sale.dart';
@@ -11,10 +12,10 @@ class TemplatesScreen extends StatelessWidget {
   final AppState state;
   const TemplatesScreen({required this.state, super.key});
 
-  static const _demo = [RcptLine('Product one', 2, 620), RcptLine('Service item', 1, 620)];
-
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
+    final demo = [RcptLine(l.demoProductLine, 2, 620), RcptLine(l.demoServiceLine, 1, 620)];
     return ListView(
       padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
       children: [
@@ -22,11 +23,7 @@ class TemplatesScreen extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 1180),
           child: Column(
             children: [
-              const PageHeader(
-                'Print templates',
-                '11 ready designs for regular A4 printers and thermal rolls. Set one default per business — WYSIWYG with the live receipt in Billing.',
-                trailing: Badge2('A4 · 80mm · 58mm'),
-              ),
+              PageHeader(l.printTemplates, l.templatesSubtitle, trailing: const Badge2('A4 · 80mm · 58mm')),
               LayoutBuilder(
                 builder: (context, c) {
                   final cols = c.maxWidth > 900
@@ -39,7 +36,7 @@ class TemplatesScreen extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: kTemplates.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: cols, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 336),
-                    itemBuilder: (context, i) => _TemplateCard(state: state, template: kTemplates[i], demo: _demo),
+                    itemBuilder: (context, i) => _TemplateCard(state: state, template: kTemplates[i], demo: demo),
                   );
                 },
               ),
@@ -51,17 +48,20 @@ class TemplatesScreen extends StatelessWidget {
   }
 }
 
-Sale _sampleSale(AppState state, String templateId) => Sale(
-  invoiceNo: '#SAMPLE',
-  epochMs: DateTime.now().millisecondsSinceEpoch,
-  businessName: state.shopName,
-  templateId: templateId,
-  lines: [SaleLine('Product one', 2, 310), SaleLine('Service item', 1, 620)],
-  subtotal: 1240,
-  gst: 62,
-  total: 1302,
-  paymentMode: 'Cash',
-);
+Sale _sampleSale(BuildContext context, AppState state, String templateId) {
+  final l = L.of(context);
+  return Sale(
+    invoiceNo: '#SAMPLE',
+    epochMs: DateTime.now().millisecondsSinceEpoch,
+    businessName: state.shopName,
+    templateId: templateId,
+    lines: [SaleLine(l.demoProductLine, 2, 310), SaleLine(l.demoServiceLine, 1, 620)],
+    subtotal: 1240,
+    gst: 62,
+    total: 1302,
+    paymentMode: 'Cash',
+  );
+}
 
 class _TemplateCard extends StatelessWidget {
   final AppState state;
@@ -72,6 +72,7 @@ class _TemplateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
+    final l = L.of(context);
     final isDefault = state.template == template.id;
     return Card(
       child: Column(
@@ -129,8 +130,8 @@ class _TemplateCard extends StatelessWidget {
                         Badge2(template.size.label),
                         const SizedBox(width: 4),
                         IconButton(
-                          tooltip: 'Print sample',
-                          onPressed: () => PdfService.run(context, () => PdfService.printSale(_sampleSale(state, template.id)), failure: "Couldn't print the sample"),
+                          tooltip: l.printSample,
+                          onPressed: () => PdfService.run(context, () => PdfService.printSale(_sampleSale(context, state, template.id)), failure: l.printSampleFail),
                           icon: Icon(Icons.print_outlined, size: 18, color: bx.muted),
                         ),
                       ],
@@ -143,7 +144,7 @@ class _TemplateCard extends StatelessWidget {
                           Icon(Icons.check_circle, size: 15, color: bx.pos),
                           const SizedBox(width: 4),
                           Text(
-                            'Default',
+                            l.defaultLabel,
                             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: bx.pos),
                           ),
                         ],
@@ -152,10 +153,10 @@ class _TemplateCard extends StatelessWidget {
                       TextButton(
                         onPressed: () {
                           state.setTemplate(template.id);
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Default template set')));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.defaultTemplateSet)));
                         },
                         style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10), minimumSize: const Size(0, 44)),
-                        child: const Text('Set default', style: TextStyle(fontSize: 12)),
+                        child: Text(l.setDefault, style: const TextStyle(fontSize: 12)),
                       ),
                   ],
                 ),
