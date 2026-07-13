@@ -212,13 +212,7 @@ class _HeroSales extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Flexible(
-                        child: Text(
-                          money(state.todaySales),
-                          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -1),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                      Flexible(child: Money(state.todaySales, style: BxText.valueHero.copyWith(fontSize: 32))),
                       const SizedBox(width: 10),
                       Text(
                         live ? '${state.billCount} bills' : 'no bills yet',

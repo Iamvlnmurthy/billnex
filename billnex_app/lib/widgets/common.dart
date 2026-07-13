@@ -8,6 +8,34 @@ String money(num n) {
   return '${neg ? '-' : ''}₹${_indianGroup(n.abs().round())}';
 }
 
+/// A prominent money value with the ₹ symbol slightly de-emphasised (DESIGN.md)
+/// and tabular figures, so the digits stay the focus and columns align. Use for
+/// totals / KPIs / balances; plain `Text(money(x))` is fine for inline amounts.
+class Money extends StatelessWidget {
+  final num amount;
+  final TextStyle style;
+  final Color? color;
+  const Money(this.amount, {required this.style, this.color, super.key});
+  @override
+  Widget build(BuildContext context) {
+    final neg = amount < 0;
+    final base = style.copyWith(color: color, fontFeatures: const [FontFeature.tabularFigures()]);
+    final symbolColor = (color ?? style.color ?? DefaultTextStyle.of(context).style.color)?.withValues(alpha: 0.62);
+    return Text.rich(
+      TextSpan(
+        children: [
+          if (neg) TextSpan(text: '-', style: base),
+          TextSpan(
+            text: '₹',
+            style: base.copyWith(color: symbolColor, fontWeight: FontWeight.w600),
+          ),
+          TextSpan(text: _indianGroup(amount.abs().round()), style: base),
+        ],
+      ),
+    );
+  }
+}
+
 String _indianGroup(int v) {
   final s = v.toString();
   if (s.length <= 3) return s;
@@ -99,9 +127,9 @@ class PageHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+                Text(title, style: BxText.pageTitle),
                 const SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(fontSize: 14, color: bx.muted, height: 1.4)),
+                Text(subtitle, style: BxText.body.copyWith(color: bx.muted)),
               ],
             ),
           ),

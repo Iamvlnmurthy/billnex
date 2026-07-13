@@ -711,7 +711,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('$_count item${_count == 1 ? '' : 's'}', style: TextStyle(fontSize: 12, color: bx.muted)),
-                        Text(money(_grand), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+                        Money(_grand, style: BxText.value),
                       ],
                     ),
                   ),
@@ -876,9 +876,7 @@ class _CollectSheetState extends State<_CollectSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Center(
-            child: Text(money(widget.total), style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, letterSpacing: -1)),
-          ),
+          Center(child: Money(widget.total, style: BxText.valueHero.copyWith(fontSize: 34))),
           const SizedBox(height: 2),
           Center(
             child: Text('Amount to collect', style: TextStyle(fontSize: 13, color: bx.muted)),

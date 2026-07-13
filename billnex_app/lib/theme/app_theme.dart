@@ -164,7 +164,62 @@ extension BxContext on BuildContext {
   TextTheme get text => Theme.of(this).textTheme;
 }
 
+/// Design-system type scale (from DESIGN.md) — one source of truth for
+/// headings/values so screens stop hand-picking arbitrary font sizes. All
+/// numeric styles use tabular figures so amounts line up in columns.
+class BxText {
+  static const _tab = [FontFeature.tabularFigures()];
+
+  /// Big screen title (dashboard/section pages). Mobile page-title, 24/800.
+  static const pageTitle = TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5, height: 1.15);
+
+  /// Section heading within a page. 20/700.
+  static const section = TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3);
+
+  /// Card / list-row title. 16/600.
+  static const cardTitle = TextStyle(fontSize: 15, fontWeight: FontWeight.w700);
+
+  /// Prominent money value (totals, KPIs, balances). Tabular figures.
+  static const value = TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5, fontFeatures: _tab);
+
+  /// Hero money value (Collect total, today's sales). Tabular figures.
+  static const valueHero = TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1, fontFeatures: _tab);
+
+  /// Body text.
+  static const body = TextStyle(fontSize: 14, height: 1.4);
+
+  /// Secondary / supporting text.
+  static const supporting = TextStyle(fontSize: 12.5, height: 1.4);
+
+  /// Uppercase metadata label. 12/700 +0.4 tracking.
+  static const meta = TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4);
+}
+
 class AppTheme {
+  /// Applies tabular figures to every slot of a [TextTheme] so digits are
+  /// monospaced (amount columns line up). Inline Text styles inherit it.
+  static TextTheme _tabularFigures(TextTheme t) {
+    const feat = [FontFeature.tabularFigures()];
+    TextStyle? f(TextStyle? s) => s?.copyWith(fontFeatures: feat);
+    return t.copyWith(
+      displayLarge: f(t.displayLarge),
+      displayMedium: f(t.displayMedium),
+      displaySmall: f(t.displaySmall),
+      headlineLarge: f(t.headlineLarge),
+      headlineMedium: f(t.headlineMedium),
+      headlineSmall: f(t.headlineSmall),
+      titleLarge: f(t.titleLarge),
+      titleMedium: f(t.titleMedium),
+      titleSmall: f(t.titleSmall),
+      bodyLarge: f(t.bodyLarge),
+      bodyMedium: f(t.bodyMedium),
+      bodySmall: f(t.bodySmall),
+      labelLarge: f(t.labelLarge),
+      labelMedium: f(t.labelMedium),
+      labelSmall: f(t.labelSmall),
+    );
+  }
+
   static ThemeData _base(Brightness b, BxColors ext, ColorScheme scheme) {
     return ThemeData(
       useMaterial3: true,
@@ -173,6 +228,9 @@ class AppTheme {
       scaffoldBackgroundColor: scheme.surfaceContainerLowest,
       extensions: [ext],
       fontFamily: 'Inter', // the design-system typeface (bundled in assets/fonts)
+      // Tabular figures everywhere so ₹ amounts and quantities align in columns.
+      // Text with an inline style inherits this (merge keeps ambient fontFeatures).
+      textTheme: _tabularFigures(ThemeData(brightness: b, useMaterial3: true).textTheme),
       cardTheme: CardThemeData(
         elevation: 0,
         color: scheme.surface,
