@@ -207,6 +207,7 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final bx = context.bx;
     final narrow = MediaQuery.of(context).size.width < 460;
+    if (narrow) return _mobileHeader(context, bx);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: narrow ? 12 : 20, vertical: 10),
       decoration: BoxDecoration(
@@ -330,9 +331,9 @@ class _TopBar extends StatelessWidget {
                   child: ListTile(dense: true, leading: Icon(Icons.history), title: Text('Audit log')),
                 ),
                 if (auth != null)
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'pin',
-                    child: ListTile(dense: true, leading: Icon(Icons.pin_outlined), title: Text('App-lock PIN')),
+                    child: ListTile(dense: true, leading: const Icon(Icons.pin_outlined), title: Text(L.of(ctx).enterPin)),
                   ),
               ],
             ),
@@ -348,6 +349,129 @@ class _TopBar extends StatelessWidget {
                 );
               },
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _mobileHeader(BuildContext context, BxColors bx) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.98),
+        border: Border(bottom: BorderSide(color: bx.border)),
+        boxShadow: const [BoxShadow(color: Color(0x1F020A14), blurRadius: 18, offset: Offset(0, 6))],
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Row(
+          children: [
+            PopupMenuButton<String>(
+              tooltip: L.of(context).more,
+              icon: const Icon(Icons.menu_rounded),
+              onSelected: (value) => _handleMobileAction(context, value),
+              itemBuilder: (ctx) => [
+                PopupMenuItem(
+                  value: 'profile',
+                  child: ListTile(dense: true, leading: const Icon(Icons.store_outlined), title: Text(state.shopName)),
+                ),
+                PopupMenuItem(
+                  value: 'role',
+                  child: ListTile(dense: true, leading: const Icon(Icons.badge_outlined), title: Text(L.of(ctx).switchRole)),
+                ),
+                PopupMenuItem(
+                  value: 'backup',
+                  child: ListTile(dense: true, leading: const Icon(Icons.backup_outlined), title: Text(L.of(ctx).backupRestoreTitle)),
+                ),
+                PopupMenuItem(
+                  value: 'audit',
+                  child: ListTile(dense: true, leading: const Icon(Icons.verified_user_outlined), title: Text(L.of(ctx).securityAudit)),
+                ),
+                if (auth != null)
+                  const PopupMenuItem(
+                    value: 'pin',
+                    child: ListTile(dense: true, leading: Icon(Icons.pin_outlined), title: Text('App-lock PIN')),
+                  ),
+                if (locale != null)
+                  PopupMenuItem(
+                    value: 'language',
+                    child: ListTile(dense: true, leading: const Icon(Icons.translate), title: Text(L.of(ctx).language)),
+                  ),
+                PopupMenuItem(
+                  value: 'theme',
+                  child: ListTile(dense: true, leading: const Icon(Icons.contrast_outlined), title: Text(L.of(ctx).toggleTheme)),
+                ),
+              ],
+            ),
+            _logo(context, bx),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+              decoration: BoxDecoration(color: (state.online ? bx.trustOnline : bx.warn).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(state.online ? Icons.check_circle : Icons.cloud_off_outlined, size: 15, color: state.online ? bx.trustOnline : bx.warn),
+                  const SizedBox(width: 5),
+                  Text(
+                    state.online ? L.of(context).online : L.of(context).offline,
+                    style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: state.online ? bx.trustOnline : bx.warn),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(tooltip: L.of(context).securityAudit, onPressed: () => _showAudit(context, state), icon: const Icon(Icons.notifications_none_rounded)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleMobileAction(BuildContext context, String value) {
+    switch (value) {
+      case 'profile':
+        _openBusinessDetails(context);
+      case 'role':
+        _showRolePicker(context);
+      case 'backup':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => Scaffold(
+              appBar: AppBar(title: Text(L.of(context).backupRestoreTitle)),
+              body: BackupScreen(state: state),
+            ),
+          ),
+        );
+      case 'audit':
+        _showAudit(context, state);
+      case 'pin':
+        if (auth != null) _managePin(context, auth!);
+      case 'language':
+        if (locale != null) showLanguagePicker(context, locale!);
+      case 'theme':
+        themeMode.value = Theme.of(context).brightness == Brightness.dark ? ThemeMode.light : ThemeMode.dark;
+    }
+  }
+
+  void _showRolePicker(BuildContext context) {
+    final bx = context.bx;
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final role in Role.values)
+              ListTile(
+                leading: Icon(state.role == role ? Icons.check_circle : Icons.circle_outlined, color: state.role == role ? bx.accent : bx.muted),
+                title: Text(role.label),
+                onTap: () {
+                  state.setRole(role);
+                  Navigator.pop(ctx);
+                },
+              ),
           ],
         ),
       ),

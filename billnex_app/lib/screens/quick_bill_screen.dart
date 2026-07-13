@@ -86,20 +86,28 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
 
   Widget _header(BxColors bx) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+      padding: const EdgeInsets.fromLTRB(14, 14, 10, 14),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(bottom: BorderSide(color: bx.border)),
+        gradient: const LinearGradient(colors: [Color(0xFF06356A), Color(0xFF071F3E)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFF2076D9)),
+        boxShadow: const [BoxShadow(color: Color(0x330067E8), blurRadius: 20, offset: Offset(0, 8))],
       ),
       child: Row(
         children: [
-          Icon(Icons.bolt, color: bx.accent, size: 22),
-          const SizedBox(width: 8),
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(color: const Color(0xFF1578F6), borderRadius: BorderRadius.circular(12)),
+            child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 22),
+          ),
+          const SizedBox(width: 10),
           Flexible(
             child: Text(
               L.of(context).quickBill,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3),
+              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3),
             ),
           ),
           const SizedBox(width: 8),
@@ -108,9 +116,9 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           Container(
             padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              color: bx.surface2,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: bx.border),
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
             ),
             child: Row(children: [_modeTab(bx, L.of(context).tally, _Mode.tally), _modeTab(bx, L.of(context).itemized, _Mode.itemized)]),
           ),
@@ -118,7 +126,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
             const SizedBox(width: 4),
             PopupMenuButton<String>(
               tooltip: L.of(context).more,
-              icon: Icon(Icons.more_vert, color: bx.muted),
+              icon: const Icon(Icons.more_vert, color: Colors.white),
               onSelected: (v) {
                 switch (v) {
                   case 'estimate':
@@ -159,10 +167,10 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
         constraints: const BoxConstraints(minHeight: 38),
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(color: on ? bx.accent : Colors.transparent, borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(color: on ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(9)),
         child: Text(
           label,
-          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: on ? bx.onAccent : bx.muted),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: on ? const Color(0xFF0969DC) : Colors.white70),
         ),
       ),
     );
@@ -174,20 +182,44 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       children: [
         Expanded(
           child: _tally.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(28),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 2, 12, 4),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: bx.border),
+                      boxShadow: bx.cardShadow,
+                    ),
+                    child: Row(
                       children: [
-                        Icon(Icons.calculate_outlined, size: 44, color: bx.faint),
-                        const SizedBox(height: 12),
-                        Text(
-                          L.of(context).punchAmounts,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: bx.muted),
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14)),
+                          child: Icon(Icons.receipt_long_outlined, color: bx.accent, size: 20),
                         ),
-                        const SizedBox(height: 4),
-                        Text(L.of(context).noCatalogueNeeded, style: TextStyle(fontSize: 12.5, color: bx.faint)),
+                        const SizedBox(width: 13),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(L.of(context).currentBill, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                              const SizedBox(height: 3),
+                              Text(
+                                L.of(context).punchAmounts,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 12.5, color: bx.muted),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text('₹0', style: BxText.value.copyWith(color: bx.faint)),
                       ],
                     ),
                   ),
@@ -233,9 +265,13 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
         ),
         // current entry
         Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
-          color: bx.surface2,
+          margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: bx.border),
+          ),
           child: Row(
             children: [
               Text(
@@ -245,7 +281,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               const Spacer(),
               Text(
                 '₹${_entry.isEmpty ? '0' : _entry}',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1, color: _entry.isEmpty ? bx.faint : null),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1, color: _entry.isEmpty ? bx.faint : bx.accent),
               ),
             ],
           ),
@@ -260,18 +296,18 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       return Expanded(
         flex: flex,
         child: Padding(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(3),
           child: Material(
-            color: color ?? Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
+            color: color ?? bx.surface2,
+            borderRadius: BorderRadius.circular(13),
             child: InkWell(
               onTap: onTap,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(13),
               child: Container(
-                height: 56,
+                height: 44,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(13),
                   border: Border.all(color: bx.border),
                 ),
                 child:
@@ -307,8 +343,14 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
     }
 
     return Container(
-      color: bx.surface2,
-      padding: const EdgeInsets.fromLTRB(6, 0, 6, 8),
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+      padding: const EdgeInsets.all(7),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: bx.border),
+        boxShadow: bx.cardShadow,
+      ),
       child: Column(
         children: [
           Row(
@@ -725,38 +767,15 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                 ],
               ),
               const SizedBox(height: 4),
-              Row(
-                children: [
-                  SizedBox(
-                    height: 60,
-                    child: FilledButton(
-                      onPressed: _hasLines ? _collect : null,
-                      style: FilledButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        padding: const EdgeInsets.symmetric(horizontal: 22),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.check_circle_outline, size: 22),
-                          const SizedBox(width: 10),
-                          Text(_hasLines ? '${L.of(context).collect}  ${money(_grand)}' : L.of(context).collect, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('$_count item${_count == 1 ? '' : 's'}', style: TextStyle(fontSize: 12, color: bx.muted)),
-                        Money(_grand, style: BxText.value),
-                      ],
-                    ),
-                  ),
-                ],
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: FilledButton.icon(
+                  onPressed: _hasLines ? _collect : null,
+                  style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                  icon: const Icon(Icons.check_circle_outline, size: 21),
+                  label: Text(_hasLines ? '${L.of(context).collect}  ${money(_grand)}' : L.of(context).collect, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                ),
               ),
             ],
           ),

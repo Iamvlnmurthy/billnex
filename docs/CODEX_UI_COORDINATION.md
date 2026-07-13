@@ -1,6 +1,23 @@
 # Codex UI coordination
 
-Status: **complete — 2026-07-13**
+Status: **complete — correction pass, 2026-07-13**
+
+Codex has reopened presentation ownership for:
+
+- `billnex_app/lib/screens/quick_bill_screen.dart`
+- the narrow/mobile header in `billnex_app/lib/screens/home_shell.dart`
+
+This correction exists because the Kirana preset opens Quick Bill by default and the
+first pass did not restyle that entry screen. Claude may resume these files while
+preserving the correction unless a later task intentionally supersedes it.
+
+Correction verification:
+
+- Integrated 390 × 844 Quick Bill entry layout: no overflow
+- Quick Bill smoke coverage: English, Hindi, and dark mode passed
+- Quick Bill behavior coverage: tally, itemized decimals, and round-off passed
+- `flutter analyze`: no issues found
+- `flutter test`: all 100 tests passed on the combined Claude/Codex tree
 
 Codex currently owns the presentation-only visual-restyle pass for:
 
