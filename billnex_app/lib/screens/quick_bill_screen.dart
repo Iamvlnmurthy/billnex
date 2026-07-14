@@ -122,7 +122,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                   tooltip: L.of(context).more,
                   icon: const Icon(Icons.more_vert, color: Colors.white),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                  constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                   onSelected: (v) {
                     switch (v) {
                       case 'estimate':
@@ -241,7 +241,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                         child: Semantics(
                           button: true,
                           label: L.of(context).removeLine,
-                          child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
+                          child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.faint)),
                         ),
                       ),
                     ],
@@ -578,7 +578,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       onTap: () => setState(() => _unit = u),
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 40, minWidth: 48),
+        constraints: const BoxConstraints(minHeight: 44, minWidth: 48),
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
@@ -586,9 +586,15 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: on ? bx.brand : bx.border),
         ),
-        child: Text(
-          u == 'pc' ? 'Pieces' : u,
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: on ? bx.brand : bx.muted),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (on) ...[Icon(Icons.check, size: 14, color: bx.brand), const SizedBox(width: 4)],
+            Text(
+              u == 'pc' ? 'Pieces' : u,
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: on ? bx.brand : bx.muted),
+            ),
+          ],
         ),
       ),
     );
@@ -666,7 +672,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
             child: Semantics(
               button: true,
               label: L.of(context).removeLine,
-              child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
+              child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.faint)),
             ),
           ),
         ],
@@ -719,7 +725,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                       onTap: _editDiscount,
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
-                        constraints: const BoxConstraints(minHeight: 38),
+                        constraints: const BoxConstraints(minHeight: 44),
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
@@ -747,7 +753,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                       onTap: () => setState(() => _roundOff = !_roundOff),
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
-                        constraints: const BoxConstraints(minHeight: 40),
+                        constraints: const BoxConstraints(minHeight: 44),
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(

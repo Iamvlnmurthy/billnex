@@ -125,7 +125,10 @@ class _CustomersScreenState extends State<CustomersScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: isSelected ? bx.brand.withValues(alpha: 0.08) : null,
-          border: first ? null : Border(top: BorderSide(color: bx.border)),
+          border: Border(
+            top: first ? BorderSide.none : BorderSide(color: bx.border),
+            left: isSelected ? BorderSide(color: bx.brand, width: 3) : BorderSide.none,
+          ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         child: Row(

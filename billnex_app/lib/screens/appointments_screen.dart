@@ -113,7 +113,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     final row = Container(
       decoration: BoxDecoration(
         color: isSelected ? bx.brand.withValues(alpha: 0.08) : null,
-        border: first ? null : Border(top: BorderSide(color: bx.border)),
+        border: Border(
+          top: first ? BorderSide.none : BorderSide(color: bx.border),
+          left: isSelected ? BorderSide(color: bx.brand, width: 3) : BorderSide.none,
+        ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -149,6 +152,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
           ),
           if (a.status == ApptStatus.booked)
             PopupMenuButton<ApptStatus>(
+              tooltip: l.more,
               icon: Icon(Icons.more_vert, color: bx.muted),
               onSelected: (s) => state.setApptStatus(a, s),
               itemBuilder: (ctx) => [PopupMenuItem(value: ApptStatus.done, child: Text(l.apptMarkDone)), PopupMenuItem(value: ApptStatus.noShow, child: Text(l.apptStatusNoShow))],
