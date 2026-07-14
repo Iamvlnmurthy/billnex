@@ -161,6 +161,8 @@ class _SaleRow extends StatelessWidget {
                   PdfService.run(context, () => PdfService.printSale(sale), failure: l.reprintFail);
                 case 'share':
                   PdfService.run(context, () => PdfService.shareSale(sale), failure: l.shareFail);
+                case 'whatsapp':
+                  PdfService.run(context, () => PdfService.whatsAppSale(sale), failure: l.whatsappFail);
                 case 'return':
                   returnSale(context, state, sale);
               }
@@ -173,6 +175,10 @@ class _SaleRow extends StatelessWidget {
               PopupMenuItem(
                 value: 'share',
                 child: ListTile(dense: true, leading: const Icon(Icons.ios_share), title: Text(l.sharePdf)),
+              ),
+              PopupMenuItem(
+                value: 'whatsapp',
+                child: ListTile(dense: true, leading: const Icon(Icons.chat_outlined), title: Text(l.sendOnWhatsApp)),
               ),
               if (!_isReturn && !state.isReturned(sale.invoiceNo))
                 PopupMenuItem(

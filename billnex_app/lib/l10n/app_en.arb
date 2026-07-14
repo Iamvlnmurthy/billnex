@@ -124,6 +124,8 @@
   "more": "More",
   "reprint": "Reprint",
   "sharePdf": "Share PDF",
+  "sendOnWhatsApp": "Send on WhatsApp",
+  "whatsappFail": "Couldn't open WhatsApp",
   "returnCreditNote": "Return / credit note",
   "reprintFail": "Couldn't reprint — check the printer",
   "shareFail": "Couldn't share the PDF",

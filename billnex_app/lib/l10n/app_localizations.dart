@@ -789,6 +789,18 @@ abstract class L {
   /// **'Share PDF'**
   String get sharePdf;
 
+  /// No description provided for @sendOnWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Send on WhatsApp'**
+  String get sendOnWhatsApp;
+
+  /// No description provided for @whatsappFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open WhatsApp'**
+  String get whatsappFail;
+
   /// No description provided for @returnCreditNote.
   ///
   /// In en, this message translates to:

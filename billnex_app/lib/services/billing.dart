@@ -15,6 +15,48 @@ String qtyLabel(num q) {
   return q.toStringAsFixed(3).replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
 }
 
+const _ones = [
+  '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+  'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen',
+];
+const _tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+String _twoDigit(int n) {
+  if (n < 20) return _ones[n];
+  return '${_tens[n ~/ 10]}${n % 10 == 0 ? '' : ' ${_ones[n % 10]}'}';
+}
+
+String _threeDigit(int n) {
+  final h = n ~/ 100, r = n % 100;
+  return [
+    if (h > 0) '${_ones[h]} Hundred',
+    if (r > 0) _twoDigit(r),
+  ].join(' ');
+}
+
+/// Rupees amount in words, Indian numbering (crore/lakh/thousand), e.g.
+/// 1,25,430 → "One Lakh Twenty Five Thousand Four Hundred Thirty Rupees Only".
+/// Includes paise when non-zero. Used on invoices ("Amount in words").
+String amountInWords(num amount) {
+  final rupees = amount.floor();
+  final paise = ((amount - rupees) * 100).round();
+  if (rupees == 0 && paise == 0) return 'Zero Rupees Only';
+
+  final parts = <String>[];
+  final crore = rupees ~/ 10000000;
+  final lakh = (rupees % 10000000) ~/ 100000;
+  final thousand = (rupees % 100000) ~/ 1000;
+  final hundred = rupees % 1000;
+  if (crore > 0) parts.add('${_twoDigit(crore)} Crore');
+  if (lakh > 0) parts.add('${_twoDigit(lakh)} Lakh');
+  if (thousand > 0) parts.add('${_twoDigit(thousand)} Thousand');
+  if (hundred > 0) parts.add(_threeDigit(hundred));
+
+  final rupeeWords = parts.isEmpty ? '' : '${parts.join(' ')} Rupees';
+  final paiseWords = paise > 0 ? '${rupeeWords.isEmpty ? '' : ' and '}${_twoDigit(paise)} Paise' : '';
+  return '${rupeeWords.isEmpty && paiseWords.isEmpty ? 'Zero Rupees' : '$rupeeWords$paiseWords'} Only'.trim();
+}
+
 /// Per-GST-rate aggregation (for the HSN/tax summary on the invoice).
 class RateBucket {
   double taxable = 0;

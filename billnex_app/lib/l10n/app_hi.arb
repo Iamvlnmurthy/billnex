@@ -116,6 +116,8 @@
   "more": "और",
   "reprint": "पुनः प्रिंट",
   "sharePdf": "PDF शेयर करें",
+  "sendOnWhatsApp": "WhatsApp पर भेजें",
+  "whatsappFail": "WhatsApp नहीं खुल सका",
   "returnCreditNote": "वापसी / क्रेडिट नोट",
   "reprintFail": "पुनः प्रिंट नहीं हो सका — प्रिंटर जांचें",
   "shareFail": "PDF शेयर नहीं हो सका",

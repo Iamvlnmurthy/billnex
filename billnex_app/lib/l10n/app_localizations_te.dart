@@ -375,6 +375,12 @@ class LTe extends L {
   String get sharePdf => 'PDF షేర్ చేయి';
 
   @override
+  String get sendOnWhatsApp => 'WhatsApp లో పంపండి';
+
+  @override
+  String get whatsappFail => 'WhatsApp తెరవలేకపోయింది';
+
+  @override
   String get returnCreditNote => 'రిటర్న్ / క్రెడిట్ నోట్';
 
   @override
