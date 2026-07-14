@@ -674,5 +674,17 @@
   "selectItemTitle": "Select an item",
   "@selectItemTitle": { "description": "Empty-state title for the tablet master-detail pane when nothing is selected" },
   "selectItemSub": "Choose from the list to see details here.",
-  "@selectItemSub": { "description": "Empty-state subtitle for the tablet master-detail pane when nothing is selected" }
+  "@selectItemSub": { "description": "Empty-state subtitle for the tablet master-detail pane when nothing is selected" },
+  "printerSettings": "Printer settings",
+  "printerSettingsSub": "Separate printers for A4 invoices and thermal receipts",
+  "thermalRollWidth": "Thermal roll width",
+  "invoicePrinterA4": "Invoice printer (A4)",
+  "receiptPrinterThermal": "Receipt printer (thermal)",
+  "printerAskEachTime": "Ask each time (system dialog)",
+  "choosePrinter": "Choose printer",
+  "useSystemDialog": "Use system dialog",
+  "printerSaved": "Default printer saved",
+  "printerCleared": "Now using the system dialog",
+  "noPrinterFound": "No printer selected",
+  "printerSettingsNote": "With a default printer set, printing goes straight to it. Otherwise the system dialog opens, pre-set to the right paper size."
 }

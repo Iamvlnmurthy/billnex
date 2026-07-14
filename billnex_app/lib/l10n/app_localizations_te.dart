@@ -1957,4 +1957,40 @@ class LTe extends L {
 
   @override
   String get selectItemSub => 'వివరాలు ఇక్కడ చూడటానికి జాబితా నుండి ఎంచుకోండి.';
+
+  @override
+  String get printerSettings => 'ప్రింటర్ సెట్టింగ్‌లు';
+
+  @override
+  String get printerSettingsSub => 'A4 బిల్లులు మరియు థర్మల్ రసీదుల కోసం వేర్వేరు ప్రింటర్లు';
+
+  @override
+  String get thermalRollWidth => 'థర్మల్ రోల్ వెడల్పు';
+
+  @override
+  String get invoicePrinterA4 => 'బిల్లు ప్రింటర్ (A4)';
+
+  @override
+  String get receiptPrinterThermal => 'రసీదు ప్రింటర్ (థర్మల్)';
+
+  @override
+  String get printerAskEachTime => 'ప్రతిసారి అడగండి (సిస్టమ్ డైలాగ్)';
+
+  @override
+  String get choosePrinter => 'ప్రింటర్ ఎంచుకోండి';
+
+  @override
+  String get useSystemDialog => 'సిస్టమ్ డైలాగ్ వాడండి';
+
+  @override
+  String get printerSaved => 'డిఫాల్ట్ ప్రింటర్ సేవ్ అయింది';
+
+  @override
+  String get printerCleared => 'ఇప్పుడు సిస్టమ్ డైలాగ్ వాడుతోంది';
+
+  @override
+  String get noPrinterFound => 'ప్రింటర్ ఎంచుకోలేదు';
+
+  @override
+  String get printerSettingsNote => 'డిఫాల్ట్ ప్రింటర్ సెట్ చేస్తే ప్రింట్ నేరుగా దానికే వెళ్తుంది. లేకపోతే సరైన పేపర్ పరిమాణంతో సిస్టమ్ డైలాగ్ తెరవబడుతుంది.';
 }

@@ -6,6 +6,7 @@ import 'package:printing/printing.dart';
 import '../data/catalog.dart';
 import '../models/sale.dart';
 import 'billing.dart';
+import 'print_settings.dart';
 
 /// Turns a posted [Sale] into a printable/shareable PDF for any of the 11
 /// templates. A4 templates use a page; thermal templates use a narrow roll
@@ -64,6 +65,16 @@ class PdfService {
     return pw.ThemeData.withFont(base: _base!, bold: _bold!);
   }
 
+  /// The page geometry a template prints on. Thermal rolls honour the user's
+  /// saved roll width (58/80mm) so the print dialog defaults to the roll, not A4.
+  static Future<PdfPageFormat> formatFor(InvoiceTemplate tpl) async {
+    if (tpl.size == PaperSize.a4) return PdfPageFormat.a4;
+    // Template dictates 58 vs 80, but let the saved thermal-width preference win
+    // when the template is the generic thermal one.
+    final mm = tpl.size == PaperSize.mm58 ? 58.0 : await PrintSettings.thermalWidthMm();
+    return PdfPageFormat(mm * PdfPageFormat.mm, double.infinity, marginAll: 6 * PdfPageFormat.mm);
+  }
+
   static Future<pw.Document> build(Sale sale) async {
     final tpl = templateById(sale.templateId);
     final doc = pw.Document(title: 'BillNex ${sale.invoiceNo}');
@@ -72,11 +83,10 @@ class PdfService {
     if (tpl.size == PaperSize.a4) {
       doc.addPage(pw.Page(theme: theme, pageFormat: PdfPageFormat.a4, margin: const pw.EdgeInsets.all(32), build: (c) => _a4Body(sale, tpl)));
     } else {
-      final width = tpl.size == PaperSize.mm58 ? 58 * PdfPageFormat.mm : 80 * PdfPageFormat.mm;
       doc.addPage(
         pw.Page(
           theme: theme,
-          pageFormat: PdfPageFormat(width, double.infinity, marginAll: 6 * PdfPageFormat.mm),
+          pageFormat: await formatFor(tpl),
           build: (c) => tpl.id == 'kot' ? _kotBody(sale) : _thermalBody(sale),
         ),
       );
@@ -84,9 +94,21 @@ class PdfService {
     return doc;
   }
 
+  /// Prints a sale. If the merchant has saved a default printer for this output
+  /// type (A4 invoice vs thermal receipt) it prints straight there; otherwise it
+  /// opens the system dialog — but always pre-set to the correct paper size, so a
+  /// thermal receipt no longer defaults to A4.
   static Future<void> printSale(Sale sale) async {
+    final tpl = templateById(sale.templateId);
     final doc = await build(sale);
-    await Printing.layoutPdf(onLayout: (f) => doc.save(), name: 'BillNex-${sale.invoiceNo}');
+    final format = await formatFor(tpl);
+    final isThermal = tpl.size != PaperSize.a4;
+    final saved = await PrintSettings.printerFor(thermal: isThermal);
+    if (saved != null) {
+      await Printing.directPrintPdf(printer: saved, onLayout: (f) => doc.save(), name: 'BillNex-${sale.invoiceNo}', format: format);
+    } else {
+      await Printing.layoutPdf(onLayout: (f) => doc.save(), name: 'BillNex-${sale.invoiceNo}', format: format);
+    }
   }
 
   /// Runs a PDF action and surfaces a friendly message on failure instead of
@@ -325,13 +347,21 @@ class PdfService {
         _dash(),
         pw.Text('${sale.invoiceNo}  ${sale.dateLabel}', style: const pw.TextStyle(fontSize: 7)),
         _dash(),
+        // Fixed-width qty/amount columns so figures line up cleanly on the roll
+        // (spaceBetween + Expanded left them ragged). Right-aligned like a bill.
         for (final l in sale.lines)
           pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Expanded(child: pw.Text(l.name, style: const pw.TextStyle(fontSize: 8))),
-              pw.Text(' ${qtyLabel(l.qty)} ', style: const pw.TextStyle(fontSize: 8)),
-              pw.Text(_rupee(l.amount), style: const pw.TextStyle(fontSize: 8)),
+              pw.SizedBox(
+                width: 26,
+                child: pw.Text('x${qtyLabel(l.qty)}', textAlign: pw.TextAlign.right, style: const pw.TextStyle(fontSize: 8)),
+              ),
+              pw.SizedBox(
+                width: 54,
+                child: pw.Text(_rupee(l.amount), textAlign: pw.TextAlign.right, style: const pw.TextStyle(fontSize: 8)),
+              ),
             ],
           ),
         _dash(),

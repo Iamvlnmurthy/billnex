@@ -88,11 +88,15 @@ class ReceiptView extends StatelessWidget {
             (l) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 1),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(l.name, style: const TextStyle(fontSize: 11, fontFamily: 'monospace')),
                   ),
-                  Text(qtyLabel(l.qty), style: const TextStyle(fontSize: 11, fontFamily: 'monospace')),
+                  SizedBox(
+                    width: 30,
+                    child: Text('x${qtyLabel(l.qty)}', textAlign: TextAlign.right, style: const TextStyle(fontSize: 11, fontFamily: 'monospace')),
+                  ),
                   SizedBox(
                     width: 64,
                     child: Text(

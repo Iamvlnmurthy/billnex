@@ -1957,4 +1957,40 @@ class LEn extends L {
 
   @override
   String get selectItemSub => 'Choose from the list to see details here.';
+
+  @override
+  String get printerSettings => 'Printer settings';
+
+  @override
+  String get printerSettingsSub => 'Separate printers for A4 invoices and thermal receipts';
+
+  @override
+  String get thermalRollWidth => 'Thermal roll width';
+
+  @override
+  String get invoicePrinterA4 => 'Invoice printer (A4)';
+
+  @override
+  String get receiptPrinterThermal => 'Receipt printer (thermal)';
+
+  @override
+  String get printerAskEachTime => 'Ask each time (system dialog)';
+
+  @override
+  String get choosePrinter => 'Choose printer';
+
+  @override
+  String get useSystemDialog => 'Use system dialog';
+
+  @override
+  String get printerSaved => 'Default printer saved';
+
+  @override
+  String get printerCleared => 'Now using the system dialog';
+
+  @override
+  String get noPrinterFound => 'No printer selected';
+
+  @override
+  String get printerSettingsNote => 'With a default printer set, printing goes straight to it. Otherwise the system dialog opens, pre-set to the right paper size.';
 }

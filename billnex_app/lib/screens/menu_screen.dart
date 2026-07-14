@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import 'backup_screen.dart';
 import 'business_setup_screen.dart';
 import 'data_io_screen.dart';
+import 'print_settings_screen.dart';
 import 'nav.dart';
 
 /// The grouped "Menu" hub (Vyapar-style) — the home for everything that isn't
@@ -52,6 +53,7 @@ class MenuScreen extends StatelessWidget {
         _group(context, l.setupSection, [
           ...setup,
           _Entry.action(l.businessDetails, Icons.store_outlined, () => _openBusiness(context)),
+          _Entry.action(l.printerSettings, Icons.print_outlined, () => _openPrintSettings(context)),
           _Entry.action(l.backupRestore, Icons.backup_outlined, () => _openBackup(context)),
           _Entry.action(l.dataIoTitle, Icons.import_export, () => _openDataIo(context)),
         ]),
@@ -113,6 +115,10 @@ class MenuScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _openPrintSettings(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PrintSettingsScreen()));
   }
 
   void _openBackup(BuildContext context) {

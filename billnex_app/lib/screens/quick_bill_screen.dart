@@ -208,50 +208,54 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
             ],
           ),
         ),
-        if (_tally.isNotEmpty)
-          Expanded(
-            flex: 2,
-            child: ListView.builder(
-              reverse: true,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-              itemCount: _tally.length,
-              itemBuilder: (context, i) {
-                final idx = _tally.length - 1 - i; // reversed
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 6),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: bx.border),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        '${idx + 1}',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: bx.faint),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(money(_tally[idx]), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-                      ),
-                      InkWell(
-                        onTap: () => setState(() => _tally.removeAt(idx)),
-                        borderRadius: BorderRadius.circular(22),
-                        child: Semantics(
-                          button: true,
-                          label: L.of(context).removeLine,
-                          child: SizedBox(width: 44, height: 44, child: Icon(Icons.close, size: 18, color: bx.faint)),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        Expanded(flex: 5, child: _keypad(bx)),
+        // Fixed-height horizontal strip of added lines: keeps the keypad at full
+        // size no matter how many lines are added (was a flex list that shrank it).
+        if (_tally.isNotEmpty) _tallyStrip(bx),
+        Expanded(child: _keypad(bx)),
       ],
+    );
+  }
+
+  /// Compact scrollable row of tally chips ("n · ₹amount  ✕"). Newest first.
+  Widget _tallyStrip(BxColors bx) {
+    return SizedBox(
+      height: 44,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        reverse: true,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+        itemCount: _tally.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          final idx = _tally.length - 1 - i; // newest first
+          return InkWell(
+            onTap: () => setState(() => _tally.removeAt(idx)),
+            borderRadius: BorderRadius.circular(10),
+            child: Semantics(
+              button: true,
+              label: L.of(context).removeLine,
+              child: Container(
+                padding: const EdgeInsets.only(left: 12, right: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: bx.border),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('${idx + 1}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: bx.faint)),
+                    const SizedBox(width: 8),
+                    Text(money(_tally[idx]), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                    const SizedBox(width: 4),
+                    Icon(Icons.close, size: 15, color: bx.faint),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 

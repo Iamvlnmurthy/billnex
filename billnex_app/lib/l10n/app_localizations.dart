@@ -3704,6 +3704,78 @@ abstract class L {
   /// In en, this message translates to:
   /// **'Choose from the list to see details here.'**
   String get selectItemSub;
+
+  /// No description provided for @printerSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Printer settings'**
+  String get printerSettings;
+
+  /// No description provided for @printerSettingsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate printers for A4 invoices and thermal receipts'**
+  String get printerSettingsSub;
+
+  /// No description provided for @thermalRollWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'Thermal roll width'**
+  String get thermalRollWidth;
+
+  /// No description provided for @invoicePrinterA4.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice printer (A4)'**
+  String get invoicePrinterA4;
+
+  /// No description provided for @receiptPrinterThermal.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt printer (thermal)'**
+  String get receiptPrinterThermal;
+
+  /// No description provided for @printerAskEachTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask each time (system dialog)'**
+  String get printerAskEachTime;
+
+  /// No description provided for @choosePrinter.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose printer'**
+  String get choosePrinter;
+
+  /// No description provided for @useSystemDialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Use system dialog'**
+  String get useSystemDialog;
+
+  /// No description provided for @printerSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Default printer saved'**
+  String get printerSaved;
+
+  /// No description provided for @printerCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Now using the system dialog'**
+  String get printerCleared;
+
+  /// No description provided for @noPrinterFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No printer selected'**
+  String get noPrinterFound;
+
+  /// No description provided for @printerSettingsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'With a default printer set, printing goes straight to it. Otherwise the system dialog opens, pre-set to the right paper size.'**
+  String get printerSettingsNote;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

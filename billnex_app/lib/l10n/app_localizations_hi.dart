@@ -1957,4 +1957,40 @@ class LHi extends L {
 
   @override
   String get selectItemSub => 'विवरण यहाँ देखने के लिए सूची से चुनें।';
+
+  @override
+  String get printerSettings => 'प्रिंटर सेटिंग्स';
+
+  @override
+  String get printerSettingsSub => 'A4 बिल और थर्मल रसीद के लिए अलग-अलग प्रिंटर';
+
+  @override
+  String get thermalRollWidth => 'थर्मल रोल चौड़ाई';
+
+  @override
+  String get invoicePrinterA4 => 'बिल प्रिंटर (A4)';
+
+  @override
+  String get receiptPrinterThermal => 'रसीद प्रिंटर (थर्मल)';
+
+  @override
+  String get printerAskEachTime => 'हर बार पूछें (सिस्टम डायलॉग)';
+
+  @override
+  String get choosePrinter => 'प्रिंटर चुनें';
+
+  @override
+  String get useSystemDialog => 'सिस्टम डायलॉग उपयोग करें';
+
+  @override
+  String get printerSaved => 'डिफ़ॉल्ट प्रिंटर सहेजा गया';
+
+  @override
+  String get printerCleared => 'अब सिस्टम डायलॉग का उपयोग हो रहा है';
+
+  @override
+  String get noPrinterFound => 'कोई प्रिंटर नहीं चुना गया';
+
+  @override
+  String get printerSettingsNote => 'डिफ़ॉल्ट प्रिंटर सेट होने पर प्रिंट सीधे उसी पर जाता है। अन्यथा सही पेपर आकार के साथ सिस्टम डायलॉग खुलता है।';
 }

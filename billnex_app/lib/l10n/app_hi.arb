@@ -601,5 +601,17 @@
   "wizardStandardStore": "मानक स्टोर",
   "wizardNotSet": "सेट नहीं",
   "selectItemTitle": "कोई आइटम चुनें",
-  "selectItemSub": "विवरण यहाँ देखने के लिए सूची से चुनें।"
+  "selectItemSub": "विवरण यहाँ देखने के लिए सूची से चुनें।",
+  "printerSettings": "प्रिंटर सेटिंग्स",
+  "printerSettingsSub": "A4 बिल और थर्मल रसीद के लिए अलग-अलग प्रिंटर",
+  "thermalRollWidth": "थर्मल रोल चौड़ाई",
+  "invoicePrinterA4": "बिल प्रिंटर (A4)",
+  "receiptPrinterThermal": "रसीद प्रिंटर (थर्मल)",
+  "printerAskEachTime": "हर बार पूछें (सिस्टम डायलॉग)",
+  "choosePrinter": "प्रिंटर चुनें",
+  "useSystemDialog": "सिस्टम डायलॉग उपयोग करें",
+  "printerSaved": "डिफ़ॉल्ट प्रिंटर सहेजा गया",
+  "printerCleared": "अब सिस्टम डायलॉग का उपयोग हो रहा है",
+  "noPrinterFound": "कोई प्रिंटर नहीं चुना गया",
+  "printerSettingsNote": "डिफ़ॉल्ट प्रिंटर सेट होने पर प्रिंट सीधे उसी पर जाता है। अन्यथा सही पेपर आकार के साथ सिस्टम डायलॉग खुलता है।"
 }
