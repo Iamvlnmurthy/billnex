@@ -103,24 +103,36 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
             child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 22),
           ),
           const SizedBox(width: 10),
+          // Title yields space to the mode switch (which can carry long localized
+          // labels); both shrink with ellipsis rather than overflow on small phones.
           Flexible(
+            flex: 2,
             child: Text(
               L.of(context).quickBill,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3),
             ),
           ),
           const SizedBox(width: 8),
-          const Spacer(),
           // mode switch
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+          Flexible(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(child: _modeTab(bx, L.of(context).tally, _Mode.tally)),
+                  Flexible(child: _modeTab(bx, L.of(context).itemized, _Mode.itemized)),
+                ],
+              ),
             ),
-            child: Row(children: [_modeTab(bx, L.of(context).tally, _Mode.tally), _modeTab(bx, L.of(context).itemized, _Mode.itemized)]),
           ),
           if (_hasLines) ...[
             const SizedBox(width: 4),
@@ -164,12 +176,15 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       onTap: () => setState(() => _mode = m),
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 38),
+        constraints: const BoxConstraints(minHeight: 36),
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(color: on ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(9)),
         child: Text(
           label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
           style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: on ? const Color(0xFF0969DC) : Colors.white70),
         ),
       ),
@@ -186,7 +201,8 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                   padding: const EdgeInsets.fromLTRB(12, 2, 12, 4),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
+                    clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(18),
@@ -207,13 +223,18 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(L.of(context).currentBill, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                              const SizedBox(height: 3),
+                              Text(
+                                L.of(context).currentBill,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                              ),
+                              const SizedBox(height: 2),
                               Text(
                                 L.of(context).punchAmounts,
-                                maxLines: 2,
+                                maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 12.5, color: bx.muted),
+                                style: TextStyle(fontSize: 12, color: bx.muted),
                               ),
                             ],
                           ),
