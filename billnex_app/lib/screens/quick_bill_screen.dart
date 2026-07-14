@@ -714,45 +714,57 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               Row(
                 children: [
                   // discount
-                  InkWell(
-                    onTap: _editDiscount,
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      constraints: const BoxConstraints(minHeight: 38),
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.local_offer_outlined, size: 15, color: bx.muted),
-                          const SizedBox(width: 6),
-                          Text(
-                            _discount > 0 ? '${L.of(context).discount} ${money(_discount)}' : L.of(context).discount,
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _discount > 0 ? bx.accent : bx.muted),
-                          ),
-                        ],
+                  Flexible(
+                    child: InkWell(
+                      onTap: _editDiscount,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        constraints: const BoxConstraints(minHeight: 38),
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.local_offer_outlined, size: 15, color: bx.muted),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                _discount > 0 ? '${L.of(context).discount} ${money(_discount)}' : L.of(context).discount,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _discount > 0 ? bx.accent : bx.muted),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 8),
                   // round-off toggle
-                  InkWell(
-                    onTap: () => setState(() => _roundOff = !_roundOff),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      constraints: const BoxConstraints(minHeight: 40),
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(_roundOff ? Icons.check_box : Icons.check_box_outline_blank, size: 18, color: _roundOff ? bx.accent : bx.faint),
-                          const SizedBox(width: 6),
-                          Text(
-                            '${L.of(context).roundOff}${_roundOff && roundedDelta != 0 ? ' (${roundedDelta > 0 ? '+' : ''}${money(roundedDelta)})' : ''}',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: bx.muted),
-                          ),
-                        ],
+                  Flexible(
+                    child: InkWell(
+                      onTap: () => setState(() => _roundOff = !_roundOff),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        constraints: const BoxConstraints(minHeight: 40),
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(_roundOff ? Icons.check_box : Icons.check_box_outline_blank, size: 18, color: _roundOff ? bx.accent : bx.faint),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                '${L.of(context).roundOff}${_roundOff && roundedDelta != 0 ? ' (${roundedDelta > 0 ? '+' : ''}${money(roundedDelta)})' : ''}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: bx.muted),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

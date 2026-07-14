@@ -22,7 +22,7 @@ void main() {
     return s; // empty tally → exercises the "Current bill" empty-state card
   }
 
-  Future<void> pumpAt(WidgetTester tester, Size logical, {Locale? locale}) async {
+  Future<void> pumpAt(WidgetTester tester, Size logical, {Locale? locale, double textScale = 1.0}) async {
     const dpr = 3.0;
     tester.view.devicePixelRatio = dpr;
     tester.view.physicalSize = logical * dpr;
@@ -34,7 +34,10 @@ void main() {
         localizationsDelegates: L.localizationsDelegates,
         supportedLocales: L.supportedLocales,
         theme: AppTheme.light(),
-        home: Scaffold(body: QuickBillScreen(state: seeded())),
+        home: MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+          child: Scaffold(body: QuickBillScreen(state: seeded())),
+        ),
       ),
     );
     await tester.pump(const Duration(milliseconds: 350));
@@ -50,5 +53,15 @@ void main() {
         await pumpAt(tester, size, locale: loc);
       });
     }
+  }
+
+  // Accessibility: a larger system font must not break the compact layout.
+  for (final scale in const [1.15, 1.3]) {
+    testWidgets('Quick Bill survives ${scale}x text scale on a normal phone', (tester) async {
+      await pumpAt(tester, const Size(390, 720), textScale: scale);
+    });
+    testWidgets('Quick Bill survives ${scale}x text scale on a compact phone (hi)', (tester) async {
+      await pumpAt(tester, const Size(360, 640), locale: const Locale('hi'), textScale: scale);
+    });
   }
 }
