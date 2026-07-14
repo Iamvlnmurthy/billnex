@@ -649,7 +649,19 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           setState(() {});
         }),
     ];
-    return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: 3, mainAxisSpacing: 8, crossAxisSpacing: 8, childAspectRatio: 2.5, children: tiles);
+    // A tight Wrap keeps the tiles directly under the caption and flows to a
+    // second row as needed (GridView.count reserved phantom vertical space).
+    return LayoutBuilder(
+      builder: (context, c) {
+        const gap = 8.0;
+        final tileW = (c.maxWidth - gap * 2) / 3; // three per row
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [for (final t in tiles) SizedBox(width: tileW, child: t)],
+        );
+      },
+    );
   }
 
   Widget _presetTile(BxColors bx, String label, VoidCallback onTap) {
@@ -658,6 +670,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
+        height: 46,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: stepper ? bx.brand.withValues(alpha: 0.10) : bx.surface2,
