@@ -706,5 +706,18 @@
   "printerSaved": "Default printer saved",
   "printerCleared": "Now using the system dialog",
   "noPrinterFound": "No printer selected",
-  "printerSettingsNote": "With a default printer set, printing goes straight to it. Otherwise the system dialog opens, pre-set to the right paper size."
+  "printerSettingsNote": "With a default printer set, printing goes straight to it. Otherwise the system dialog opens, pre-set to the right paper size.",
+  "btThermalTitle": "Bluetooth thermal printer",
+  "btThermalSub": "Print receipts straight to a paired 58/80mm Bluetooth printer (ESC-POS), skipping the system dialog.",
+  "btUseForReceipts": "Use Bluetooth for receipts",
+  "btPairedDevices": "Paired printers",
+  "btNoDevices": "No paired Bluetooth printers found. Pair your printer in Android Settings first.",
+  "btBluetoothOff": "Bluetooth is off. Turn it on to connect a printer.",
+  "btRefresh": "Refresh",
+  "btTestPrint": "Test print",
+  "btConnected": "Connected",
+  "btConnectFail": "Couldn't connect to the printer",
+  "btTestSent": "Test slip sent to the printer",
+  "btPermissionNeeded": "Bluetooth permission is needed to find printers",
+  "btConnectedTo": "Printing to {name}"
 }

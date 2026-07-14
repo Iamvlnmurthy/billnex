@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../data/catalog.dart';
 import '../models/sale.dart';
 import 'billing.dart';
+import 'bt_thermal_service.dart';
 import 'integrations.dart';
 import 'print_settings.dart';
 
@@ -102,9 +103,18 @@ class PdfService {
   /// thermal receipt no longer defaults to A4.
   static Future<void> printSale(Sale sale) async {
     final tpl = templateById(sale.templateId);
+    final isThermal = tpl.size != PaperSize.a4;
+    // Direct Bluetooth ESC-POS path for thermal receipts, when configured.
+    if (isThermal && tpl.id != 'kot' && await PrintSettings.btEnabled()) {
+      final mac = await PrintSettings.btMac();
+      final widthMm = (await PrintSettings.thermalWidthMm()).round();
+      if (mac != null && await BtThermalService.printSale(sale, mac: mac, widthMm: widthMm)) {
+        return; // printed over Bluetooth
+      }
+      // fall through to the system dialog if the BT print didn't go through
+    }
     final doc = await build(sale);
     final format = await formatFor(tpl);
-    final isThermal = tpl.size != PaperSize.a4;
     final saved = await PrintSettings.printerFor(thermal: isThermal);
     if (saved != null) {
       await Printing.directPrintPdf(printer: saved, onLayout: (f) => doc.save(), name: 'BillNex-${sale.invoiceNo}', format: format);

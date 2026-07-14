@@ -2050,4 +2050,45 @@ class LTe extends L {
 
   @override
   String get printerSettingsNote => 'డిఫాల్ట్ ప్రింటర్ సెట్ చేస్తే ప్రింట్ నేరుగా దానికే వెళ్తుంది. లేకపోతే సరైన పేపర్ పరిమాణంతో సిస్టమ్ డైలాగ్ తెరవబడుతుంది.';
+
+  @override
+  String get btThermalTitle => 'బ్లూటూత్ థర్మల్ ప్రింటర్';
+
+  @override
+  String get btThermalSub => 'రసీదులను నేరుగా జత చేసిన 58/80mm బ్లూటూత్ ప్రింటర్ (ESC-POS) కు ముద్రించండి, సిస్టమ్ డైలాగ్ దాటవేసి.';
+
+  @override
+  String get btUseForReceipts => 'రసీదుల కోసం బ్లూటూత్ వాడండి';
+
+  @override
+  String get btPairedDevices => 'జత చేసిన ప్రింటర్లు';
+
+  @override
+  String get btNoDevices => 'జత చేసిన బ్లూటూత్ ప్రింటర్ కనబడలేదు. ముందుగా Android సెట్టింగ్‌లలో ప్రింటర్‌ను జత చేయండి.';
+
+  @override
+  String get btBluetoothOff => 'బ్లూటూత్ ఆఫ్‌లో ఉంది. ప్రింటర్ కనెక్ట్ చేయడానికి ఆన్ చేయండి.';
+
+  @override
+  String get btRefresh => 'రిఫ్రెష్';
+
+  @override
+  String get btTestPrint => 'టెస్ట్ ప్రింట్';
+
+  @override
+  String get btConnected => 'కనెక్ట్ అయింది';
+
+  @override
+  String get btConnectFail => 'ప్రింటర్‌కు కనెక్ట్ కాలేకపోయాము';
+
+  @override
+  String get btTestSent => 'టెస్ట్ స్లిప్ ప్రింటర్‌కు పంపబడింది';
+
+  @override
+  String get btPermissionNeeded => 'ప్రింటర్లను కనుగొనడానికి బ్లూటూత్ అనుమతి అవసరం';
+
+  @override
+  String btConnectedTo(Object name) {
+    return '$name కు ముద్రిస్తోంది';
+  }
 }

@@ -2050,4 +2050,45 @@ class LHi extends L {
 
   @override
   String get printerSettingsNote => 'डिफ़ॉल्ट प्रिंटर सेट होने पर प्रिंट सीधे उसी पर जाता है। अन्यथा सही पेपर आकार के साथ सिस्टम डायलॉग खुलता है।';
+
+  @override
+  String get btThermalTitle => 'ब्लूटूथ थर्मल प्रिंटर';
+
+  @override
+  String get btThermalSub => 'रसीदें सीधे पेयर किए गए 58/80mm ब्लूटूथ प्रिंटर (ESC-POS) पर छापें, सिस्टम डायलॉग छोड़कर।';
+
+  @override
+  String get btUseForReceipts => 'रसीदों के लिए ब्लूटूथ उपयोग करें';
+
+  @override
+  String get btPairedDevices => 'पेयर किए प्रिंटर';
+
+  @override
+  String get btNoDevices => 'कोई पेयर ब्लूटूथ प्रिंटर नहीं मिला। पहले Android सेटिंग्स में प्रिंटर पेयर करें।';
+
+  @override
+  String get btBluetoothOff => 'ब्लूटूथ बंद है। प्रिंटर जोड़ने के लिए इसे चालू करें।';
+
+  @override
+  String get btRefresh => 'रिफ्रेश';
+
+  @override
+  String get btTestPrint => 'टेस्ट प्रिंट';
+
+  @override
+  String get btConnected => 'कनेक्टेड';
+
+  @override
+  String get btConnectFail => 'प्रिंटर से कनेक्ट नहीं हो सका';
+
+  @override
+  String get btTestSent => 'टेस्ट स्लिप प्रिंटर को भेजी गई';
+
+  @override
+  String get btPermissionNeeded => 'प्रिंटर खोजने के लिए ब्लूटूथ अनुमति चाहिए';
+
+  @override
+  String btConnectedTo(Object name) {
+    return '$name पर प्रिंट हो रहा है';
+  }
 }

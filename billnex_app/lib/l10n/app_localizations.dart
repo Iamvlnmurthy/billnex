@@ -3878,6 +3878,84 @@ abstract class L {
   /// In en, this message translates to:
   /// **'With a default printer set, printing goes straight to it. Otherwise the system dialog opens, pre-set to the right paper size.'**
   String get printerSettingsNote;
+
+  /// No description provided for @btThermalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth thermal printer'**
+  String get btThermalTitle;
+
+  /// No description provided for @btThermalSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Print receipts straight to a paired 58/80mm Bluetooth printer (ESC-POS), skipping the system dialog.'**
+  String get btThermalSub;
+
+  /// No description provided for @btUseForReceipts.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Bluetooth for receipts'**
+  String get btUseForReceipts;
+
+  /// No description provided for @btPairedDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Paired printers'**
+  String get btPairedDevices;
+
+  /// No description provided for @btNoDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'No paired Bluetooth printers found. Pair your printer in Android Settings first.'**
+  String get btNoDevices;
+
+  /// No description provided for @btBluetoothOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth is off. Turn it on to connect a printer.'**
+  String get btBluetoothOff;
+
+  /// No description provided for @btRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get btRefresh;
+
+  /// No description provided for @btTestPrint.
+  ///
+  /// In en, this message translates to:
+  /// **'Test print'**
+  String get btTestPrint;
+
+  /// No description provided for @btConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get btConnected;
+
+  /// No description provided for @btConnectFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t connect to the printer'**
+  String get btConnectFail;
+
+  /// No description provided for @btTestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Test slip sent to the printer'**
+  String get btTestSent;
+
+  /// No description provided for @btPermissionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth permission is needed to find printers'**
+  String get btPermissionNeeded;
+
+  /// No description provided for @btConnectedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Printing to {name}'**
+  String btConnectedTo(Object name);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

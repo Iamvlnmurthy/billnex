@@ -2050,4 +2050,45 @@ class LEn extends L {
 
   @override
   String get printerSettingsNote => 'With a default printer set, printing goes straight to it. Otherwise the system dialog opens, pre-set to the right paper size.';
+
+  @override
+  String get btThermalTitle => 'Bluetooth thermal printer';
+
+  @override
+  String get btThermalSub => 'Print receipts straight to a paired 58/80mm Bluetooth printer (ESC-POS), skipping the system dialog.';
+
+  @override
+  String get btUseForReceipts => 'Use Bluetooth for receipts';
+
+  @override
+  String get btPairedDevices => 'Paired printers';
+
+  @override
+  String get btNoDevices => 'No paired Bluetooth printers found. Pair your printer in Android Settings first.';
+
+  @override
+  String get btBluetoothOff => 'Bluetooth is off. Turn it on to connect a printer.';
+
+  @override
+  String get btRefresh => 'Refresh';
+
+  @override
+  String get btTestPrint => 'Test print';
+
+  @override
+  String get btConnected => 'Connected';
+
+  @override
+  String get btConnectFail => 'Couldn\'t connect to the printer';
+
+  @override
+  String get btTestSent => 'Test slip sent to the printer';
+
+  @override
+  String get btPermissionNeeded => 'Bluetooth permission is needed to find printers';
+
+  @override
+  String btConnectedTo(Object name) {
+    return 'Printing to $name';
+  }
 }

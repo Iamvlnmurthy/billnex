@@ -7,6 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// data store. Values are optional — absent means "ask via the system dialog".
 class PrintSettings {
   static const _kWidth = 'print.thermal.width'; // 58 or 80 (mm)
+  static const _kBtMac = 'print.bt.mac';
+  static const _kBtName = 'print.bt.name';
+  static const _kBtOn = 'print.bt.enabled';
   static String _url(bool thermal) => thermal ? 'print.thermal.url' : 'print.a4.url';
   static String _name(bool thermal) => thermal ? 'print.thermal.name' : 'print.a4.name';
 
@@ -48,5 +51,30 @@ class PrintSettings {
       await p.setString(_url(thermal), printer.url);
       await p.setString(_name(thermal), printer.name);
     }
+  }
+
+  // ── Bluetooth ESC-POS printer (direct, for thermal receipts) ──
+  /// True when the merchant has chosen to route thermal receipts to a paired
+  /// Bluetooth ESC-POS printer instead of the system print dialog.
+  static Future<bool> btEnabled() async {
+    final p = await SharedPreferences.getInstance();
+    return (p.getBool(_kBtOn) ?? false) && (p.getString(_kBtMac)?.isNotEmpty ?? false);
+  }
+
+  static Future<String?> btMac() async => (await SharedPreferences.getInstance()).getString(_kBtMac);
+  static Future<String?> btName() async => (await SharedPreferences.getInstance()).getString(_kBtName);
+
+  static Future<void> setBt({required bool enabled, String? mac, String? name}) async {
+    final p = await SharedPreferences.getInstance();
+    await p.setBool(_kBtOn, enabled);
+    if (mac != null) await p.setString(_kBtMac, mac);
+    if (name != null) await p.setString(_kBtName, name);
+  }
+
+  static Future<void> clearBt() async {
+    final p = await SharedPreferences.getInstance();
+    await p.remove(_kBtMac);
+    await p.remove(_kBtName);
+    await p.setBool(_kBtOn, false);
   }
 }

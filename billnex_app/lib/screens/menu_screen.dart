@@ -118,7 +118,7 @@ class MenuScreen extends StatelessWidget {
   }
 
   void _openPrintSettings(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PrintSettingsScreen()));
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => PrintSettingsScreen(state: state)));
   }
 
   void _openBackup(BuildContext context) {
