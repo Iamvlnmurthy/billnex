@@ -375,6 +375,9 @@ class LHi extends L {
   String get sharePdf => 'PDF शेयर करें';
 
   @override
+  String get quickQty => 'त्वरित मात्रा';
+
+  @override
   String get sendOnWhatsApp => 'WhatsApp पर भेजें';
 
   @override

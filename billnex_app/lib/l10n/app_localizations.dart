@@ -789,6 +789,12 @@ abstract class L {
   /// **'Share PDF'**
   String get sharePdf;
 
+  /// No description provided for @quickQty.
+  ///
+  /// In en, this message translates to:
+  /// **'QUICK QUANTITY'**
+  String get quickQty;
+
   /// No description provided for @sendOnWhatsApp.
   ///
   /// In en, this message translates to:

@@ -375,6 +375,9 @@ class LEn extends L {
   String get sharePdf => 'Share PDF';
 
   @override
+  String get quickQty => 'QUICK QUANTITY';
+
+  @override
   String get sendOnWhatsApp => 'Send on WhatsApp';
 
   @override

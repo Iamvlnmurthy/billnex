@@ -375,6 +375,9 @@ class LTe extends L {
   String get sharePdf => 'PDF షేర్ చేయి';
 
   @override
+  String get quickQty => 'త్వరిత పరిమాణం';
+
+  @override
   String get sendOnWhatsApp => 'WhatsApp లో పంపండి';
 
   @override

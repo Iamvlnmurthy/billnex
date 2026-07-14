@@ -436,7 +436,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
         // editor
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -546,23 +546,41 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 // quantity presets
+                Text(L.of(context).quickQty, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.6, color: bx.faint)),
+                const SizedBox(height: 8),
                 _presetChips(bx),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text(L.of(context).amount, style: TextStyle(fontSize: 13, color: bx.muted)),
-                    const Spacer(),
-                    Text(money(_editorAmount), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                  ],
+                const SizedBox(height: 16),
+                // live amount — highlights as soon as qty × rate is positive
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: _editorAmount > 0 ? bx.brand.withValues(alpha: 0.08) : bx.surface2,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _editorAmount > 0 ? bx.brand.withValues(alpha: 0.35) : bx.border),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(L.of(context).amount, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: bx.muted)),
+                      const Spacer(),
+                      Text(
+                        money(_editorAmount),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _editorAmount > 0 ? bx.brand : bx.faint),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 FilledButton.icon(
                   onPressed: _editorAmount > 0 ? _addItem : null,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: Text(L.of(context).addItem),
-                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                  icon: const Icon(Icons.add, size: 20),
+                  label: Text(L.of(context).addItem, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
                 ),
               ],
             ),
@@ -631,22 +649,25 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           setState(() {});
         }),
     ];
-    return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: 3, mainAxisSpacing: 8, crossAxisSpacing: 8, childAspectRatio: 2.7, children: tiles);
+    return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: 3, mainAxisSpacing: 8, crossAxisSpacing: 8, childAspectRatio: 2.5, children: tiles);
   }
 
-  Widget _presetTile(BxColors bx, String label, VoidCallback onTap) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(10),
-    child: Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: bx.surface2,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: bx.border),
+  Widget _presetTile(BxColors bx, String label, VoidCallback onTap) {
+    final stepper = label == '−' || label == '+';
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: stepper ? bx.brand.withValues(alpha: 0.10) : bx.surface2,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: stepper ? bx.brand.withValues(alpha: 0.30) : bx.border),
+        ),
+        child: Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: stepper ? bx.brand : null)),
       ),
-      child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-    ),
-  );
+    );
+  }
 
   Widget _itemCard(BxColors bx, _QLine l, int i) {
     return Container(
