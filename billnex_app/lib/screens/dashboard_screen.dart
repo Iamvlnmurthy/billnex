@@ -28,7 +28,7 @@ class DashboardScreen extends StatelessWidget {
     final canReports = state.roleCanAccess('reports');
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+      padding: const EdgeInsets.fromLTRB(18, 10, 18, 20),
       children: [
         Center(
           child: ConstrainedBox(
@@ -66,7 +66,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 // ── Alert banners (only when actionable for this role) ───
                 if (state.lowStockCount > 0 && canInventory)
@@ -96,21 +96,21 @@ class DashboardScreen extends StatelessWidget {
                 _HeroSales(state: state),
                 const SizedBox(height: 8),
                 _SummaryGrid(state: state, goTo: goTo),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 if (canBill) ...[
                   FilledButton.icon(
                     onPressed: () => goTo(NavId.billing),
                     icon: const Icon(Icons.add_circle_outline_rounded, size: 20),
                     label: Text(l.createNewBill),
-                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 12),
                 ],
 
                 // ── Quick actions ────────────────────────────────────────
                 _QuickActions(state: state, goTo: goTo),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
                 // ── Recent Activity ──────────────────────────────────────
                 _SectionHead(title: l.recentActivity, action: (state.billCount > 0 && state.roleCanAccess('sales')) ? l.viewAll : null, onAction: () => goTo(NavId.sales)),
@@ -218,7 +218,7 @@ class _HeroSales extends StatelessWidget {
         border: Border.all(color: const Color(0xFF3988FF).withValues(alpha: 0.42)),
         boxShadow: bx.cardShadow,
       ),
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+      padding: const EdgeInsets.fromLTRB(16, 13, 16, 11),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -227,31 +227,31 @@ class _HeroSales extends StatelessWidget {
               Expanded(
                 child: Text(
                   l.todaysSales,
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFFC6D8F0)),
+                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Color(0xFFC6D8F0)),
                 ),
               ),
               Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(12)),
-                child: const Icon(Icons.auto_graph_rounded, size: 20, color: Color(0xFF69A4FF)),
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.auto_graph_rounded, size: 18, color: Color(0xFF69A4FF)),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3),
           Money(
             state.todaySales,
-            style: BxText.valueHero.copyWith(fontSize: 34, color: Colors.white),
+            style: BxText.valueHero.copyWith(fontSize: 30, color: Colors.white),
             color: Colors.white,
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 1),
           Text(
             live ? l.billsCount(state.billCount) : l.noBillsYet,
             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: live ? const Color(0xFF45E195) : const Color(0xFF9CB2CD)),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           SizedBox(
-            height: 42,
+            height: 28,
             width: double.infinity,
             child: CustomPaint(painter: _SalesSparkline(points, const Color(0xFF55A1FF))),
           ),
@@ -326,9 +326,9 @@ class _SummaryGrid extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: cols,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          mainAxisExtent: 92,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          mainAxisExtent: 78,
           children: [
             _MiniStat(l.totalBills, '${state.billCount}', color: bx.muted),
             _MiniStat(l.cashReceived2, money(cash), color: bx.muted),
@@ -354,7 +354,7 @@ class _MiniStat extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(Bx.radius),
         child: Padding(
-          padding: const EdgeInsets.all(13),
+          padding: const EdgeInsets.all(11),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -364,14 +364,14 @@ class _MiniStat extends StatelessWidget {
                   Expanded(
                     child: Text(
                       label,
-                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: bx.muted),
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: bx.muted),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (onTap != null) Icon(Icons.chevron_right, size: 15, color: bx.faint),
                 ],
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               Text(
                 value,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.5, color: color == bx.danger ? bx.danger : null),

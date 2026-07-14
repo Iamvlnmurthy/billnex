@@ -144,9 +144,8 @@ class _HomeShellState extends State<HomeShell> {
               child: Column(
                 children: [
                   _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
-                  // The counter (Quick Bill) needs max height for the keypad, so the
-                  // status strip is hidden there; it shows on every other tab.
-                  if (_current != NavId.quickbill) _TrustBar(state: widget.state),
+                  // (Status strip removed for a taller content area on every screen;
+                  // online state stays in the top bar and backup-due warns on Dashboard.)
                   Expanded(
                     child: Row(
                       children: [
@@ -655,102 +654,6 @@ class _TopBar extends StatelessWidget {
       ],
     ],
   );
-}
-
-class _TrustBar extends StatelessWidget {
-  final AppState state;
-  const _TrustBar({required this.state});
-
-  @override
-  Widget build(BuildContext context) {
-    final bx = context.bx;
-    Widget seg(String label, String value) => Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text('$label ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
-        Text(value, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
-      ],
-    );
-    return Container(
-      decoration: BoxDecoration(
-        color: bx.surface2,
-        border: Border(bottom: BorderSide(color: bx.border)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            // online/offline toggle
-            InkWell(
-              onTap: () => state.setOnline(!state.online),
-              borderRadius: BorderRadius.circular(999),
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 40),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(color: (state.online ? bx.trustOnline : bx.warn).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(color: state.online ? bx.trustOnline : bx.warn, shape: BoxShape.circle),
-                    ),
-                    const SizedBox(width: 7),
-                    Text(
-                      state.online ? L.of(context).online : L.of(context).offline,
-                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: state.online ? bx.trustOnline : bx.warn),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            seg(L.of(context).queue, '${state.queueCount}'),
-            if (state.queueCount > 0) ...[
-              const SizedBox(width: 8),
-              TextButton(
-                onPressed: state.syncNow,
-                style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10), minimumSize: const Size(0, 40)),
-                child: Text(L.of(context).syncNow, style: const TextStyle(fontSize: 12.5)),
-              ),
-            ],
-            const SizedBox(width: 16),
-            InkWell(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => Scaffold(
-                    appBar: AppBar(title: const Text('Backup & Restore')),
-                    body: BackupScreen(state: state),
-                  ),
-                ),
-              ),
-              borderRadius: BorderRadius.circular(6),
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 40),
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (state.backupDue) ...[Icon(Icons.warning_amber_rounded, size: 13, color: bx.warn), const SizedBox(width: 4)],
-                    Text('${L.of(context).backup} ', style: TextStyle(fontSize: 12.5, color: bx.muted)),
-                    Text(
-                      state.backupDue ? L.of(context).backupDue : (state.lastBackupMs == null ? L.of(context).backupNone : L.of(context).backupSaved),
-                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: state.backupDue ? bx.warn : null),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            seg(L.of(context).activeFeatures, '${state.activeCount}'),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _Rail extends StatelessWidget {
