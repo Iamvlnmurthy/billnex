@@ -941,6 +941,39 @@ class AppState extends ChangeNotifier {
     return b.toString();
   }
 
+  /// GSTR-1 rate-wise outward-supply summary. No buyer GSTIN is captured per
+  /// sale, so all supplies are treated as B2C (Others). Sales returns (credit
+  /// notes) net off. Intra-state → CGST + SGST at half the rate each.
+  List<({double rate, double taxable, double cgst, double sgst, int invoices})> gstr1Summary() {
+    final m = <double, ({double taxable, double tax, Set<String> inv})>{};
+    for (final s in _sales) {
+      final sign = s.isReturn ? -1.0 : 1.0;
+      for (final l in s.lines) {
+        final gross = l.amount - l.discount;
+        final taxable = s.taxInclusive ? gross / (1 + l.gstRate / 100) : gross;
+        final tax = s.taxInclusive ? gross - taxable : gross * l.gstRate / 100;
+        final ex = m[l.gstRate];
+        final inv = ex?.inv ?? <String>{};
+        inv.add(s.invoiceNo);
+        m[l.gstRate] = (taxable: (ex?.taxable ?? 0) + taxable * sign, tax: (ex?.tax ?? 0) + tax * sign, inv: inv);
+      }
+    }
+    final rows = m.entries
+        .map((e) => (rate: e.key, taxable: _r2(e.value.taxable), cgst: _r2(e.value.tax / 2), sgst: _r2(e.value.tax / 2), invoices: e.value.inv.length))
+        .toList();
+    rows.sort((a, b) => a.rate.compareTo(b.rate));
+    return rows;
+  }
+
+  /// GSTR-1 summary as CSV text (rate-wise B2C outward supplies).
+  String gstr1Csv() {
+    final b = StringBuffer('GST %,Taxable Value,CGST,SGST,Total Tax,Invoices\n');
+    for (final r in gstr1Summary()) {
+      b.writeln('${r.rate.toStringAsFixed(0)},${r.taxable.toStringAsFixed(2)},${r.cgst.toStringAsFixed(2)},${r.sgst.toStringAsFixed(2)},${(r.cgst + r.sgst).toStringAsFixed(2)},${r.invoices}');
+    }
+    return b.toString();
+  }
+
   // -----------------------------------------------------------------------
   // Customers & credit ledger
   // -----------------------------------------------------------------------

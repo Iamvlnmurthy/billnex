@@ -378,6 +378,30 @@ class LHi extends L {
   String get quickQty => 'त्वरित मात्रा';
 
   @override
+  String get gstr1Title => 'GSTR-1 · दर-वार (B2C)';
+
+  @override
+  String get gstr1Sub => 'GST दर के अनुसार बिक्री। खरीदार GSTIN दर्ज नहीं है, इसलिए सभी बिक्री B2C मानी गई हैं।';
+
+  @override
+  String get cgstCol => 'CGST';
+
+  @override
+  String get sgstCol => 'SGST';
+
+  @override
+  String get invoicesCol => 'बिल';
+
+  @override
+  String get exportGstPdf => 'GST PDF';
+
+  @override
+  String get gstReportFail => 'GST रिपोर्ट निर्यात नहीं हो सकी';
+
+  @override
+  String get totalLabel => 'कुल';
+
+  @override
   String get sendOnWhatsApp => 'WhatsApp पर भेजें';
 
   @override

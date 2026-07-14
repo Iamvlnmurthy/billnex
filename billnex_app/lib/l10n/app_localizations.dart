@@ -795,6 +795,54 @@ abstract class L {
   /// **'QUICK QUANTITY'**
   String get quickQty;
 
+  /// No description provided for @gstr1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'GSTR-1 · Rate-wise (B2C)'**
+  String get gstr1Title;
+
+  /// No description provided for @gstr1Sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Outward supplies by GST rate. No buyer GSTIN is captured, so all sales are treated as B2C.'**
+  String get gstr1Sub;
+
+  /// No description provided for @cgstCol.
+  ///
+  /// In en, this message translates to:
+  /// **'CGST'**
+  String get cgstCol;
+
+  /// No description provided for @sgstCol.
+  ///
+  /// In en, this message translates to:
+  /// **'SGST'**
+  String get sgstCol;
+
+  /// No description provided for @invoicesCol.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills'**
+  String get invoicesCol;
+
+  /// No description provided for @exportGstPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'GST PDF'**
+  String get exportGstPdf;
+
+  /// No description provided for @gstReportFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t export the GST report'**
+  String get gstReportFail;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
   /// No description provided for @sendOnWhatsApp.
   ///
   /// In en, this message translates to:

@@ -378,6 +378,30 @@ class LEn extends L {
   String get quickQty => 'QUICK QUANTITY';
 
   @override
+  String get gstr1Title => 'GSTR-1 · Rate-wise (B2C)';
+
+  @override
+  String get gstr1Sub => 'Outward supplies by GST rate. No buyer GSTIN is captured, so all sales are treated as B2C.';
+
+  @override
+  String get cgstCol => 'CGST';
+
+  @override
+  String get sgstCol => 'SGST';
+
+  @override
+  String get invoicesCol => 'Bills';
+
+  @override
+  String get exportGstPdf => 'GST PDF';
+
+  @override
+  String get gstReportFail => 'Couldn\'t export the GST report';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
   String get sendOnWhatsApp => 'Send on WhatsApp';
 
   @override

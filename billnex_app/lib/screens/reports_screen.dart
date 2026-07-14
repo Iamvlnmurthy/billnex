@@ -103,6 +103,8 @@ class ReportsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _plCard(context),
               const SizedBox(height: 16),
+              _gstr1Card(context),
+              const SizedBox(height: 16),
               _hsnCard(context),
               const SizedBox(height: 16),
               _dayBookCard(context),
@@ -152,6 +154,93 @@ class ReportsScreen extends StatelessWidget {
             row(l.plGrossProfit, pl.grossProfit, bold: true, color: pl.grossProfit >= 0 ? bx.pos : bx.danger),
             const SizedBox(height: 4),
             Text(l.plGstNote(money(pl.gst)), style: TextStyle(fontSize: 11.5, color: bx.faint)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── GSTR-1 rate-wise (B2C) ─────────────────────────────────────────────
+  Widget _gstr1Card(BuildContext context) {
+    final bx = context.bx;
+    final l = L.of(context);
+    final rows = state.gstr1Summary();
+    final taxableTotal = rows.fold<double>(0, (a, r) => a + r.taxable);
+    final taxTotal = rows.fold<double>(0, (a, r) => a + r.cgst + r.sgst);
+
+    Widget cell(String s, int flex, {TextAlign align = TextAlign.right, bool head = false, bool strong = false}) => Expanded(
+      flex: flex,
+      child: Text(
+        s,
+        textAlign: align,
+        style: head ? BxText.meta.copyWith(color: bx.faint) : TextStyle(fontWeight: strong ? FontWeight.w800 : FontWeight.w700, color: strong ? bx.brand : null),
+      ),
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(child: Text(l.gstr1Title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700))),
+                if (rows.isNotEmpty) ...[
+                  TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-GSTR1.csv', state.gstr1Csv()), icon: const Icon(Icons.download, size: 16), label: Text(l.csv)),
+                  TextButton.icon(
+                    onPressed: () => PdfService.run(
+                      context,
+                      () => PdfService.shareGstReport(businessName: state.shopName, gstin: state.profile?.gstin, gstr1: state.gstr1Summary(), hsn: state.hsnSummary()),
+                      failure: l.gstReportFail,
+                    ),
+                    icon: const Icon(Icons.ios_share, size: 16),
+                    label: Text(l.exportGstPdf),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 2),
+            Text(l.gstr1Sub, style: TextStyle(fontSize: 11.5, color: bx.faint, height: 1.35)),
+            const SizedBox(height: 12),
+            if (rows.isEmpty)
+              Text(l.noSalesYet, style: TextStyle(color: bx.muted))
+            else ...[
+              Row(
+                children: [
+                  cell(l.gstCol, 2, align: TextAlign.left, head: true),
+                  cell(l.taxableCol, 4, head: true),
+                  cell(l.cgstCol, 3, head: true),
+                  cell(l.sgstCol, 3, head: true),
+                ],
+              ),
+              const SizedBox(height: 4),
+              for (final r in rows)
+                Container(
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: bx.border))),
+                  padding: const EdgeInsets.symmetric(vertical: 9),
+                  child: Row(
+                    children: [
+                      Expanded(flex: 2, child: Text('${r.rate.toStringAsFixed(0)}%', style: TextStyle(color: bx.muted, fontWeight: FontWeight.w600))),
+                      cell(money(r.taxable), 4),
+                      cell(money(r.cgst), 3),
+                      cell(money(r.sgst), 3),
+                    ],
+                  ),
+                ),
+              Container(
+                decoration: BoxDecoration(border: Border(top: BorderSide(color: bx.brand.withValues(alpha: 0.4), width: 1.4))),
+                padding: const EdgeInsets.only(top: 10),
+                child: Row(
+                  children: [
+                    cell(l.totalLabel, 2, align: TextAlign.left, strong: true),
+                    cell(money(taxableTotal), 4, strong: true),
+                    cell(money(taxTotal / 2), 3, strong: true),
+                    cell(money(taxTotal / 2), 3, strong: true),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),

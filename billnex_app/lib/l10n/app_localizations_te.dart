@@ -378,6 +378,30 @@ class LTe extends L {
   String get quickQty => 'త్వరిత పరిమాణం';
 
   @override
+  String get gstr1Title => 'GSTR-1 · రేటు వారీగా (B2C)';
+
+  @override
+  String get gstr1Sub => 'GST రేటు ప్రకారం అమ్మకాలు. కొనుగోలుదారు GSTIN నమోదు కాలేదు, కాబట్టి అన్నీ B2C గా పరిగణించబడ్డాయి.';
+
+  @override
+  String get cgstCol => 'CGST';
+
+  @override
+  String get sgstCol => 'SGST';
+
+  @override
+  String get invoicesCol => 'బిల్లులు';
+
+  @override
+  String get exportGstPdf => 'GST PDF';
+
+  @override
+  String get gstReportFail => 'GST నివేదికను ఎగుమతి చేయలేకపోయాము';
+
+  @override
+  String get totalLabel => 'మొత్తం';
+
+  @override
   String get sendOnWhatsApp => 'WhatsApp లో పంపండి';
 
   @override
