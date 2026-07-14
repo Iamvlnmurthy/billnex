@@ -170,29 +170,33 @@ extension BxContext on BuildContext {
 class BxText {
   static const _tab = [FontFeature.tabularFigures()];
 
-  /// Big screen title (dashboard/section pages). Mobile page-title, 24/800.
-  static const pageTitle = TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5, height: 1.15);
+  // Refined ramp: weight carries hierarchy without shouting. w800 is reserved for
+  // hero *numbers* (money) where heft aids scanning; titles are w700, labels w600,
+  // body regular. Calmer than the previous all-w800 look.
 
-  /// Section heading within a page. 20/700.
-  static const section = TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3);
+  /// Big screen title (dashboard/section pages). 23/700.
+  static const pageTitle = TextStyle(fontSize: 23, fontWeight: FontWeight.w700, letterSpacing: -0.4, height: 1.18);
 
-  /// Card / list-row title. 16/600.
-  static const cardTitle = TextStyle(fontSize: 15, fontWeight: FontWeight.w700);
+  /// Section heading within a page. 17/700.
+  static const section = TextStyle(fontSize: 17, fontWeight: FontWeight.w700, letterSpacing: -0.2, height: 1.25);
 
-  /// Prominent money value (totals, KPIs, balances). Tabular figures.
-  static const value = TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5, fontFeatures: _tab);
+  /// Card / list-row title. 15/600.
+  static const cardTitle = TextStyle(fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: -0.1);
 
-  /// Hero money value (Collect total, today's sales). Tabular figures.
-  static const valueHero = TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1, fontFeatures: _tab);
+  /// Prominent money value (totals, KPIs, balances). Tabular figures. 22/700.
+  static const value = TextStyle(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: -0.4, fontFeatures: _tab);
+
+  /// Hero money value (Collect total, today's sales). Tabular figures. 29/800.
+  static const valueHero = TextStyle(fontSize: 29, fontWeight: FontWeight.w800, letterSpacing: -0.7, fontFeatures: _tab);
 
   /// Body text.
-  static const body = TextStyle(fontSize: 14, height: 1.4);
+  static const body = TextStyle(fontSize: 14, height: 1.45, letterSpacing: 0.05);
 
   /// Secondary / supporting text.
-  static const supporting = TextStyle(fontSize: 12.5, height: 1.4);
+  static const supporting = TextStyle(fontSize: 12.5, height: 1.45, letterSpacing: 0.05);
 
-  /// Uppercase metadata label. 12/700 +0.4 tracking.
-  static const meta = TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.4);
+  /// Uppercase metadata label. 11.5/600 +0.5 tracking.
+  static const meta = TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, letterSpacing: 0.5);
 }
 
 class AppTheme {
@@ -227,7 +231,10 @@ class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surfaceContainerLowest,
       extensions: [ext],
-      fontFamily: 'Inter', // the design-system typeface (bundled in assets/fonts)
+      // Primary UI typeface: Plus Jakarta Sans (bundled). Inter is the Latin
+      // fallback; Devanagari/Telugu fall through to the system Noto fonts.
+      fontFamily: 'PlusJakartaSans',
+      fontFamilyFallback: const ['Inter'],
       // Tabular figures everywhere so ₹ amounts and quantities align in columns.
       // Text with an inline style inherits this (merge keeps ambient fontFeatures).
       textTheme: _tabularFigures(ThemeData(brightness: b, useMaterial3: true).textTheme),
@@ -246,7 +253,7 @@ class AppTheme {
         centerTitle: false,
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.25),
+        titleTextStyle: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.25),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -290,7 +297,7 @@ class AppTheme {
         indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) =>
-              TextStyle(fontSize: 11.5, fontWeight: states.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w600, color: states.contains(WidgetState.selected) ? ext.accent : ext.muted),
+              TextStyle(fontSize: 11.5, fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500, color: states.contains(WidgetState.selected) ? ext.accent : ext.muted),
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(

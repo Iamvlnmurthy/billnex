@@ -94,77 +94,78 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
         border: Border.all(color: const Color(0xFF2076D9)),
         boxShadow: const [BoxShadow(color: Color(0x330067E8), blurRadius: 20, offset: Offset(0, 8))],
       ),
-      child: Row(
+      // Two rows: a title row (never truncates) + a full-width segmented control.
+      // This is robust on every phone width — no title/toggle competition.
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(color: const Color(0xFF1578F6), borderRadius: BorderRadius.circular(11)),
+                child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 21),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  L.of(context).quickBill,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.2),
+                ),
+              ),
+              if (_hasLines)
+                PopupMenuButton<String>(
+                  tooltip: L.of(context).more,
+                  icon: const Icon(Icons.more_vert, color: Colors.white),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                  onSelected: (v) {
+                    switch (v) {
+                      case 'estimate':
+                        _shareDoc(context, 'quotation', 'Estimate');
+                      case 'challan':
+                        _shareDoc(context, 'delivery', 'Delivery challan');
+                      case 'clear':
+                        _confirmClear();
+                    }
+                  },
+                  itemBuilder: (ctx) => const [
+                    PopupMenuItem(
+                      value: 'estimate',
+                      child: ListTile(dense: true, leading: Icon(Icons.description_outlined), title: Text('Share as estimate')),
+                    ),
+                    PopupMenuItem(
+                      value: 'challan',
+                      child: ListTile(dense: true, leading: Icon(Icons.local_shipping_outlined), title: Text('Share delivery challan')),
+                    ),
+                    PopupMenuItem(
+                      value: 'clear',
+                      child: ListTile(dense: true, leading: Icon(Icons.delete_sweep_outlined), title: Text('Clear bill')),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 11),
+          // Full-width segmented control — big thumb targets, no truncation.
           Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(color: const Color(0xFF1578F6), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 22),
-          ),
-          const SizedBox(width: 10),
-          // Title yields space to the mode switch (which can carry long localized
-          // labels); both shrink with ellipsis rather than overflow on small phones.
-          Flexible(
-            flex: 2,
-            child: Text(
-              L.of(context).quickBill,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3),
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
             ),
-          ),
-          const SizedBox(width: 8),
-          // mode switch
-          Flexible(
-            flex: 3,
-            child: Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(child: _modeTab(bx, L.of(context).tally, _Mode.tally)),
-                  Flexible(child: _modeTab(bx, L.of(context).itemized, _Mode.itemized)),
-                ],
-              ),
-            ),
-          ),
-          if (_hasLines) ...[
-            const SizedBox(width: 4),
-            PopupMenuButton<String>(
-              tooltip: L.of(context).more,
-              icon: const Icon(Icons.more_vert, color: Colors.white),
-              onSelected: (v) {
-                switch (v) {
-                  case 'estimate':
-                    _shareDoc(context, 'quotation', 'Estimate');
-                  case 'challan':
-                    _shareDoc(context, 'delivery', 'Delivery challan');
-                  case 'clear':
-                    _confirmClear();
-                }
-              },
-              itemBuilder: (ctx) => const [
-                PopupMenuItem(
-                  value: 'estimate',
-                  child: ListTile(dense: true, leading: Icon(Icons.description_outlined), title: Text('Share as estimate')),
-                ),
-                PopupMenuItem(
-                  value: 'challan',
-                  child: ListTile(dense: true, leading: Icon(Icons.local_shipping_outlined), title: Text('Share delivery challan')),
-                ),
-                PopupMenuItem(
-                  value: 'clear',
-                  child: ListTile(dense: true, leading: Icon(Icons.delete_sweep_outlined), title: Text('Clear bill')),
-                ),
+            child: Row(
+              children: [
+                Expanded(child: _modeTab(bx, L.of(context).tally, _Mode.tally)),
+                Expanded(child: _modeTab(bx, L.of(context).itemized, _Mode.itemized)),
               ],
             ),
-          ],
+          ),
         ],
       ),
     );
@@ -195,95 +196,97 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
   Widget _tallyBody(BxColors bx) {
     return Column(
       children: [
-        Expanded(
-          child: _tally.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 2, 12, 4),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: bx.border),
-                      boxShadow: bx.cardShadow,
-                    ),
-                    child: Row(
+        // Empty: a natural-height hint + flexible space (never squeezed/clipped).
+        if (_tally.isEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 2, 12, 4),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: bx.border),
+                boxShadow: bx.cardShadow,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+                    child: Icon(Icons.receipt_long_outlined, color: bx.accent, size: 20),
+                  ),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Container(
-                          width: 34,
-                          height: 34,
-                          decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14)),
-                          child: Icon(Icons.receipt_long_outlined, color: bx.accent, size: 20),
+                        Text(
+                          L.of(context).currentBill,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                         ),
-                        const SizedBox(width: 13),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                L.of(context).currentBill,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                L.of(context).punchAmounts,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 12, color: bx.muted),
-                              ),
-                            ],
-                          ),
+                        const SizedBox(height: 2),
+                        Text(
+                          L.of(context).punchAmounts,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12, color: bx.muted),
                         ),
-                        const SizedBox(width: 8),
-                        Text('₹0', style: BxText.value.copyWith(color: bx.faint)),
                       ],
                     ),
                   ),
-                )
-              : ListView.builder(
-                  reverse: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  itemCount: _tally.length,
-                  itemBuilder: (context, i) {
-                    final idx = _tally.length - 1 - i; // reversed
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: bx.border),
+                  const SizedBox(width: 8),
+                  Text('₹0', style: BxText.value.copyWith(color: bx.faint)),
+                ],
+              ),
+            ),
+          ),
+          const Spacer(),
+        ] else
+          Expanded(
+            child: ListView.builder(
+              reverse: true,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              itemCount: _tally.length,
+              itemBuilder: (context, i) {
+                final idx = _tally.length - 1 - i; // reversed
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: bx.border),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        '${idx + 1}',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: bx.faint),
                       ),
-                      child: Row(
-                        children: [
-                          Text(
-                            '${idx + 1}',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: bx.faint),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Text(money(_tally[idx]), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-                          ),
-                          InkWell(
-                            onTap: () => setState(() => _tally.removeAt(idx)),
-                            borderRadius: BorderRadius.circular(22),
-                            child: Semantics(
-                              button: true,
-                              label: L.of(context).removeLine,
-                              child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
-                            ),
-                          ),
-                        ],
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(money(_tally[idx]), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                       ),
-                    );
-                  },
-                ),
-        ),
+                      InkWell(
+                        onTap: () => setState(() => _tally.removeAt(idx)),
+                        borderRadius: BorderRadius.circular(22),
+                        child: Semantics(
+                          button: true,
+                          label: L.of(context).removeLine,
+                          child: SizedBox(width: 40, height: 40, child: Icon(Icons.close, size: 18, color: bx.faint)),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         // current entry
         Container(
           margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
