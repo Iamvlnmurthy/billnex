@@ -364,7 +364,7 @@ class _ProductTile extends StatelessWidget {
               const Spacer(),
               Row(
                 children: [
-                  Text(money(item.price), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  Flexible(child: Text(money(item.price), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700))),
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(
@@ -851,9 +851,19 @@ class _TplChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: on ? bx.brand : bx.border),
         ),
-        child: Text(
-          label,
-          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: on ? bx.brand : bx.muted),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (on) ...[Icon(Icons.check, size: 14, color: bx.brand), const SizedBox(width: 4)],
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: on ? bx.brand : bx.muted),
+              ),
+            ),
+          ],
         ),
       ),
     );
