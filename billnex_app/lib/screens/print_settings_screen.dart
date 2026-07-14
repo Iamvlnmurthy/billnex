@@ -39,10 +39,12 @@ class _PrintSettingsScreenState extends State<PrintSettingsScreen> {
   }
 
   Future<void> _reload() async {
+    // Fast, prefs-only load so the screen renders immediately. The native
+    // Bluetooth-radio check can block on devices without an adapter (e.g. the
+    // emulator), so it must NOT gate the initial render.
     final w = await PrintSettings.thermalWidthMm();
     final a4 = await PrintSettings.printerName(thermal: false);
     final th = await PrintSettings.printerName(thermal: true);
-    final btOn = await BtThermalService.isEnabled();
     final btEnabled = await PrintSettings.btEnabled();
     final btMac = await PrintSettings.btMac();
     final btName = await PrintSettings.btName();
@@ -51,12 +53,14 @@ class _PrintSettingsScreenState extends State<PrintSettingsScreen> {
       _width = w;
       _a4Name = a4;
       _thermalName = th;
-      _btOn = btOn;
       _btEnabled = btEnabled;
       _btMac = btMac;
       _btName = btName;
       _loading = false;
     });
+    // Best-effort radio status, timed out so a blocking plugin can't wedge us.
+    final on = await BtThermalService.isEnabled().timeout(const Duration(seconds: 3), onTimeout: () => false).catchError((_) => false);
+    if (mounted) setState(() => _btOn = on);
   }
 
   Future<void> _scanBt() async {
@@ -69,8 +73,8 @@ class _PrintSettingsScreenState extends State<PrintSettingsScreen> {
         messenger.showSnackBar(SnackBar(content: Text(l.btPermissionNeeded)));
         return;
       }
-      final on = await BtThermalService.isEnabled();
-      final devices = await BtThermalService.paired();
+      final on = await BtThermalService.isEnabled().timeout(const Duration(seconds: 3), onTimeout: () => false).catchError((_) => false);
+      final devices = await BtThermalService.paired().timeout(const Duration(seconds: 5), onTimeout: () => const <BtPrinter>[]).catchError((_) => const <BtPrinter>[]);
       if (!mounted) return;
       setState(() {
         _btOn = on;
