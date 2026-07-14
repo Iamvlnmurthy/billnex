@@ -34,7 +34,7 @@ class _PurchasingScreenState extends State<PurchasingScreen> {
   List<Supplier> _sorted() => [...state.suppliers]..sort((a, b) => state.payableOf(b.id).compareTo(state.payableOf(a.id)));
 
   Widget _narrow(BuildContext context) => ListView(
-    padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+    padding: const EdgeInsets.fromLTRB(22, 14, 22, 100),
     children: [ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1180), child: _masterColumn(context, wide: false))],
   );
 

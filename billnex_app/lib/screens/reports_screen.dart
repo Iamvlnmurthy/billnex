@@ -22,7 +22,7 @@ class ReportsScreen extends StatelessWidget {
     final mixTotal = mix.values.fold<double>(0, (a, b) => a + b);
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+      padding: const EdgeInsets.fromLTRB(22, 14, 22, 100),
       children: [
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1180),

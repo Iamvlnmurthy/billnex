@@ -18,7 +18,7 @@ class TemplatesScreen extends StatelessWidget {
     final l = L.of(context);
     final demo = [RcptLine(l.demoProductLine, 2, 620), RcptLine(l.demoServiceLine, 1, 620)];
     return ListView(
-      padding: const EdgeInsets.fromLTRB(22, 24, 22, 100),
+      padding: const EdgeInsets.fromLTRB(22, 14, 22, 100),
       children: [
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1180),

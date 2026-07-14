@@ -171,7 +171,7 @@ class PageHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final bx = context.bx;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -180,7 +180,7 @@ class PageHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: BxText.pageTitle),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(subtitle, style: BxText.body.copyWith(color: bx.muted)),
               ],
             ),
