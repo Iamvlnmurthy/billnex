@@ -232,7 +232,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
           builder: (ctx, setSt) => Padding(
             padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
             child: SingleChildScrollView(
-              child: Form(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 640), // keep the sheet readable on tablets
+                  child: Form(
                 key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -352,6 +355,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       child: Text(l.addToCatalogue),
                     ),
                   ],
+                ),
+                  ),
                 ),
               ),
             ),
@@ -634,7 +639,10 @@ Future<void> _editStock(BuildContext context, AppState state, StockItem it) asyn
         builder: (ctx, setSt) => Padding(
           padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(ctx).viewInsets.bottom),
           child: SingleChildScrollView(
-            child: Form(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640), // keep the sheet readable on tablets
+                child: Form(
               key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -732,6 +740,8 @@ Future<void> _editStock(BuildContext context, AppState state, StockItem it) asyn
                     child: Text(l.saveChanges),
                   ),
                 ],
+              ),
+                ),
               ),
             ),
           ),

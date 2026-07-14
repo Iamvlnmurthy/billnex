@@ -68,14 +68,18 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
       appBar: AppBar(title: Text(_editing ? l.businessDetails : l.setUpYourBusiness)),
       body: Form(
         key: _form,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 40),
-          children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 720; // tablet: pair short fields
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 40),
+              children: [
+                Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: wide ? 720 : 560),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                   // Business type is editable — choose it here (or change it
                   // later); the features re-align to it, data is untouched.
                   DropdownButtonFormField<String>(
@@ -106,30 +110,36 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
                     ),
                   const SizedBox(height: 16),
                   _field(_shop, l.shopBusinessName, hint: l.shopNameHint, validator: (v) => (v == null || v.trim().isEmpty) ? l.requiredField : null, autofocus: !_editing),
-                  _field(_owner, l.ownerName, hint: l.ownerNameHint),
-                  _field(
-                    _phone,
-                    l.phoneField,
-                    keyboard: TextInputType.phone,
-                    validator: (v) {
-                      final t = (v ?? '').trim();
-                      if (t.isEmpty) return null;
-                      return RegExp(r'^[0-9]{10}$').hasMatch(t) ? null : l.phone10DigitError;
-                    },
+                  _pair(
+                    wide,
+                    _field(_owner, l.ownerName, hint: l.ownerNameHint),
+                    _field(
+                      _phone,
+                      l.phoneField,
+                      keyboard: TextInputType.phone,
+                      validator: (v) {
+                        final t = (v ?? '').trim();
+                        if (t.isEmpty) return null;
+                        return RegExp(r'^[0-9]{10}$').hasMatch(t) ? null : l.phone10DigitError;
+                      },
+                    ),
                   ),
-                  _field(_gstin, l.gstinOptional, hint: l.gstinHint, caps: true, validator: (v) => (v != null && v.trim().isNotEmpty && v.trim().length != 15) ? l.gstin15Error : null),
+                  _pair(
+                    wide,
+                    _field(_gstin, l.gstinOptional, hint: l.gstinHint, caps: true, validator: (v) => (v != null && v.trim().isNotEmpty && v.trim().length != 15) ? l.gstin15Error : null),
+                    _field(
+                      _state,
+                      l.gstStateCode,
+                      keyboard: TextInputType.number,
+                      hint: l.gstStateCodeHint,
+                      validator: (v) {
+                        final t = (v ?? '').trim();
+                        if (t.isEmpty) return null;
+                        return RegExp(r'^[0-9]{2}$').hasMatch(t) ? null : l.stateCode2DigitError;
+                      },
+                    ),
+                  ),
                   _field(_addr, l.addressField, maxLines: 2),
-                  _field(
-                    _state,
-                    l.gstStateCode,
-                    keyboard: TextInputType.number,
-                    hint: l.gstStateCodeHint,
-                    validator: (v) {
-                      final t = (v ?? '').trim();
-                      if (t.isEmpty) return null;
-                      return RegExp(r'^[0-9]{2}$').hasMatch(t) ? null : l.stateCode2DigitError;
-                    },
-                  ),
                   const SizedBox(height: 4),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
@@ -154,12 +164,29 @@ class _BusinessSetupScreenState extends State<BusinessSetupScreen> {
                         style: TextStyle(fontSize: 12, color: bx.faint),
                       ),
                     ),
-                ],
-              ),
-            ),
-          ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
+    );
+  }
+
+  /// Two fields side-by-side on tablets, stacked on phones. Each field already
+  /// carries its own bottom padding, so the row aligns cleanly.
+  Widget _pair(bool wide, Widget a, Widget b) {
+    if (!wide) return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [a, b]);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: a),
+        const SizedBox(width: 16),
+        Expanded(child: b),
+      ],
     );
   }
 
