@@ -86,13 +86,13 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
 
   Widget _header(BxColors bx) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-      padding: const EdgeInsets.fromLTRB(14, 14, 10, 14),
+      margin: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+      padding: const EdgeInsets.fromLTRB(12, 9, 10, 9),
       decoration: BoxDecoration(
         gradient: const LinearGradient(colors: [Color(0xFF06356A), Color(0xFF071F3E)], begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: const Color(0xFF2076D9)),
-        boxShadow: const [BoxShadow(color: Color(0x330067E8), blurRadius: 20, offset: Offset(0, 8))],
+        boxShadow: const [BoxShadow(color: Color(0x330067E8), blurRadius: 16, offset: Offset(0, 6))],
       ),
       // Two rows: a title row (never truncates) + a full-width segmented control.
       // This is robust on every phone width — no title/toggle competition.
@@ -103,10 +103,10 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(color: const Color(0xFF1578F6), borderRadius: BorderRadius.circular(11)),
-                child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 21),
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: const Color(0xFF1578F6), borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 19),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -150,7 +150,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                 ),
             ],
           ),
-          const SizedBox(height: 11),
+          const SizedBox(height: 8),
           // Full-width segmented control — big thumb targets, no truncation.
           Container(
             padding: const EdgeInsets.all(3),
@@ -177,7 +177,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       onTap: () => setState(() => _mode = m),
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 36),
+        constraints: const BoxConstraints(minHeight: 34),
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(color: on ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(9)),
@@ -199,25 +199,25 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
         // Empty: a natural-height hint (the keypad below fills the rest).
         if (_tally.isEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 2, 12, 4),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: bx.border),
                 boxShadow: bx.cardShadow,
               ),
               child: Row(
                 children: [
                   Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-                    child: Icon(Icons.receipt_long_outlined, color: bx.accent, size: 20),
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                    child: Icon(Icons.receipt_long_outlined, color: bx.accent, size: 18),
                   ),
-                  const SizedBox(width: 13),
+                  const SizedBox(width: 11),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,11 +289,11 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           ),
         // current entry
         Container(
-          margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(color: bx.border),
           ),
           child: Row(
@@ -305,7 +305,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               const Spacer(),
               Text(
                 '₹${_entry.isEmpty ? '0' : _entry}',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, letterSpacing: -1, color: _entry.isEmpty ? bx.faint : bx.accent),
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, letterSpacing: -0.8, color: _entry.isEmpty ? bx.faint : bx.accent),
               ),
             ],
           ),
@@ -328,7 +328,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               onTap: onTap,
               borderRadius: BorderRadius.circular(13),
               child: Container(
-                constraints: const BoxConstraints(minHeight: 36),
+                constraints: const BoxConstraints(minHeight: 44),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(13),
@@ -754,7 +754,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+          padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -765,7 +765,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                     onTap: _editDiscount,
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
-                      constraints: const BoxConstraints(minHeight: 40),
+                      constraints: const BoxConstraints(minHeight: 38),
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
