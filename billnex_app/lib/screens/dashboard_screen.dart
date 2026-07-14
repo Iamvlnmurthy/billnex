@@ -249,12 +249,15 @@ class _HeroSales extends StatelessWidget {
             live ? l.billsCount(state.billCount) : l.noBillsYet,
             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: live ? const Color(0xFF45E195) : const Color(0xFF9CB2CD)),
           ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 28,
-            width: double.infinity,
-            child: CustomPaint(painter: _SalesSparkline(points, const Color(0xFF55A1FF))),
-          ),
+          // Sparkline only when there's real history — no empty band on a fresh store.
+          if (points.length > 1) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 30,
+              width: double.infinity,
+              child: CustomPaint(painter: _SalesSparkline(points, const Color(0xFF55A1FF))),
+            ),
+          ],
         ],
       ),
     );
