@@ -7,18 +7,21 @@ import '../widgets/empty_state.dart';
 import '../widgets/customer_picker.dart';
 import '../l10n/app_localizations.dart';
 
-class CustomersScreen extends StatelessWidget {
+class CustomersScreen extends StatefulWidget {
   final AppState state;
   const CustomersScreen({required this.state, super.key});
+  @override
+  State<CustomersScreen> createState() => _CustomersScreenState();
+}
+
+class _CustomersScreenState extends State<CustomersScreen> {
+  String? _selectedCustomerId;
+
+  AppState get state => widget.state;
 
   @override
   Widget build(BuildContext context) {
-    final bx = context.bx;
     final l = L.of(context);
-    final customers = state.customers;
-    final withDue = customers.where((c) => state.balanceOf(c.id) > 0).toList()..sort((a, b) => state.balanceOf(b.id).compareTo(state.balanceOf(a.id)));
-    final settled = customers.where((c) => state.balanceOf(c.id) <= 0).toList();
-
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
@@ -29,33 +32,73 @@ class CustomersScreen extends StatelessWidget {
         label: Text(l.addCustomer),
       ),
       backgroundColor: Colors.transparent,
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 100),
-        children: [
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1180),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                PageHeader(l.customersTitle, l.customersSubtitle(customers.length, money(state.totalReceivable), state.overdueCount), trailing: Badge2(l.khataLedger)),
-                if (customers.isEmpty)
-                  _empty(bx, l)
-                else ...[
-                  if (withDue.isNotEmpty) ...[
-                    _sectionLabel(bx, l.sectionOutstanding),
-                    Card(child: Column(children: [for (int i = 0; i < withDue.length; i++) _row(context, withDue[i], i == 0)])),
-                    const SizedBox(height: 16),
-                  ],
-                  if (settled.isNotEmpty) ...[
-                    _sectionLabel(bx, l.sectionSettled),
-                    Card(child: Column(children: [for (int i = 0; i < settled.length; i++) _row(context, settled[i], i == 0)])),
-                  ],
-                ],
-              ],
+      body: LayoutBuilder(builder: (context, c) => c.maxWidth >= 720 ? _wide(context) : _narrow(context)),
+    );
+  }
+
+  // ── Phone: unchanged single-column list, taps push the detail screen. ──
+  Widget _narrow(BuildContext context) => ListView(
+    padding: const EdgeInsets.fromLTRB(18, 18, 18, 100),
+    children: [ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1180), child: _masterColumn(context, wide: false))],
+  );
+
+  // ── Tablet: master list + live detail pane. ──
+  Widget _wide(BuildContext context) {
+    final bx = context.bx;
+    final l = L.of(context);
+    return AnimatedBuilder(
+      animation: state,
+      builder: (context, _) {
+        final selected = _selectedCustomerId != null && state.customers.any((x) => x.id == _selectedCustomerId);
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 360,
+              child: ListView(padding: const EdgeInsets.fromLTRB(18, 24, 14, 100), children: [_masterColumn(context, wide: true)]),
             ),
-          ),
+            Container(width: 1, color: bx.border),
+            Expanded(
+              child: selected
+                  ? CustomerDetailView(state: state, customerId: _selectedCustomerId!, embedded: true)
+                  : Center(
+                      child: EmptyState(illustration: 'empty-no-customers', title: l.selectItemTitle, subtitle: l.selectItemSub),
+                    ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _masterColumn(BuildContext context, {required bool wide}) {
+    final bx = context.bx;
+    final l = L.of(context);
+    final customers = state.customers;
+    final withDue = customers.where((c) => state.balanceOf(c.id) > 0).toList()..sort((a, b) => state.balanceOf(b.id).compareTo(state.balanceOf(a.id)));
+    final settled = customers.where((c) => state.balanceOf(c.id) <= 0).toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PageHeader(l.customersTitle, l.customersSubtitle(customers.length, money(state.totalReceivable), state.overdueCount), trailing: wide ? null : Badge2(l.khataLedger)),
+        if (customers.isEmpty)
+          _empty(bx, l)
+        else ...[
+          if (withDue.isNotEmpty) ...[
+            _sectionLabel(bx, l.sectionOutstanding),
+            Card(
+              child: Column(children: [for (int i = 0; i < withDue.length; i++) _row(context, withDue[i], i == 0, wide: wide)]),
+            ),
+            const SizedBox(height: 16),
+          ],
+          if (settled.isNotEmpty) ...[
+            _sectionLabel(bx, l.sectionSettled),
+            Card(
+              child: Column(children: [for (int i = 0; i < settled.length; i++) _row(context, settled[i], i == 0, wide: wide)]),
+            ),
+          ],
         ],
-      ),
+      ],
     );
   }
 
@@ -71,15 +114,17 @@ class CustomersScreen extends StatelessWidget {
     child: EmptyState(illustration: 'empty-no-customers', title: l.noCustomersTitle, subtitle: l.noCustomersSub),
   );
 
-  Widget _row(BuildContext context, Customer c, bool first) {
+  Widget _row(BuildContext context, Customer c, bool first, {required bool wide}) {
     final bx = context.bx;
     final l = L.of(context);
     final bal = state.balanceOf(c.id);
     final over = c.creditLimit > 0 && bal > c.creditLimit;
+    final isSelected = wide && c.id == _selectedCustomerId;
     return InkWell(
-      onTap: () => _openDetail(context, state, c),
+      onTap: () => wide ? setState(() => _selectedCustomerId = c.id) : _openDetail(context, state, c),
       child: Container(
         decoration: BoxDecoration(
+          color: isSelected ? bx.brand.withValues(alpha: 0.08) : null,
           border: first ? null : Border(top: BorderSide(color: bx.border)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
@@ -160,10 +205,36 @@ class StatusChip extends StatelessWidget {
   );
 }
 
+/// Pushed detail screen for phones — Scaffold + AppBar wrapping [CustomerDetailView].
 class CustomerDetailScreen extends StatelessWidget {
   final AppState state;
   final String customerId;
   const CustomerDetailScreen({required this.state, required this.customerId, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: state,
+      builder: (context, _) {
+        final c = state.customers.where((x) => x.id == customerId).firstOrNull;
+        if (c == null) return const Scaffold(body: SizedBox.shrink());
+        return Scaffold(
+          appBar: AppBar(title: Text(c.name), backgroundColor: Theme.of(context).colorScheme.surface),
+          body: CustomerDetailView(state: state, customerId: customerId),
+        );
+      },
+    );
+  }
+}
+
+/// Body content for a customer — used both inside [CustomerDetailScreen] (phone)
+/// and embedded in the tablet master-detail pane. Preserves the balance header,
+/// collect-payment action and ledger list in both modes.
+class CustomerDetailView extends StatelessWidget {
+  final AppState state;
+  final String customerId;
+  final bool embedded;
+  const CustomerDetailView({required this.state, required this.customerId, this.embedded = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +243,8 @@ class CustomerDetailScreen extends StatelessWidget {
     return AnimatedBuilder(
       animation: state,
       builder: (context, _) {
-        final c = state.customers.firstWhere((x) => x.id == customerId);
+        final c = state.customers.where((x) => x.id == customerId).firstOrNull;
+        if (c == null) return const SizedBox.shrink();
         final entries = state.ledgerFor(c.id).reversed.toList();
         final bal = state.balanceOf(c.id);
         double running = 0;
@@ -184,110 +256,107 @@ class CustomerDetailScreen extends StatelessWidget {
           runningMap[e.epochMs] = running;
         }
 
-        return Scaffold(
-          appBar: AppBar(title: Text(c.name), backgroundColor: Theme.of(context).colorScheme.surface),
-          body: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-            children: [
-              // balance header
-              Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF0A2A51), Color(0xFF0B3B75)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: const Color(0xFF3988FF).withValues(alpha: 0.42)),
-                  boxShadow: bx.cardShadow,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(color: const Color(0xFF3988FF).withValues(alpha: 0.22), shape: BoxShape.circle),
-                            child: const Icon(Icons.storefront_rounded, color: Color(0xFF72AAFF), size: 25),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  c.name,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(c.mobile.isEmpty ? l.noMobile : c.mobile, style: const TextStyle(fontSize: 12.5, color: Color(0xFFB9CCE3))),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.chevron_right_rounded, color: Color(0xFFB9CCE3)),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        l.outstandingBalance,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFFB9CCE3)),
-                      ),
-                      const SizedBox(height: 4),
-                      Money(
-                        bal,
-                        style: BxText.valueHero.copyWith(fontSize: 32, color: Colors.white),
-                        color: bal > 0 ? const Color(0xFFFF746C) : const Color(0xFF45E195),
-                      ),
-                      if (c.creditLimit > 0) ...[const SizedBox(height: 4), Text(l.limitLabel(money(c.creditLimit)), style: const TextStyle(fontSize: 12.5, color: Color(0xFFB9CCE3)))],
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: FilledButton.icon(
-                              onPressed: bal <= 0 ? null : () => _collect(context, c, bal),
-                              icon: const Icon(Icons.payments_outlined, size: 18),
-                              label: Text(l.collectPayment),
-                              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF1677FF), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+          children: [
+            // balance header
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(colors: [Color(0xFF0A2A51), Color(0xFF0B3B75)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: const Color(0xFF3988FF).withValues(alpha: 0.42)),
+                boxShadow: bx.cardShadow,
               ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: bx.surface2,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: bx.border),
-                ),
-                child: Container(
-                  alignment: Alignment.center,
-                  constraints: const BoxConstraints(minHeight: 42),
-                  decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(11)),
-                  child: Text(
-                    l.ledgerLabel,
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: bx.accent),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (entries.isEmpty)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32),
-                    child: Center(
-                      child: Text(l.noLedgerEntries, style: TextStyle(color: bx.muted)),
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(color: const Color(0xFF3988FF).withValues(alpha: 0.22), shape: BoxShape.circle),
+                          child: const Icon(Icons.storefront_rounded, color: Color(0xFF72AAFF), size: 25),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                c.name,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(c.mobile.isEmpty ? l.noMobile : c.mobile, style: const TextStyle(fontSize: 12.5, color: Color(0xFFB9CCE3))),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right_rounded, color: Color(0xFFB9CCE3)),
+                      ],
                     ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l.outstandingBalance,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFFB9CCE3)),
+                    ),
+                    const SizedBox(height: 4),
+                    Money(
+                      bal,
+                      style: BxText.valueHero.copyWith(fontSize: 32, color: Colors.white),
+                      color: bal > 0 ? const Color(0xFFFF746C) : const Color(0xFF45E195),
+                    ),
+                    if (c.creditLimit > 0) ...[const SizedBox(height: 4), Text(l.limitLabel(money(c.creditLimit)), style: const TextStyle(fontSize: 12.5, color: Color(0xFFB9CCE3)))],
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: bal <= 0 ? null : () => _collect(context, c, bal),
+                            icon: const Icon(Icons.payments_outlined, size: 18),
+                            label: Text(l.collectPayment),
+                            style: FilledButton.styleFrom(backgroundColor: const Color(0xFF1677FF), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: bx.surface2,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: bx.border),
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                constraints: const BoxConstraints(minHeight: 42),
+                decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(11)),
+                child: Text(
+                  l.ledgerLabel,
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: bx.accent),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (entries.isEmpty)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: Center(
+                    child: Text(l.noLedgerEntries, style: TextStyle(color: bx.muted)),
                   ),
-                )
-              else
-                Card(child: Column(children: [for (int i = 0; i < entries.length; i++) _ledgerRow(context, entries[i], runningMap[entries[i].epochMs] ?? 0, i == 0)])),
-            ],
-          ),
+                ),
+              )
+            else
+              Card(child: Column(children: [for (int i = 0; i < entries.length; i++) _ledgerRow(context, entries[i], runningMap[entries[i].epochMs] ?? 0, i == 0)])),
+          ],
         );
       },
     );

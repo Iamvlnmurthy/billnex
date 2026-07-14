@@ -13,6 +13,7 @@ import 'package:billnex/screens/sales_screen.dart';
 import 'package:billnex/screens/inventory_screen.dart';
 import 'package:billnex/screens/purchasing_screen.dart';
 import 'package:billnex/screens/appointments_screen.dart';
+import 'package:billnex/screens/customers_screen.dart';
 
 /// Seeds a store the same way smoke_test.dart does.
 AppState _seeded() {
@@ -50,6 +51,7 @@ void main() {
     'Purchasing': (s) => PurchasingScreen(state: s),
     'Sales': (s) => SalesScreen(state: s),
     'Appointments': (s) => AppointmentsScreen(state: s),
+    'Customers': (s) => CustomersScreen(state: s),
   };
 
   for (final entry in screens.entries) {
