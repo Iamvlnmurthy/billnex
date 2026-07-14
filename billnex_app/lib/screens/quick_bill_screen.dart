@@ -432,7 +432,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
         // editor
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -545,7 +545,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                 const SizedBox(height: 10),
                 // quantity presets
                 _presetChips(bx),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Text(L.of(context).amount, style: TextStyle(fontSize: 13, color: bx.muted)),
@@ -600,58 +600,41 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       'L' => const [('100ml', 0.1), ('250ml', 0.25), ('500ml', 0.5), ('1L', 1.0)],
       _ => const [('1', 1.0), ('2', 2.0), ('5', 5.0), ('10', 10.0)],
     };
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        if (_unit == 'pc')
-          _stepBtn(bx, Icons.remove, () {
-            final q = (double.tryParse(_qtyC.text) ?? 0) - 1;
-            _qtyC.text = qtyLabel(q < 0 ? 0 : q);
-            setState(() {});
-          }),
-        for (final p in presets)
-          InkWell(
-            onTap: () {
-              _qtyC.text = qtyLabel(p.$2);
-              setState(() {});
-            },
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 40, minWidth: 52),
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: bx.surface2,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: bx.border),
-              ),
-              child: Text(p.$1, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-            ),
-          ),
-        if (_unit == 'pc')
-          _stepBtn(bx, Icons.add, () {
-            final q = (double.tryParse(_qtyC.text) ?? 0) + 1;
-            _qtyC.text = qtyLabel(q);
-            setState(() {});
-          }),
-      ],
-    );
+    // Compact keypad-style grid of quantity tiles (3 per row) — fits in view
+    // without scrolling. For pieces, − / + steppers bookend the number tiles.
+    final tiles = <Widget>[
+      if (_unit == 'pc')
+        _presetTile(bx, '−', () {
+          final q = (double.tryParse(_qtyC.text) ?? 0) - 1;
+          _qtyC.text = qtyLabel(q < 0 ? 0 : q);
+          setState(() {});
+        }),
+      for (final p in presets)
+        _presetTile(bx, p.$1, () {
+          _qtyC.text = qtyLabel(p.$2);
+          setState(() {});
+        }),
+      if (_unit == 'pc')
+        _presetTile(bx, '+', () {
+          final q = (double.tryParse(_qtyC.text) ?? 0) + 1;
+          _qtyC.text = qtyLabel(q);
+          setState(() {});
+        }),
+    ];
+    return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: 3, mainAxisSpacing: 8, crossAxisSpacing: 8, childAspectRatio: 2.7, children: tiles);
   }
 
-  Widget _stepBtn(BxColors bx, IconData ic, VoidCallback onTap) => InkWell(
+  Widget _presetTile(BxColors bx, String label, VoidCallback onTap) => InkWell(
     onTap: onTap,
-    borderRadius: BorderRadius.circular(8),
+    borderRadius: BorderRadius.circular(10),
     child: Container(
-      width: 44,
-      height: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: bx.surface2,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: bx.border),
       ),
-      child: Icon(ic, size: 18),
+      child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
     ),
   );
 
