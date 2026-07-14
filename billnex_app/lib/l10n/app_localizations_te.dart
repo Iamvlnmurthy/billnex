@@ -381,6 +381,30 @@ class LTe extends L {
   String get whatsappFail => 'WhatsApp తెరవలేకపోయింది';
 
   @override
+  String balanceDue(String amt) {
+    return 'బాకీ $amt';
+  }
+
+  @override
+  String get receivePayment => 'చెల్లింపు స్వీకరించండి';
+
+  @override
+  String receivePaymentFor(String invoice) {
+    return 'చెల్లింపు స్వీకరించండి · $invoice';
+  }
+
+  @override
+  String get receive => 'స్వీకరించండి';
+
+  @override
+  String paymentRecordedLeft(String amt) {
+    return 'చెల్లింపు నమోదు · $amt ఇంకా బాకీ';
+  }
+
+  @override
+  String get paymentRecordedPaid => 'చెల్లింపు నమోదు · పూర్తిగా చెల్లించారు ✓';
+
+  @override
   String get returnCreditNote => 'రిటర్న్ / క్రెడిట్ నోట్';
 
   @override

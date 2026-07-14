@@ -1047,17 +1047,49 @@ class AppState extends ChangeNotifier {
 
   /// Record a payment against a customer's outstanding (BNX-0129). The amount
   /// is capped at the current balance so a collection can't push it negative.
-  LedgerEntry collect({required Customer customer, required double amount, required String mode, int nowMs = 0}) {
+  /// [against] optionally ties the payment to a specific invoice so that bill's
+  /// balance-due goes down (invoice-level khata, Vyapar-style Payment-In).
+  LedgerEntry collect({required Customer customer, required double amount, required String mode, String? against, int nowMs = 0}) {
     _rcptSeq += 1;
     final capped = amount.clamp(0, balanceOf(customer.id)).toDouble();
-    final entry = LedgerEntry(customerId: customer.id, epochMs: nowMs, kind: LedgerKind.collection, ref: '#RCPT-$_rcptSeq', credit: capped, mode: mode);
+    final entry = LedgerEntry(customerId: customer.id, epochMs: nowMs, kind: LedgerKind.collection, ref: '#RCPT-$_rcptSeq', credit: capped, mode: mode, against: against);
     _ledger.add(entry);
     _store.saveLedger(_ledger);
     _store.saveRcptSeq(_rcptSeq);
     _enqueue('collection', entry.ref, nowMs);
-    _audit0('Collection · ${customer.name} ${amount.round()}', entry.ref, nowMs);
+    _audit0('Collection · ${customer.name} ${amount.round()}${against != null ? ' · $against' : ''}', entry.ref, nowMs);
     notifyListeners();
     return entry;
+  }
+
+  Customer? customerById(String id) {
+    for (final c in _customers) {
+      if (c.id == id) return c;
+    }
+    return null;
+  }
+
+  /// The credit-sale ledger entry for an invoice, if it was sold on credit.
+  LedgerEntry? _creditSaleFor(String invoiceNo) {
+    for (final e in _ledger) {
+      if (e.kind == LedgerKind.creditSale && e.ref == invoiceNo) return e;
+    }
+    return null;
+  }
+
+  /// Outstanding balance on a single invoice: the credit-sale amount minus any
+  /// payments recorded against it. Cash/UPI bills (no credit entry) return 0.
+  double invoiceBalance(String invoiceNo) {
+    final sale = _creditSaleFor(invoiceNo);
+    if (sale == null) return 0;
+    final paid = _ledger.where((e) => e.kind == LedgerKind.collection && e.against == invoiceNo).fold<double>(0, (a, e) => a + e.credit);
+    return (sale.debit - paid).clamp(0, double.infinity).toDouble();
+  }
+
+  /// The customer an invoice was billed to on credit (for Payment-In), if any.
+  Customer? customerForInvoice(String invoiceNo) {
+    final e = _creditSaleFor(invoiceNo);
+    return e == null ? null : customerById(e.customerId);
   }
 
   /// Seed a few posted bills + credit customers (previews/demos only).

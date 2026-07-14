@@ -381,6 +381,30 @@ class LHi extends L {
   String get whatsappFail => 'WhatsApp नहीं खुल सका';
 
   @override
+  String balanceDue(String amt) {
+    return 'बकाया $amt';
+  }
+
+  @override
+  String get receivePayment => 'भुगतान प्राप्त करें';
+
+  @override
+  String receivePaymentFor(String invoice) {
+    return 'भुगतान प्राप्त करें · $invoice';
+  }
+
+  @override
+  String get receive => 'प्राप्त करें';
+
+  @override
+  String paymentRecordedLeft(String amt) {
+    return 'भुगतान दर्ज · $amt अभी बाकी';
+  }
+
+  @override
+  String get paymentRecordedPaid => 'भुगतान दर्ज · पूरा भुगतान ✓';
+
+  @override
   String get returnCreditNote => 'वापसी / क्रेडिट नोट';
 
   @override

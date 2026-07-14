@@ -801,6 +801,42 @@ abstract class L {
   /// **'Couldn\'t open WhatsApp'**
   String get whatsappFail;
 
+  /// No description provided for @balanceDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance {amt}'**
+  String balanceDue(String amt);
+
+  /// No description provided for @receivePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive payment'**
+  String get receivePayment;
+
+  /// No description provided for @receivePaymentFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive payment · {invoice}'**
+  String receivePaymentFor(String invoice);
+
+  /// No description provided for @receive.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive'**
+  String get receive;
+
+  /// No description provided for @paymentRecordedLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment recorded · {amt} still due'**
+  String paymentRecordedLeft(String amt);
+
+  /// No description provided for @paymentRecordedPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment recorded · fully paid ✓'**
+  String get paymentRecordedPaid;
+
   /// No description provided for @returnCreditNote.
   ///
   /// In en, this message translates to:

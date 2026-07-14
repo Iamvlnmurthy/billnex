@@ -40,8 +40,9 @@ class LedgerEntry {
   final double debit;
   final double credit;
   final String? mode; // payment mode for collections
+  final String? against; // invoice this collection settles (invoice-level khata)
 
-  const LedgerEntry({required this.customerId, required this.epochMs, required this.kind, required this.ref, this.debit = 0, this.credit = 0, this.mode});
+  const LedgerEntry({required this.customerId, required this.epochMs, required this.kind, required this.ref, this.debit = 0, this.credit = 0, this.mode, this.against});
 
   double get delta => debit - credit;
 
@@ -51,7 +52,7 @@ class LedgerEntry {
     return '${d.day} ${months[d.month - 1]} ${d.year}';
   }
 
-  Map<String, dynamic> toJson() => {'c': customerId, 't': epochMs, 'k': kind.code, 'r': ref, 'd': debit, 'cr': credit, 'm': mode};
+  Map<String, dynamic> toJson() => {'c': customerId, 't': epochMs, 'k': kind.code, 'r': ref, 'd': debit, 'cr': credit, 'm': mode, 'ag': against};
 
   factory LedgerEntry.fromJson(Map<String, dynamic> j) => LedgerEntry(
     customerId: j['c'] as String,
@@ -61,5 +62,6 @@ class LedgerEntry {
     debit: (j['d'] as num?)?.toDouble() ?? 0,
     credit: (j['cr'] as num?)?.toDouble() ?? 0,
     mode: j['m'] as String?,
+    against: j['ag'] as String?,
   );
 }

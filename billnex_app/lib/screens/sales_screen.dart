@@ -101,10 +101,13 @@ class _SaleRow extends StatelessWidget {
 
   bool get _isReturn => sale.paymentMode == 'Return';
 
+  bool get _isCredit => sale.paymentMode == 'Credit';
+
   @override
   Widget build(BuildContext context) {
     final bx = context.bx;
     final l = L.of(context);
+    final balance = _isCredit ? state.invoiceBalance(sale.invoiceNo) : 0.0;
     final row = Container(
       decoration: BoxDecoration(
         color: selected ? bx.brand.withValues(alpha: 0.08) : null,
@@ -136,8 +139,10 @@ class _SaleRow extends StatelessWidget {
                     const SizedBox(width: 8),
                     if (_isReturn)
                       Flexible(child: StatusChip(l.chipReturn, bx.danger, bx.dangerBg))
-                    else if (sale.paymentMode == 'Credit')
-                      Flexible(child: StatusChip(l.pending, bx.warn, bx.warnBg))
+                    else if (_isCredit && balance > 0)
+                      Flexible(child: StatusChip(l.balanceDue(money(balance)), bx.warn, bx.warnBg))
+                    else if (_isCredit)
+                      Flexible(child: StatusChip(l.chipPaidMode(sale.paymentMode), bx.pos, bx.posBg))
                     else
                       Flexible(child: StatusChip(l.chipPaidMode(sale.paymentMode), bx.pos, bx.posBg)),
                   ],
@@ -163,11 +168,18 @@ class _SaleRow extends StatelessWidget {
                   PdfService.run(context, () => PdfService.shareSale(sale), failure: l.shareFail);
                 case 'whatsapp':
                   PdfService.run(context, () => PdfService.whatsAppSale(sale), failure: l.whatsappFail);
+                case 'receive':
+                  _receivePayment(context);
                 case 'return':
                   returnSale(context, state, sale);
               }
             },
             itemBuilder: (ctx) => [
+              if (_isCredit && balance > 0)
+                PopupMenuItem(
+                  value: 'receive',
+                  child: ListTile(dense: true, leading: const Icon(Icons.payments_outlined), title: Text(l.receivePayment)),
+                ),
               PopupMenuItem(
                 value: 'print',
                 child: ListTile(dense: true, leading: const Icon(Icons.print_outlined), title: Text(l.reprint)),
@@ -191,6 +203,61 @@ class _SaleRow extends StatelessWidget {
       ),
     );
     return onTap == null ? row : InkWell(onTap: onTap, child: row);
+  }
+
+  /// Record a (possibly partial) Payment-In against this credit invoice. The
+  /// amount defaults to the full balance; anything less leaves a running due.
+  Future<void> _receivePayment(BuildContext context) async {
+    final l = L.of(context);
+    final customer = state.customerForInvoice(sale.invoiceNo);
+    final balance = state.invoiceBalance(sale.invoiceNo);
+    if (customer == null || balance <= 0) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final c = TextEditingController(text: qtyLabel(balance));
+    var mode = 'Cash';
+    final amount = await showDialog<double>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSt) => AlertDialog(
+          title: Text(l.receivePaymentFor(sale.invoiceNo)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l.balanceDue(money(balance)), style: TextStyle(color: ctx.bx.muted)),
+              const SizedBox(height: 12),
+              TextField(
+                controller: c,
+                autofocus: true,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(prefixText: '₹ ', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              SegmentedButton<String>(
+                segments: [
+                  ButtonSegment(value: 'Cash', label: Text(l.cash)),
+                  ButtonSegment(value: 'UPI', label: Text(l.upi)),
+                ],
+                selected: {mode},
+                onSelectionChanged: (s) => setSt(() => mode = s.first),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, (double.tryParse(c.text.trim()) ?? 0).clamp(0, balance).toDouble()),
+              child: Text(l.receive),
+            ),
+          ],
+        ),
+      ),
+    );
+    c.dispose();
+    if (amount == null || amount <= 0) return;
+    state.collect(customer: customer, amount: amount, mode: mode, against: sale.invoiceNo, nowMs: DateTime.now().millisecondsSinceEpoch);
+    final left = state.invoiceBalance(sale.invoiceNo);
+    messenger.showSnackBar(SnackBar(content: Text(left > 0 ? l.paymentRecordedLeft(money(left)) : l.paymentRecordedPaid)));
   }
 }
 

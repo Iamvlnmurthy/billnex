@@ -381,6 +381,30 @@ class LEn extends L {
   String get whatsappFail => 'Couldn\'t open WhatsApp';
 
   @override
+  String balanceDue(String amt) {
+    return 'Balance $amt';
+  }
+
+  @override
+  String get receivePayment => 'Receive payment';
+
+  @override
+  String receivePaymentFor(String invoice) {
+    return 'Receive payment · $invoice';
+  }
+
+  @override
+  String get receive => 'Receive';
+
+  @override
+  String paymentRecordedLeft(String amt) {
+    return 'Payment recorded · $amt still due';
+  }
+
+  @override
+  String get paymentRecordedPaid => 'Payment recorded · fully paid ✓';
+
+  @override
   String get returnCreditNote => 'Return / credit note';
 
   @override
