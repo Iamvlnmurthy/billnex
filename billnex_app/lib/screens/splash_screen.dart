@@ -37,11 +37,11 @@ class SplashScreen extends StatelessWidget {
                   children: [
                     const TextSpan(
                       text: 'Bill',
-                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 34, letterSpacing: -1),
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 34, letterSpacing: -1),
                     ),
                     TextSpan(
                       text: 'Nex',
-                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 34, letterSpacing: -1, color: bx.accent),
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 34, letterSpacing: -1, color: bx.accent),
                     ),
                   ],
                 ),

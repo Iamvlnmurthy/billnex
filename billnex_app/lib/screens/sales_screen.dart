@@ -130,7 +130,7 @@ class _SaleRow extends StatelessWidget {
                       child: Text(
                         sale.invoiceNo,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -149,7 +149,7 @@ class _SaleRow extends StatelessWidget {
           ),
           Money(
             sale.total,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             color: _isReturn ? bx.danger : null,
           ),
           PopupMenuButton<String>(
@@ -207,7 +207,7 @@ class SaleDetailView extends StatelessWidget {
             Expanded(
               child: Text(
                 sale.invoiceNo,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
             ),

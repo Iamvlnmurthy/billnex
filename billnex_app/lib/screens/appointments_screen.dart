@@ -181,7 +181,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l.apptBookTitle, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  Text(l.apptBookTitle, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: customer,
@@ -277,7 +277,7 @@ class AppointmentDetailView extends StatelessWidget {
             Expanded(
               child: Text(
                 appt.customer,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
             ),

@@ -195,7 +195,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               children: [
                 Text(
                   it.stockTracked ? qtyLabel(it.qty) : '—',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: qtyColor),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: qtyColor),
                 ),
                 Text(it.stockTracked ? it.unit : l.service, style: TextStyle(fontSize: 11, color: bx.faint)),
               ],
@@ -238,7 +238,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(l.newProduct, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    Text(l.newProduct, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: name,
@@ -473,7 +473,7 @@ class StockDetailView extends StatelessWidget {
                   Expanded(
                     child: Text(
                       it.name,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -504,7 +504,7 @@ class StockDetailView extends StatelessWidget {
                       children: [
                         Text(
                           it.stockTracked ? qtyLabel(it.qty) : '—',
-                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: qtyColor),
+                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: qtyColor),
                         ),
                         const SizedBox(width: 6),
                         Text(it.unit, style: TextStyle(fontSize: 14, color: bx.muted)),
@@ -604,7 +604,7 @@ class StockDetailView extends StatelessWidget {
           ),
           Text(
             '${positive ? '+' : '−'}${qtyLabel(m.delta.abs())}',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: positive ? bx.pos : bx.danger),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: positive ? bx.pos : bx.danger),
           ),
         ],
       ),
@@ -640,7 +640,7 @@ Future<void> _editStock(BuildContext context, AppState state, StockItem it) asyn
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l.editProduct, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  Text(l.editProduct, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: name,
@@ -786,7 +786,7 @@ Future<void> _adjustStock(BuildContext context, AppState state, StockItem it, bo
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(add ? l.addStockTitle(it.name) : l.reduceStockTitle(it.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            Text(add ? l.addStockTitle(it.name) : l.reduceStockTitle(it.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
             if (!add)
               Padding(
                 padding: const EdgeInsets.only(top: 4),

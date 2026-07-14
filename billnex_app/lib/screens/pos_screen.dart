@@ -357,14 +357,14 @@ class _ProductTile extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 item.name,
-                style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const Spacer(),
               Row(
                 children: [
-                  Text(money(item.price), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  Text(money(item.price), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(
@@ -419,7 +419,7 @@ class _CartPanel extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(l.currentBill, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                      child: Text(l.currentBill, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                     ),
                     Badge2(l.qtyBadge(qtyLabel(state.cartQty))),
                   ],
@@ -465,7 +465,7 @@ class _CartPanel extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(l.total, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                      Text(l.total, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                       Money(state.total, style: BxText.value.copyWith(fontSize: 22), color: bx.accent),
                     ],
                   ),
@@ -513,7 +513,7 @@ class _CartPanel extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(l.liveReceipt, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+              child: Text(l.liveReceipt, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
             ),
           ],
         ),
@@ -660,7 +660,7 @@ class _CartRow extends StatelessWidget {
             child: Text(
               money(line.net),
               textAlign: TextAlign.right,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
         ],

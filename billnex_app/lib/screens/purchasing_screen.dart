@@ -131,7 +131,7 @@ class _PurchasingScreenState extends State<PurchasingScreen> {
               backgroundColor: bx.brand.withValues(alpha: 0.12),
               child: Text(
                 s.name.characters.first.toUpperCase(),
-                style: TextStyle(color: bx.brand, fontWeight: FontWeight.w800),
+                style: TextStyle(color: bx.brand, fontWeight: FontWeight.w700),
               ),
             ),
             const SizedBox(width: 12),
@@ -154,7 +154,7 @@ class _PurchasingScreenState extends State<PurchasingScreen> {
               children: [
                 Text(
                   pay > 0 ? money(pay) : l.settledLabel,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: pay > 0 ? bx.warn : bx.pos),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: pay > 0 ? bx.warn : bx.pos),
                 ),
                 Text(pay > 0 ? l.payableLower : l.noDues, style: TextStyle(fontSize: 11, color: bx.faint)),
               ],
@@ -186,7 +186,7 @@ class _PurchasingScreenState extends State<PurchasingScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l.newSupplier, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  Text(l.newSupplier, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: name,
@@ -277,7 +277,7 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l.recordPurchase, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            Text(l.recordPurchase, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
             const SizedBox(height: 12),
             // supplier
             InkWell(
@@ -338,7 +338,7 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
               children: [
                 Text(l.totalInclGst, style: const TextStyle(fontWeight: FontWeight.w700)),
                 const Spacer(),
-                Text(money(_total), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                Text(money(_total), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
               ],
             ),
             SwitchListTile(
@@ -422,7 +422,7 @@ class _PurchaseSheetState extends State<_PurchaseSheet> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(picked.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  Text(picked.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -526,7 +526,7 @@ class SupplierDetailView extends StatelessWidget {
             if (embedded) ...[
               Text(
                 s.name,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
@@ -544,7 +544,7 @@ class SupplierDetailView extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       money(pay),
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: pay > 0 ? bx.warn : bx.pos),
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: pay > 0 ? bx.warn : bx.pos),
                     ),
                     if (s.phone.isNotEmpty) ...[const SizedBox(height: 4), Text(s.phone, style: TextStyle(fontSize: 13, color: bx.muted))],
                     const SizedBox(height: 14),
@@ -588,7 +588,7 @@ class SupplierDetailView extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(purchases[i].purchaseNo, style: const TextStyle(fontWeight: FontWeight.w800)),
+                                      Text(purchases[i].purchaseNo, style: const TextStyle(fontWeight: FontWeight.w700)),
                                       const SizedBox(width: 8),
                                       purchases[i].paid ? StatusChip(l.paid, bx.pos, bx.posBg) : StatusChip(l.creditChip, bx.warn, bx.warnBg),
                                     ],
@@ -600,7 +600,7 @@ class SupplierDetailView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            Text(money(purchases[i].total), style: const TextStyle(fontWeight: FontWeight.w800)),
+                            Text(money(purchases[i].total), style: const TextStyle(fontWeight: FontWeight.w700)),
                           ],
                         ),
                       ),
@@ -630,7 +630,7 @@ class SupplierDetailView extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(l.paySupplierTitle(s.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                Text(l.paySupplierTitle(s.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
                 Text(l.payableColon(money(due)), style: TextStyle(fontSize: 12.5, color: context.bx.muted)),
                 const SizedBox(height: 12),

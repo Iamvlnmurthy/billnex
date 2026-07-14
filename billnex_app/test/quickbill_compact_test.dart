@@ -41,9 +41,10 @@ void main() {
     expect(tester.takeException(), isNull);
   }
 
-  // Realistic small/compact phones (narrow width stresses the header; a short
-  // height stresses the keypad/footer column) in EN, HI and TE.
-  for (final size in const [Size(360, 720), Size(384, 760), Size(412, 732)]) {
+  // Heights here mimic the space Quick Bill actually gets *inside* HomeShell
+  // (top bar + trust bar + bottom nav eat ~200dp), so the flexible keypad is
+  // stressed the way it is on a real phone. Narrow widths stress the header.
+  for (final size in const [Size(360, 600), Size(384, 640), Size(412, 700), Size(360, 560)]) {
     for (final loc in const [Locale('en'), Locale('hi'), Locale('te')]) {
       testWidgets('Quick Bill has no overflow at ${size.width.toInt()}x${size.height.toInt()} (${loc.languageCode})', (tester) async {
         await pumpAt(tester, size, locale: loc);

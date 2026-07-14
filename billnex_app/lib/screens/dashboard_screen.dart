@@ -59,7 +59,7 @@ class DashboardScreen extends StatelessWidget {
                           const SizedBox(width: 5),
                           Text(
                             state.online ? l.online : l.offline,
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: state.online ? bx.pos : bx.warn),
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: state.online ? bx.pos : bx.warn),
                           ),
                         ],
                       ),
@@ -144,7 +144,7 @@ class _SectionHead extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+          child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
         ),
         if (action != null)
           InkWell(
@@ -374,7 +374,7 @@ class _MiniStat extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 value,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: color == bx.danger ? bx.danger : null),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.5, color: color == bx.danger ? bx.danger : null),
               ),
             ],
           ),
@@ -532,7 +532,7 @@ class _StatusChip extends StatelessWidget {
       decoration: BoxDecoration(color: c.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(6)),
       child: Text(
         pending ? l.pending : l.paid,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.3, color: c),
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.3, color: c),
       ),
     );
   }

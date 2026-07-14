@@ -66,7 +66,7 @@ class _CategoryCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(categoryName(l, cat.key), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                      Text(categoryName(l, cat.key), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                       Text(l.featuresEnabledCount(on, caps.length), style: TextStyle(fontSize: 12, color: bx.muted)),
                     ],
                   ),

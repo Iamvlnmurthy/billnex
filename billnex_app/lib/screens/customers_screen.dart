@@ -90,7 +90,7 @@ class CustomersScreen extends StatelessWidget {
               backgroundColor: bx.accent.withValues(alpha: 0.14),
               child: Text(
                 c.name.characters.first.toUpperCase(),
-                style: TextStyle(color: bx.accent, fontWeight: FontWeight.w800),
+                style: TextStyle(color: bx.accent, fontWeight: FontWeight.w700),
               ),
             ),
             const SizedBox(width: 12),
@@ -120,7 +120,7 @@ class CustomersScreen extends StatelessWidget {
               children: [
                 Text(
                   bal > 0 ? money(bal) : l.settledLabel,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: bal > 0 ? bx.danger : bx.pos),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: bal > 0 ? bx.danger : bx.pos),
                 ),
                 Text(bal > 0 ? l.outstandingLabel : l.noDues, style: TextStyle(fontSize: 11, color: bx.faint)),
               ],
@@ -155,7 +155,7 @@ class StatusChip extends StatelessWidget {
       label,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: fg),
+      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: fg),
     ),
   );
 }
@@ -217,7 +217,7 @@ class CustomerDetailScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   c.name,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white),
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(c.mobile.isEmpty ? l.noMobile : c.mobile, style: const TextStyle(fontSize: 12.5, color: Color(0xFFB9CCE3))),
@@ -270,7 +270,7 @@ class CustomerDetailScreen extends StatelessWidget {
                   decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(11)),
                   child: Text(
                     l.ledgerLabel,
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: bx.accent),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: bx.accent),
                   ),
                 ),
               ),
@@ -325,7 +325,7 @@ class CustomerDetailScreen extends StatelessWidget {
             children: [
               Text(
                 '${isCredit ? '−' : '+'}${money(isCredit ? e.credit : e.debit)}',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: isCredit ? bx.pos : Theme.of(context).colorScheme.onSurface),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: isCredit ? bx.pos : Theme.of(context).colorScheme.onSurface),
               ),
               Text(l.balLabel(money(running)), style: TextStyle(fontSize: 11, color: bx.faint)),
             ],
@@ -355,7 +355,7 @@ class CustomerDetailScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(l.collectFrom(c.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    Text(l.collectFrom(c.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 4),
                     Text(l.outstandingSuffix(money(due)), style: TextStyle(fontSize: 13, color: bx.muted)),
                     const SizedBox(height: 14),

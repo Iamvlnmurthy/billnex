@@ -186,7 +186,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: on ? const Color(0xFF0969DC) : Colors.white70),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: on ? const Color(0xFF0969DC) : Colors.white70),
         ),
       ),
     );
@@ -196,8 +196,8 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
   Widget _tallyBody(BxColors bx) {
     return Column(
       children: [
-        // Empty: a natural-height hint + flexible space (never squeezed/clipped).
-        if (_tally.isEmpty) ...[
+        // Empty: a natural-height hint (the keypad below fills the rest).
+        if (_tally.isEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 2, 12, 4),
             child: Container(
@@ -244,10 +244,10 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                 ],
               ),
             ),
-          ),
-          const Spacer(),
-        ] else
+          )
+        else
           Expanded(
+            flex: 2,
             child: ListView.builder(
               reverse: true,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -305,12 +305,12 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               const Spacer(),
               Text(
                 '₹${_entry.isEmpty ? '0' : _entry}',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1, color: _entry.isEmpty ? bx.faint : bx.accent),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, letterSpacing: -1, color: _entry.isEmpty ? bx.faint : bx.accent),
               ),
             ],
           ),
         ),
-        _keypad(bx),
+        Expanded(flex: 5, child: _keypad(bx)),
       ],
     );
   }
@@ -328,7 +328,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               onTap: onTap,
               borderRadius: BorderRadius.circular(13),
               child: Container(
-                height: 44,
+                constraints: const BoxConstraints(minHeight: 36),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(13),
@@ -377,40 +377,55 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       ),
       child: Column(
         children: [
-          Row(
-            children: [
-              key('7', onTap: () => press('7')),
-              key('8', onTap: () => press('8')),
-              key('9', onTap: () => press('9')),
-            ],
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                key('7', onTap: () => press('7')),
+                key('8', onTap: () => press('8')),
+                key('9', onTap: () => press('9')),
+              ],
+            ),
           ),
-          Row(
-            children: [
-              key('4', onTap: () => press('4')),
-              key('5', onTap: () => press('5')),
-              key('6', onTap: () => press('6')),
-            ],
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                key('4', onTap: () => press('4')),
+                key('5', onTap: () => press('5')),
+                key('6', onTap: () => press('6')),
+              ],
+            ),
           ),
-          Row(
-            children: [
-              key('1', onTap: () => press('1')),
-              key('2', onTap: () => press('2')),
-              key('3', onTap: () => press('3')),
-            ],
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                key('1', onTap: () => press('1')),
+                key('2', onTap: () => press('2')),
+                key('3', onTap: () => press('3')),
+              ],
+            ),
           ),
-          Row(
-            children: [
-              key('.', onTap: () => press('.')),
-              key('0', onTap: () => press('0')),
-              key(
-                '',
-                onTap: () => setState(() => _entry = _entry.isEmpty ? '' : _entry.substring(0, _entry.length - 1)),
-                child: Icon(Icons.backspace_outlined, color: bx.muted),
-              ),
-            ],
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                key('.', onTap: () => press('.')),
+                key('0', onTap: () => press('0')),
+                key(
+                  '',
+                  onTap: () => setState(() => _entry = _entry.isEmpty ? '' : _entry.substring(0, _entry.length - 1)),
+                  child: Icon(Icons.backspace_outlined, color: bx.muted),
+                ),
+              ],
+            ),
           ),
-          Row(
-            children: [key('${L.of(context).add} +', onTap: addLine, color: bx.accent, fg: bx.onAccent, flex: 3)],
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [key('${L.of(context).add} +', onTap: addLine, color: bx.accent, fg: bx.onAccent, flex: 3)],
+            ),
           ),
         ],
       ),
@@ -565,7 +580,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                   children: [
                     Text(L.of(context).amount, style: TextStyle(fontSize: 13, color: bx.muted)),
                     const Spacer(),
-                    Text(money(_editorAmount), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    Text(money(_editorAmount), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -691,7 +706,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               ],
             ),
           ),
-          Text(money(l.amount), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+          Text(money(l.amount), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
           InkWell(
             onTap: () => setState(() => _items.removeAt(i)),
             borderRadius: BorderRadius.circular(22),
@@ -798,7 +813,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                   onPressed: _hasLines ? _collect : null,
                   style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                   icon: const Icon(Icons.check_circle_outline, size: 21),
-                  label: Text(_hasLines ? '${L.of(context).collect}  ${money(_grand)}' : L.of(context).collect, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  label: Text(_hasLines ? '${L.of(context).collect}  ${money(_grand)}' : L.of(context).collect, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                 ),
               ),
             ],
@@ -1004,7 +1019,7 @@ class _CollectSheetState extends State<_CollectSheet> {
                 const Spacer(),
                 Text(
                   money(_change),
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: bx.pos),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: bx.pos),
                 ),
               ],
             ),

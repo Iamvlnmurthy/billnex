@@ -79,7 +79,7 @@ class ReceiptView extends StatelessWidget {
         children: [
           Text(
             businessName,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
             textAlign: TextAlign.center,
           ),
           if (_subline.isNotEmpty) Text(_subline, style: const TextStyle(fontSize: 9.5), textAlign: TextAlign.center),
@@ -128,7 +128,7 @@ class ReceiptView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
-          const Text('KITCHEN — KOT #204', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+          const Text('KITCHEN — KOT #204', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
           const Text('Table 6 · Steward: Ravi · 7:42 PM', style: TextStyle(fontSize: 9.5)),
           Container(height: 2, color: Colors.black, margin: const EdgeInsets.symmetric(vertical: 8)),
           ...lines.map(
@@ -136,7 +136,7 @@ class ReceiptView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 3),
               child: Row(
                 children: [
-                  Text('${qtyLabel(l.qty)} ×  ', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+                  Text('${qtyLabel(l.qty)} ×  ', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
                   Expanded(child: Text(l.name, style: const TextStyle(fontSize: 13))),
                 ],
               ),
@@ -225,11 +225,11 @@ class ReceiptView extends StatelessWidget {
                             children: [
                               Text(
                                 t.id == 'quotation' ? 'Est.' : 'Total',
-                                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: accent),
+                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: accent),
                               ),
                               Text(
                                 money(total),
-                                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: accent),
+                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: accent),
                               ),
                             ],
                           ),
@@ -263,7 +263,7 @@ class ReceiptView extends StatelessWidget {
             children: [
               Text(
                 businessName,
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: nameColor),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: nameColor),
               ),
               if (_subline.isNotEmpty) Text(_subline, style: TextStyle(fontSize: 9.5, color: subColor)),
             ],
@@ -274,7 +274,7 @@ class ReceiptView extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: 1, color: onColor ?? const Color(0xFF111111)),
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, letterSpacing: 1, color: onColor ?? const Color(0xFF111111)),
             ),
             Text('#INV-2048 · 11 Jul 2026', style: TextStyle(fontSize: 9.5, color: subColor)),
           ],
@@ -332,11 +332,11 @@ class ReceiptView extends StatelessWidget {
     children: [
       Text(
         k,
-        style: TextStyle(fontSize: bold ? 13 : 11, fontWeight: bold ? FontWeight.w800 : FontWeight.w400, fontFamily: 'monospace'),
+        style: TextStyle(fontSize: bold ? 13 : 11, fontWeight: bold ? FontWeight.w700 : FontWeight.w400, fontFamily: 'monospace'),
       ),
       Text(
         v,
-        style: TextStyle(fontSize: bold ? 13 : 11, fontWeight: bold ? FontWeight.w800 : FontWeight.w400, fontFamily: 'monospace'),
+        style: TextStyle(fontSize: bold ? 13 : 11, fontWeight: bold ? FontWeight.w700 : FontWeight.w400, fontFamily: 'monospace'),
       ),
     ],
   );

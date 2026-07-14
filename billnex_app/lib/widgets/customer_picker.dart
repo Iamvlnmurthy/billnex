@@ -49,7 +49,7 @@ class _CustomerPickerSheetState extends State<_CustomerPickerSheet> {
                         Row(
                           children: [
                             const Expanded(
-                              child: Text('Select customer', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                              child: Text('Select customer', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                             ),
                             TextButton.icon(onPressed: () => setState(() => _adding = true), icon: const Icon(Icons.person_add_alt, size: 18), label: const Text('New')),
                           ],
@@ -99,7 +99,7 @@ class _CustomerPickerSheetState extends State<_CustomerPickerSheet> {
                                   backgroundColor: bx.brand.withValues(alpha: 0.12),
                                   child: Text(
                                     c.name.characters.first.toUpperCase(),
-                                    style: TextStyle(color: bx.brand, fontWeight: FontWeight.w800),
+                                    style: TextStyle(color: bx.brand, fontWeight: FontWeight.w700),
                                   ),
                                 ),
                                 title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -163,7 +163,7 @@ class _AddFormState extends State<_AddForm> {
           Row(
             children: [
               IconButton(tooltip: L.of(context).backLabel, onPressed: widget.onCancel, icon: const Icon(Icons.arrow_back)),
-              const Text('New customer', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              const Text('New customer', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
             ],
           ),
           const SizedBox(height: 8),

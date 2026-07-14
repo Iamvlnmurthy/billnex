@@ -68,7 +68,7 @@ class _BackupScreenState extends State<BackupScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(_ago(l, state.lastBackupMs), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                                Text(_ago(l, state.lastBackupMs), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                                 Text(l.backupDataSummary('${state.billCount}', '${state.customers.length}', '${state.stockItems.length}'), style: TextStyle(fontSize: 12.5, color: bx.muted)),
                               ],
                             ),
@@ -107,7 +107,7 @@ class _BackupScreenState extends State<BackupScreen> {
                       padding: const EdgeInsets.all(16),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(l.inThisBackup, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                        child: Text(l.inThisBackup, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                       ),
                     ),
                     for (final (label, n) in counts)
@@ -121,7 +121,7 @@ class _BackupScreenState extends State<BackupScreen> {
                             Expanded(
                               child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
                             ),
-                            Text('$n', style: const TextStyle(fontWeight: FontWeight.w800)),
+                            Text('$n', style: const TextStyle(fontWeight: FontWeight.w700)),
                           ],
                         ),
                       ),
@@ -159,7 +159,7 @@ class _BackupScreenState extends State<BackupScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l.googleDrive, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                      Text(l.googleDrive, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                       Text(_drive.isSignedIn ? (_drive.email ?? l.driveConnected) : l.driveConnectPrompt, style: TextStyle(fontSize: 12.5, color: bx.muted)),
                     ],
                   ),

@@ -199,7 +199,7 @@ class _DataIoScreenState extends State<DataIoScreen> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  child: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                 ),
               ],
             ),

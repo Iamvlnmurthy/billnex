@@ -119,7 +119,7 @@ Future<bool> confirmDialog(BuildContext context, {required String title, require
   final ok = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
       content: Text(message, style: const TextStyle(height: 1.4)),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(cancelLabel)),

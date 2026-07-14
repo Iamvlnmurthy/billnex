@@ -82,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ],
                         ),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 26, height: 1.15, fontWeight: FontWeight.w800, letterSpacing: -0.6),
+                        style: const TextStyle(fontSize: 26, height: 1.15, fontWeight: FontWeight.w700, letterSpacing: -0.6),
                       ),
                       const SizedBox(height: 8),
                       Text(

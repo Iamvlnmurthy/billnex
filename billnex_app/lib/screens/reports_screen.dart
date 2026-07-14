@@ -126,13 +126,13 @@ class ReportsScreen extends StatelessWidget {
           Expanded(
             child: Text(
               k,
-              style: TextStyle(fontSize: 13.5, fontWeight: bold ? FontWeight.w800 : FontWeight.w500, color: bold ? null : bx.muted),
+              style: TextStyle(fontSize: 13.5, fontWeight: bold ? FontWeight.w700 : FontWeight.w500, color: bold ? null : bx.muted),
             ),
           ),
           const SizedBox(width: 8),
           Money(
             v,
-            style: TextStyle(fontSize: bold ? 16 : 14, fontWeight: bold ? FontWeight.w800 : FontWeight.w700),
+            style: TextStyle(fontSize: bold ? 16 : 14, fontWeight: bold ? FontWeight.w700 : FontWeight.w700),
             color: color,
           ),
         ],
@@ -144,7 +144,7 @@ class ReportsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l.profitLoss, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+            Text(l.profitLoss, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
             const SizedBox(height: 10),
             row(l.plSalesTaxable, pl.sales),
             row(l.plCogs, -pl.cogs, color: bx.danger),
@@ -172,7 +172,7 @@ class ReportsScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(l.hsnSummaryTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  child: Text(l.hsnSummaryTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                 ),
                 if (rows.isNotEmpty) TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-HSN-summary.csv', state.hsnCsv()), icon: const Icon(Icons.download, size: 16), label: Text(l.csv)),
               ],
@@ -274,7 +274,7 @@ class ReportsScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(l.dayBookTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  child: Text(l.dayBookTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                 ),
                 if (rows.isNotEmpty) TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-daybook.csv', state.dayBookCsv()), icon: const Icon(Icons.download, size: 16), label: Text(l.csv)),
               ],
@@ -303,13 +303,13 @@ class ReportsScreen extends StatelessWidget {
                       if (r.inAmt > 0)
                         Money(
                           r.inAmt,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                           color: bx.pos,
                         ),
                       if (r.outAmt > 0)
                         Money(
                           r.outAmt,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                           color: bx.danger,
                         ),
                     ],
@@ -349,7 +349,7 @@ class ReportsScreen extends StatelessWidget {
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
-            child: Text(v, style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+            child: Text(v, style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w700, letterSpacing: -0.5)),
           ),
         ],
       ),
@@ -366,7 +366,7 @@ class ReportsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l.paymentMixTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+            Text(l.paymentMixTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
             const SizedBox(height: 14),
             if (mix.isEmpty)
               Text(l.noSalesYet, style: TextStyle(color: bx.muted))
@@ -384,7 +384,7 @@ class ReportsScreen extends StatelessWidget {
                           Expanded(
                             child: Text(e.key, style: const TextStyle(fontWeight: FontWeight.w600)),
                           ),
-                          Text(money(e.value), style: const TextStyle(fontWeight: FontWeight.w800)),
+                          Text(money(e.value), style: const TextStyle(fontWeight: FontWeight.w700)),
                           const SizedBox(width: 6),
                           Text('${(frac * 100).toStringAsFixed(0)}%', style: TextStyle(fontSize: 12, color: bx.muted)),
                         ],
@@ -415,7 +415,7 @@ class ReportsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(l.topItems, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+              child: Text(l.topItems, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
             ),
           ),
           if (top.isEmpty)
@@ -436,7 +436,7 @@ class ReportsScreen extends StatelessWidget {
                       width: 22,
                       child: Text(
                         '${i + 1}',
-                        style: TextStyle(fontWeight: FontWeight.w800, color: bx.faint),
+                        style: TextStyle(fontWeight: FontWeight.w700, color: bx.faint),
                       ),
                     ),
                     Expanded(
@@ -448,7 +448,7 @@ class ReportsScreen extends StatelessWidget {
                     ),
                     Text(l.qtySold(qtyLabel(top[i].qty)), style: TextStyle(fontSize: 12, color: bx.muted)),
                     const SizedBox(width: 12),
-                    Text(money(top[i].value), style: const TextStyle(fontWeight: FontWeight.w800)),
+                    Text(money(top[i].value), style: const TextStyle(fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),

@@ -202,7 +202,7 @@ Future<void> showLanguagePicker(BuildContext context, ValueNotifier<Locale?> loc
             padding: const EdgeInsets.all(16),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(L.of(ctx).language, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              child: Text(L.of(ctx).language, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
             ),
           ),
           for (final (name, code) in langs)
@@ -441,7 +441,7 @@ class _TopBar extends StatelessWidget {
                   const SizedBox(width: 5),
                   Text(
                     state.online ? L.of(context).online : L.of(context).offline,
-                    style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: state.online ? bx.trustOnline : bx.warn),
+                    style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: state.online ? bx.trustOnline : bx.warn),
                   ),
                 ],
               ),
@@ -534,7 +534,7 @@ class _TopBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(hasPin ? 'Change app-lock PIN' : 'Set app-lock PIN', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              Text(hasPin ? 'Change app-lock PIN' : 'Set app-lock PIN', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
               const Text('A 4-digit PIN locks BillNex on launch. Stored hashed in the device keystore.', style: TextStyle(fontSize: 12.5)),
               const SizedBox(height: 14),
@@ -590,7 +590,7 @@ class _TopBar extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Text('Audit log', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  child: Text('Audit log', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                 ),
                 if (log.isEmpty)
                   Padding(
@@ -641,11 +641,11 @@ class _TopBar extends StatelessWidget {
             children: [
               const TextSpan(
                 text: 'Bill',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, letterSpacing: -0.5),
               ),
               TextSpan(
                 text: 'Nex',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: bx.accent, letterSpacing: -0.5),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: bx.accent, letterSpacing: -0.5),
               ),
             ],
           ),
@@ -698,7 +698,7 @@ class _TrustBar extends StatelessWidget {
                     const SizedBox(width: 7),
                     Text(
                       state.online ? L.of(context).online : L.of(context).offline,
-                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: state.online ? bx.trustOnline : bx.warn),
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: state.online ? bx.trustOnline : bx.warn),
                     ),
                   ],
                 ),

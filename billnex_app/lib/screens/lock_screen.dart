@@ -83,7 +83,7 @@ class _LockScreenState extends State<LockScreen> {
                   child: const Icon(Icons.lock_outline, color: Colors.white, size: 26),
                 ),
                 const SizedBox(height: 18),
-                Text(l.enterPin, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                Text(l.enterPin, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
                 Text(_lockout > 0 ? l.lockedTryIn('$_lockout') : (_error ?? l.appLocked), style: TextStyle(fontSize: 13, color: _error != null ? bx.danger : bx.muted)),
                 const SizedBox(height: 22),
