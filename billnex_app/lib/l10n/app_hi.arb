@@ -296,6 +296,7 @@
   "removeLine": "पंक्ति हटाएं",
   "scanBarcode": "बारकोड स्कैन करें",
   "notSupportedDevice": "इस डिवाइस पर समर्थित नहीं",
+  "pressBackToExit": "बाहर निकलने के लिए फिर से बैक दबाएं",
   "qbSalePosted": "{inv} · {mode} {amt}",
   "qbReturnSuffix": " · वापसी {amt}",
   "printFail": "प्रिंट नहीं हो सका",

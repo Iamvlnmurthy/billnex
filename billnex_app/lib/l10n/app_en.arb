@@ -336,6 +336,7 @@
   "removeLine": "Remove line",
   "scanBarcode": "Scan barcode",
   "notSupportedDevice": "Not supported on this device",
+  "pressBackToExit": "Press back again to exit",
   "qbSalePosted": "{inv} · {mode} {amt}",
   "@qbSalePosted": { "placeholders": { "inv": { "type": "String" }, "mode": { "type": "String" }, "amt": { "type": "String" } } },
   "qbReturnSuffix": " · return {amt}",

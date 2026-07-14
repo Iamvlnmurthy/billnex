@@ -979,6 +979,9 @@ class LTe extends L {
   String get notSupportedDevice => 'ఈ పరికరంలో మద్దతు లేదు';
 
   @override
+  String get pressBackToExit => 'నిష్క్రమించడానికి మళ్లీ బ్యాక్ నొక్కండి';
+
+  @override
   String qbSalePosted(String inv, String mode, String amt) {
     return '$inv · $mode $amt';
   }

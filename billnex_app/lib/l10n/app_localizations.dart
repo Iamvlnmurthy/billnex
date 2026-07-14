@@ -1869,6 +1869,12 @@ abstract class L {
   /// **'Not supported on this device'**
   String get notSupportedDevice;
 
+  /// No description provided for @pressBackToExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Press back again to exit'**
+  String get pressBackToExit;
+
   /// No description provided for @qbSalePosted.
   ///
   /// In en, this message translates to:

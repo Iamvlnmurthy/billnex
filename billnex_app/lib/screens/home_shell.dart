@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../state/app_state.dart';
 import '../models/system.dart';
 import '../services/auth_service.dart';
@@ -35,6 +36,7 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> {
   NavId _current = NavId.dash;
+  DateTime? _lastBackPress;
 
   @override
   void initState() {
@@ -109,47 +111,70 @@ class _HomeShellState extends State<HomeShell> {
 
         final dark = Theme.of(context).brightness == Brightness.dark;
         final bx = context.bx;
-        return Scaffold(
-          body: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerLowest,
-              gradient: dark
-                  ? const LinearGradient(colors: [Color(0xFF071426), Color(0xFF0B1D32)], begin: Alignment.topCenter, end: Alignment.bottomCenter)
-                  : const LinearGradient(colors: [Color(0xFFF8FBFF), Color(0xFFF1F6FD)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-            ),
-            child: Column(
-              children: [
-                _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
-                _TrustBar(state: widget.state),
-                Expanded(
-                  child: Row(
-                    children: [
-                      if (wide) _Rail(order: order, current: _current, onTap: _go),
-                      Expanded(child: _bodyFor(_current)),
-                    ],
+        // The bottom tabs are switched via in-widget state (not Navigator routes),
+        // so the Android back button would otherwise close the app from any tab.
+        // Back returns to the home tab; on the home tab, press-back-again to exit.
+        final homeTab = tabs.first;
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, _) {
+            if (didPop) return;
+            if (_current != homeTab) {
+              _go(homeTab);
+              return;
+            }
+            final now = DateTime.now();
+            if (_lastBackPress != null && now.difference(_lastBackPress!) < const Duration(seconds: 2)) {
+              SystemNavigator.pop(); // exit the app
+              return;
+            }
+            _lastBackPress = now;
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(SnackBar(content: Text(L.of(context).pressBackToExit), duration: const Duration(seconds: 2)));
+          },
+          child: Scaffold(
+            body: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                gradient: dark
+                    ? const LinearGradient(colors: [Color(0xFF071426), Color(0xFF0B1D32)], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+                    : const LinearGradient(colors: [Color(0xFFF8FBFF), Color(0xFFF1F6FD)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+              ),
+              child: Column(
+                children: [
+                  _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
+                  _TrustBar(state: widget.state),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        if (wide) _Rail(order: order, current: _current, onTap: _go),
+                        Expanded(child: _bodyFor(_current)),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            bottomNavigationBar: wide
+                ? null
+                : DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      border: Border(top: BorderSide(color: bx.border)),
+                      boxShadow: const [BoxShadow(color: Color(0x26020A14), blurRadius: 20, offset: Offset(0, -6))],
+                    ),
+                    child: NavigationBar(
+                      selectedIndex: _mobileSelectedIndex(tabs),
+                      onDestinationSelected: (i) => _go(tabs[i]),
+                      height: 72,
+                      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                      destinations: [
+                        for (final id in tabs) NavigationDestination(icon: Icon(kNavSpecs[id]!.icon, size: 22), selectedIcon: Icon(kNavSpecs[id]!.activeIcon, size: 23), label: navLabel(context, id)),
+                      ],
+                    ),
+                  ),
           ),
-          bottomNavigationBar: wide
-              ? null
-              : DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    border: Border(top: BorderSide(color: bx.border)),
-                    boxShadow: const [BoxShadow(color: Color(0x26020A14), blurRadius: 20, offset: Offset(0, -6))],
-                  ),
-                  child: NavigationBar(
-                    selectedIndex: _mobileSelectedIndex(tabs),
-                    onDestinationSelected: (i) => _go(tabs[i]),
-                    height: 72,
-                    labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                    destinations: [
-                      for (final id in tabs) NavigationDestination(icon: Icon(kNavSpecs[id]!.icon, size: 22), selectedIcon: Icon(kNavSpecs[id]!.activeIcon, size: 23), label: navLabel(context, id)),
-                    ],
-                  ),
-                ),
         );
       },
     );

@@ -979,6 +979,9 @@ class LHi extends L {
   String get notSupportedDevice => 'इस डिवाइस पर समर्थित नहीं';
 
   @override
+  String get pressBackToExit => 'बाहर निकलने के लिए फिर से बैक दबाएं';
+
+  @override
   String qbSalePosted(String inv, String mode, String amt) {
     return '$inv · $mode $amt';
   }

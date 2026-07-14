@@ -979,6 +979,9 @@ class LEn extends L {
   String get notSupportedDevice => 'Not supported on this device';
 
   @override
+  String get pressBackToExit => 'Press back again to exit';
+
+  @override
   String qbSalePosted(String inv, String mode, String amt) {
     return '$inv · $mode $amt';
   }
