@@ -144,7 +144,9 @@ class _HomeShellState extends State<HomeShell> {
               child: Column(
                 children: [
                   _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
-                  _TrustBar(state: widget.state),
+                  // The counter (Quick Bill) needs max height for the keypad, so the
+                  // status strip is hidden there; it shows on every other tab.
+                  if (_current != NavId.quickbill) _TrustBar(state: widget.state),
                   Expanded(
                     child: Row(
                       children: [

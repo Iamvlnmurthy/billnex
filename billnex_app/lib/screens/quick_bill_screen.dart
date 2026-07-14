@@ -194,63 +194,26 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
 
   // ── TALLY ─────────────────────────────────────────────────────────────
   Widget _tallyBody(BxColors bx) {
+    final committed = _tally.fold<double>(0, (a, v) => a + v);
     return Column(
       children: [
-        // Empty: a natural-height hint (the keypad below fills the rest).
-        if (_tally.isEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: bx.border),
-                boxShadow: bx.cardShadow,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(color: bx.accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
-                    child: Icon(Icons.receipt_long_outlined, color: bx.accent, size: 18),
-                  ),
-                  const SizedBox(width: 11),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          L.of(context).currentBill,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          L.of(context).punchAmounts,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 12, color: bx.muted),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text('₹0', style: BxText.value.copyWith(color: bx.faint)),
-                ],
-              ),
-            ),
-          )
-        else
+        // Compact side-by-side summary: committed running total + current entry.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+          child: Row(
+            children: [
+              Expanded(child: _summaryCard(bx, L.of(context).currentBill, money(committed))),
+              const SizedBox(width: 8),
+              Expanded(child: _summaryCard(bx, L.of(context).amount, '₹${_entry.isEmpty ? '0' : _entry}', highlight: _entry.isNotEmpty)),
+            ],
+          ),
+        ),
+        if (_tally.isNotEmpty)
           Expanded(
             flex: 2,
             child: ListView.builder(
               reverse: true,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
               itemCount: _tally.length,
               itemBuilder: (context, i) {
                 final idx = _tally.length - 1 - i; // reversed
@@ -287,31 +250,38 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
               },
             ),
           ),
-        // current entry
-        Container(
-          margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: bx.border),
-          ),
-          child: Row(
-            children: [
-              Text(
-                L.of(context).amount,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: bx.muted),
-              ),
-              const Spacer(),
-              Text(
-                '₹${_entry.isEmpty ? '0' : _entry}',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, letterSpacing: -0.8, color: _entry.isEmpty ? bx.faint : bx.accent),
-              ),
-            ],
-          ),
-        ),
         Expanded(flex: 5, child: _keypad(bx)),
       ],
+    );
+  }
+
+  /// Compact labelled value card used side-by-side for the tally summary.
+  Widget _summaryCard(BxColors bx, String label, String value, {bool highlight = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: highlight ? bx.accent.withValues(alpha: 0.55) : bx.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: bx.muted),
+          ),
+          const SizedBox(height: 3),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(value, style: BxText.value.copyWith(color: highlight ? bx.accent : null)),
+          ),
+        ],
+      ),
     );
   }
 
