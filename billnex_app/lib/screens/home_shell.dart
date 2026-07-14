@@ -713,7 +713,7 @@ class _RailBtn extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: on ? bx.accent : bx.muted),
+              style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: on ? bx.accent : bx.muted),
             ),
           ],
         ),

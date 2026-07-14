@@ -345,7 +345,7 @@ class _ProductTile extends StatelessWidget {
                             decoration: BoxDecoration(color: qtyColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
                             child: Text(
                               item.stockTracked ? '${qtyLabel(item.qty)} ${item.unit}' : L.of(context).serviceLabel,
-                              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: qtyColor),
+                              style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: qtyColor),
                             ),
                           ),
                         ),

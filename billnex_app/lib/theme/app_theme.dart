@@ -72,7 +72,7 @@ class BxColors extends ThemeExtension<BxColors> {
     dangerBg: Color(0xFFFDECEC),
     surface2: Color(0xFFF1F6FD),
     muted: Color(0xFF42526A),
-    faint: Color(0xFF718096),
+    faint: Color(0xFF5C6B82), // WCAG AA: >=4.9:1 on all light surfaces (was 0xFF718096 → 3.7 on surface2)
     border: Color(0xFFD7E2F0),
     trustOnline: Color(0xFF12B76A),
     cardShadow: Bx.cardShadow,
@@ -91,7 +91,7 @@ class BxColors extends ThemeExtension<BxColors> {
     dangerBg: Color(0xFF351C22),
     surface2: Color(0xFF10243D),
     muted: Color(0xFFA9B8CC),
-    faint: Color(0xFF74869E),
+    faint: Color(0xFF8496AD), // WCAG AA: >=5.1:1 on all dark surfaces (was 0xFF74869E → 4.2 on surface2)
     border: Color(0xFF27415F),
     trustOnline: Color(0xFF35D07F),
     cardShadow: [BoxShadow(color: Color(0x66030B16), blurRadius: 28, spreadRadius: -10, offset: Offset(0, 18))],

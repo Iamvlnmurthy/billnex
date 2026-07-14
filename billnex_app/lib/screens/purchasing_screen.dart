@@ -149,15 +149,27 @@ class _PurchasingScreenState extends State<PurchasingScreen> {
                 ],
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  pay > 0 ? money(pay) : l.settledLabel,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: pay > 0 ? bx.warn : bx.pos),
-                ),
-                Text(pay > 0 ? l.payableLower : l.noDues, style: TextStyle(fontSize: 11, color: bx.faint)),
-              ],
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 128),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    pay > 0 ? money(pay) : l.settledLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: pay > 0 ? bx.warn : bx.pos),
+                  ),
+                  Text(
+                    pay > 0 ? l.payableLower : l.noDues,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: TextStyle(fontSize: 11, color: bx.faint),
+                  ),
+                ],
+              ),
             ),
             Icon(Icons.chevron_right, size: 20, color: bx.faint),
           ],
