@@ -378,6 +378,54 @@ class LHi extends L {
   String get quickQty => 'त्वरित मात्रा';
 
   @override
+  String get aboutTitle => 'ऐप के बारे में';
+
+  @override
+  String get aboutTagline => 'भारतीय व्यवसायों के लिए बिलिंग और खाता';
+
+  @override
+  String get aboutVersion => 'वर्शन';
+
+  @override
+  String get aboutBuild => 'बिल्ड';
+
+  @override
+  String get aboutPublisher => 'प्रकाशक';
+
+  @override
+  String get aboutLicence => 'लाइसेंस';
+
+  @override
+  String get aboutLicenceFree => 'निःशुल्क';
+
+  @override
+  String get aboutCopyright => '© 2026 NexenLabs · भारत में निर्मित';
+
+  @override
+  String get lowStockTitle => 'कम स्टॉक · रीऑर्डर सूची';
+
+  @override
+  String get lowStockSub => 'रीऑर्डर स्तर या उससे कम वाले आइटम, सुझाई गई ऑर्डर मात्रा के साथ।';
+
+  @override
+  String get inStockCol => 'स्टॉक में';
+
+  @override
+  String get reorderAtCol => 'रीऑर्डर स्तर';
+
+  @override
+  String get suggestedCol => 'ऑर्डर';
+
+  @override
+  String get shareReorderWa => 'सप्लायर को भेजें';
+
+  @override
+  String get stockHealthy => 'सभी स्टॉक रीऑर्डर स्तर से ऊपर है।';
+
+  @override
+  String get reorderShareFail => 'WhatsApp नहीं खुल सका';
+
+  @override
   String get gstr1Title => 'GSTR-1 · दर-वार (B2C)';
 
   @override

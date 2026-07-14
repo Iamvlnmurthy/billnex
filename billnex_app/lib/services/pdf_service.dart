@@ -316,6 +316,15 @@ class PdfService {
     }
   }
 
+  /// Opens WhatsApp with any prefilled text (reorder lists, reminders). When
+  /// [phone] is empty, WhatsApp shows the contact picker.
+  static Future<void> whatsAppText(String message, {String phone = ''}) async {
+    final url = WhatsAppService.invoiceLink(phone: phone, message: message);
+    if (!await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)) {
+      throw Exception('WhatsApp not available');
+    }
+  }
+
   // ------------------------------------------------------------------ A4
   static pw.Widget _a4Body(Sale sale, InvoiceTemplate tpl) {
     final accent = _accent(tpl.id);

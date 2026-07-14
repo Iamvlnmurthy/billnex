@@ -378,6 +378,54 @@ class LTe extends L {
   String get quickQty => 'త్వరిత పరిమాణం';
 
   @override
+  String get aboutTitle => 'గురించి';
+
+  @override
+  String get aboutTagline => 'భారతీయ వ్యాపారాల కోసం బిల్లింగ్ & ఖాతా';
+
+  @override
+  String get aboutVersion => 'వర్షన్';
+
+  @override
+  String get aboutBuild => 'బిల్డ్';
+
+  @override
+  String get aboutPublisher => 'ప్రచురణకర్త';
+
+  @override
+  String get aboutLicence => 'లైసెన్స్';
+
+  @override
+  String get aboutLicenceFree => 'ఉచితం';
+
+  @override
+  String get aboutCopyright => '© 2026 NexenLabs · భారత్‌లో తయారు';
+
+  @override
+  String get lowStockTitle => 'తక్కువ స్టాక్ · రీఆర్డర్ జాబితా';
+
+  @override
+  String get lowStockSub => 'రీఆర్డర్ స్థాయి లేదా అంతకంటే తక్కువ ఉన్న వస్తువులు, సూచించిన ఆర్డర్ పరిమాణంతో.';
+
+  @override
+  String get inStockCol => 'స్టాక్‌లో';
+
+  @override
+  String get reorderAtCol => 'రీఆర్డర్ స్థాయి';
+
+  @override
+  String get suggestedCol => 'ఆర్డర్';
+
+  @override
+  String get shareReorderWa => 'సప్లయర్‌కు పంపండి';
+
+  @override
+  String get stockHealthy => 'మొత్తం స్టాక్ రీఆర్డర్ స్థాయి కంటే ఎక్కువగా ఉంది.';
+
+  @override
+  String get reorderShareFail => 'WhatsApp తెరవలేకపోయాము';
+
+  @override
   String get gstr1Title => 'GSTR-1 · రేటు వారీగా (B2C)';
 
   @override

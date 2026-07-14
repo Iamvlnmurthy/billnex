@@ -172,6 +172,39 @@ class AppState extends ChangeNotifier {
   List<StockItem> get stockItems => _stock.values.toList()..sort((a, b) => a.name.compareTo(b.name));
   List<StockItem> get lowStockItems => stockItems.where((i) => i.low).toList();
   int get lowStockCount => _stock.values.where((i) => i.low).length;
+
+  /// A "buy these" reorder list: low-stock items with the shortfall to their
+  /// reorder level and a suggested order qty (tops back up to 2× reorder level).
+  /// Sorted most-urgent (biggest shortfall) first.
+  List<({String name, String unit, double qty, double reorder, double suggested})> reorderList() {
+    final rows = lowStockItems.map((i) {
+      final target = i.reorderLevel <= 0 ? 1.0 : i.reorderLevel * 2;
+      final suggested = (target - i.qty).clamp(1, double.infinity).toDouble();
+      return (name: i.name, unit: i.unit, qty: i.qty, reorder: i.reorderLevel, suggested: suggested);
+    }).toList();
+    rows.sort((a, b) => (b.reorder - b.qty).compareTo(a.reorder - a.qty));
+    return rows;
+  }
+
+  /// Reorder list as CSV (Item, Unit, In stock, Reorder at, Suggested order).
+  String reorderCsv() {
+    final b = StringBuffer('Item,Unit,In stock,Reorder at,Suggested order\n');
+    for (final r in reorderList()) {
+      b.writeln('"${r.name}",${r.unit},${qtyLabel(r.qty)},${qtyLabel(r.reorder)},${qtyLabel(r.suggested)}');
+    }
+    return b.toString();
+  }
+
+  /// A plaintext purchase list to send a supplier on WhatsApp.
+  String reorderWhatsAppText() {
+    final rows = reorderList();
+    if (rows.isEmpty) return '$shopName — stock is healthy, nothing to reorder.';
+    final b = StringBuffer('$shopName — reorder list:\n');
+    for (final r in rows) {
+      b.writeln('• ${r.name}: ${qtyLabel(r.suggested)} ${r.unit} (have ${qtyLabel(r.qty)})');
+    }
+    return b.toString().trimRight();
+  }
   double stockOf(String sku) => _stock[sku]?.qty ?? 0;
   List<StockMovement> movementsFor(String sku) => _moves.where((m) => m.sku == sku).toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
 

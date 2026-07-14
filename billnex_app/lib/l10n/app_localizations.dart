@@ -795,6 +795,102 @@ abstract class L {
   /// **'QUICK QUANTITY'**
   String get quickQty;
 
+  /// No description provided for @aboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutTitle;
+
+  /// No description provided for @aboutTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing & khata for Indian businesses'**
+  String get aboutTagline;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get aboutVersion;
+
+  /// No description provided for @aboutBuild.
+  ///
+  /// In en, this message translates to:
+  /// **'build'**
+  String get aboutBuild;
+
+  /// No description provided for @aboutPublisher.
+  ///
+  /// In en, this message translates to:
+  /// **'Publisher'**
+  String get aboutPublisher;
+
+  /// No description provided for @aboutLicence.
+  ///
+  /// In en, this message translates to:
+  /// **'Licence'**
+  String get aboutLicence;
+
+  /// No description provided for @aboutLicenceFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get aboutLicenceFree;
+
+  /// No description provided for @aboutCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2026 NexenLabs · Made in India'**
+  String get aboutCopyright;
+
+  /// No description provided for @lowStockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Low stock · Reorder list'**
+  String get lowStockTitle;
+
+  /// No description provided for @lowStockSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Items at or below their reorder level, with a suggested order quantity.'**
+  String get lowStockSub;
+
+  /// No description provided for @inStockCol.
+  ///
+  /// In en, this message translates to:
+  /// **'In stock'**
+  String get inStockCol;
+
+  /// No description provided for @reorderAtCol.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder at'**
+  String get reorderAtCol;
+
+  /// No description provided for @suggestedCol.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get suggestedCol;
+
+  /// No description provided for @shareReorderWa.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to supplier'**
+  String get shareReorderWa;
+
+  /// No description provided for @stockHealthy.
+  ///
+  /// In en, this message translates to:
+  /// **'All stock is above its reorder level.'**
+  String get stockHealthy;
+
+  /// No description provided for @reorderShareFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open WhatsApp'**
+  String get reorderShareFail;
+
   /// No description provided for @gstr1Title.
   ///
   /// In en, this message translates to:

@@ -107,6 +107,8 @@ class ReportsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _hsnCard(context),
               const SizedBox(height: 16),
+              _lowStockCard(context),
+              const SizedBox(height: 16),
               _dayBookCard(context),
             ],
           ),
@@ -183,26 +185,28 @@ class ReportsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(child: Text(l.gstr1Title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700))),
-                if (rows.isNotEmpty) ...[
-                  TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-GSTR1.csv', state.gstr1Csv()), icon: const Icon(Icons.download, size: 16), label: Text(l.csv)),
-                  TextButton.icon(
-                    onPressed: () => PdfService.run(
-                      context,
-                      () => PdfService.shareGstReport(businessName: state.shopName, gstin: state.profile?.gstin, gstr1: state.gstr1Summary(), hsn: state.hsnSummary()),
-                      failure: l.gstReportFail,
-                    ),
-                    icon: const Icon(Icons.ios_share, size: 16),
-                    label: Text(l.exportGstPdf),
-                  ),
-                ],
-              ],
-            ),
+            Text(l.gstr1Title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
             const SizedBox(height: 2),
             Text(l.gstr1Sub, style: TextStyle(fontSize: 11.5, color: bx.faint, height: 1.35)),
-            const SizedBox(height: 12),
+            if (rows.isNotEmpty)
+              Align(
+                alignment: Alignment.centerRight,
+                child: Wrap(
+                  children: [
+                    TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-GSTR1.csv', state.gstr1Csv()), icon: const Icon(Icons.download, size: 16), label: Text(l.csv)),
+                    TextButton.icon(
+                      onPressed: () => PdfService.run(
+                        context,
+                        () => PdfService.shareGstReport(businessName: state.shopName, gstin: state.profile?.gstin, gstr1: state.gstr1Summary(), hsn: state.hsnSummary()),
+                        failure: l.gstReportFail,
+                      ),
+                      icon: const Icon(Icons.ios_share, size: 16),
+                      label: Text(l.exportGstPdf),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 8),
             if (rows.isEmpty)
               Text(l.noSalesYet, style: TextStyle(color: bx.muted))
             else ...[
@@ -339,6 +343,67 @@ class ReportsScreen extends StatelessWidget {
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ),
+                    ],
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Low stock · Reorder list ───────────────────────────────────────────
+  Widget _lowStockCard(BuildContext context) {
+    final bx = context.bx;
+    final l = L.of(context);
+    final rows = state.reorderList();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l.lowStockTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 2),
+            Text(l.lowStockSub, style: TextStyle(fontSize: 11.5, color: bx.faint, height: 1.35)),
+            if (rows.isNotEmpty)
+              Align(
+                alignment: Alignment.centerRight,
+                child: Wrap(
+                  children: [
+                    TextButton.icon(onPressed: () => _exportCsv(context, 'BillNex-reorder-list.csv', state.reorderCsv()), icon: const Icon(Icons.download, size: 16), label: Text(l.csv)),
+                    TextButton.icon(
+                      onPressed: () => PdfService.run(context, () => PdfService.whatsAppText(state.reorderWhatsAppText()), failure: l.reorderShareFail),
+                      icon: const Icon(Icons.chat_outlined, size: 16),
+                      label: Text(l.shareReorderWa),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 8),
+            if (rows.isEmpty)
+              Text(l.stockHealthy, style: TextStyle(color: bx.pos, fontWeight: FontWeight.w600))
+            else ...[
+              Row(
+                children: [
+                  Expanded(flex: 4, child: Text(l.item, style: BxText.meta.copyWith(color: bx.faint))),
+                  Expanded(flex: 3, child: Text(l.inStockCol, textAlign: TextAlign.right, style: BxText.meta.copyWith(color: bx.faint))),
+                  Expanded(flex: 3, child: Text(l.reorderAtCol, textAlign: TextAlign.right, style: BxText.meta.copyWith(color: bx.faint))),
+                  Expanded(flex: 2, child: Text(l.suggestedCol, textAlign: TextAlign.right, style: BxText.meta.copyWith(color: bx.faint))),
+                ],
+              ),
+              const SizedBox(height: 4),
+              for (final r in rows)
+                Container(
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: bx.border))),
+                  padding: const EdgeInsets.symmetric(vertical: 9),
+                  child: Row(
+                    children: [
+                      Expanded(flex: 4, child: Text(r.name, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600))),
+                      Expanded(flex: 3, child: Text('${qtyLabel(r.qty)} ${r.unit}', textAlign: TextAlign.right, style: TextStyle(color: r.qty <= 0 ? bx.danger : bx.warn, fontWeight: FontWeight.w700))),
+                      Expanded(flex: 3, child: Text(qtyLabel(r.reorder), textAlign: TextAlign.right, style: TextStyle(color: bx.muted))),
+                      Expanded(flex: 2, child: Text(qtyLabel(r.suggested), textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w800))),
                     ],
                   ),
                 ),

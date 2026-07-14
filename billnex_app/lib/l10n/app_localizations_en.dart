@@ -378,6 +378,54 @@ class LEn extends L {
   String get quickQty => 'QUICK QUANTITY';
 
   @override
+  String get aboutTitle => 'About';
+
+  @override
+  String get aboutTagline => 'Billing & khata for Indian businesses';
+
+  @override
+  String get aboutVersion => 'Version';
+
+  @override
+  String get aboutBuild => 'build';
+
+  @override
+  String get aboutPublisher => 'Publisher';
+
+  @override
+  String get aboutLicence => 'Licence';
+
+  @override
+  String get aboutLicenceFree => 'Free';
+
+  @override
+  String get aboutCopyright => '© 2026 NexenLabs · Made in India';
+
+  @override
+  String get lowStockTitle => 'Low stock · Reorder list';
+
+  @override
+  String get lowStockSub => 'Items at or below their reorder level, with a suggested order quantity.';
+
+  @override
+  String get inStockCol => 'In stock';
+
+  @override
+  String get reorderAtCol => 'Reorder at';
+
+  @override
+  String get suggestedCol => 'Order';
+
+  @override
+  String get shareReorderWa => 'Send to supplier';
+
+  @override
+  String get stockHealthy => 'All stock is above its reorder level.';
+
+  @override
+  String get reorderShareFail => 'Couldn\'t open WhatsApp';
+
+  @override
   String get gstr1Title => 'GSTR-1 · Rate-wise (B2C)';
 
   @override
