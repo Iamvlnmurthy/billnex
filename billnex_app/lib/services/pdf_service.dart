@@ -487,6 +487,7 @@ class PdfService {
                 if (sale.discount > 0) _kv('Discount', '- ${_rupee(sale.discount)}'),
                 _kv('CGST', _rupee(sale.cgst)),
                 _kv('SGST', _rupee(sale.sgst)),
+                if (sale.otherCharges > 0) _kv(sale.chargesLabel.isEmpty ? 'Other charges' : sale.chargesLabel, _rupee(sale.otherCharges)),
                 if (sale.roundOff != 0) _kv('Round off', _rupee(sale.roundOff)),
                 pw.Container(
                   margin: const pw.EdgeInsets.only(top: 4),
@@ -542,6 +543,10 @@ class PdfService {
                     tpl.id == 'quotation' ? 'Prices valid as quoted · Reply to confirm this order.' : 'Goods once sold will not be taken back or exchanged.',
                     style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600),
                   ),
+                  if ((sale.transportNote ?? '').isNotEmpty) ...[
+                    pw.SizedBox(height: 4),
+                    pw.Text('Transport: ${sale.transportNote}', style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey700)),
+                  ],
                 ],
               ),
             ),
@@ -607,6 +612,7 @@ class PdfService {
         if (sale.discount > 0) _thKv('Discount', '- ${_rupee(sale.discount)}'),
         _thKv('CGST', _rupee(sale.cgst)),
         _thKv('SGST', _rupee(sale.sgst)),
+        if (sale.otherCharges > 0) _thKv(sale.chargesLabel.isEmpty ? 'Charges' : sale.chargesLabel, _rupee(sale.otherCharges)),
         if (sale.roundOff != 0) _thKv('Round off', _rupee(sale.roundOff)),
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,

@@ -378,6 +378,21 @@ class LTe extends L {
   String get quickQty => 'త్వరిత పరిమాణం';
 
   @override
+  String get addChargesTransport => 'ఛార్జీలు / రవాణా జోడించండి';
+
+  @override
+  String get chargeLabel => 'ఛార్జీ';
+
+  @override
+  String get chargeLabelHint => 'ఉదా. డెలివరీ';
+
+  @override
+  String get transportDetails => 'రవాణా వివరాలు';
+
+  @override
+  String get transportHint => 'వాహనం / ట్రాన్స్‌పోర్టర్ (ఐచ్ఛికం)';
+
+  @override
   String get statement => 'స్టేట్‌మెంట్';
 
   @override

@@ -915,7 +915,17 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
     );
     if (result == null) return;
 
-    final sale = state.postCustomSale(lines: lines, paymentMode: result.mode, billDiscount: _discount, roundOff: _roundOff, customer: result.customer, nowMs: DateTime.now().millisecondsSinceEpoch);
+    final sale = state.postCustomSale(
+      lines: lines,
+      paymentMode: result.mode,
+      billDiscount: _discount,
+      roundOff: _roundOff,
+      customer: result.customer,
+      otherCharges: result.otherCharges,
+      chargesLabel: result.chargesLabel,
+      transportNote: result.transportNote,
+      nowMs: DateTime.now().millisecondsSinceEpoch,
+    );
     _confirmClear();
     if (!mounted) return;
     final l = L.of(context);
@@ -961,7 +971,10 @@ class _CollectResult {
   final String mode;
   final Customer? customer;
   final double change;
-  _CollectResult(this.mode, this.customer, this.change);
+  final double otherCharges;
+  final String chargesLabel;
+  final String? transportNote;
+  _CollectResult(this.mode, this.customer, this.change, {this.otherCharges = 0, this.chargesLabel = '', this.transportNote});
 }
 
 /// Collect footer: choose mode, take cash received → show change, or attach a
@@ -976,28 +989,47 @@ class _CollectSheet extends StatefulWidget {
 
 class _CollectSheetState extends State<_CollectSheet> {
   final _received = TextEditingController();
+  final _charge = TextEditingController();
+  final _chargeLabel = TextEditingController();
+  final _transport = TextEditingController();
+  bool _showCharges = false;
   Customer? _customer;
 
   @override
   void dispose() {
     _received.dispose();
+    _charge.dispose();
+    _chargeLabel.dispose();
+    _transport.dispose();
     super.dispose();
   }
 
+  double get _chargeAmt => double.tryParse(_charge.text.trim()) ?? 0;
+  double get _effectiveTotal => widget.total + _chargeAmt;
+
   double get _change {
     final r = double.tryParse(_received.text.trim()) ?? 0;
-    final c = r - widget.total;
+    final c = r - _effectiveTotal;
     return c > 0 ? c : 0;
   }
+
+  _CollectResult _result(String mode, Customer? customer, double change) => _CollectResult(
+        mode,
+        customer,
+        change,
+        otherCharges: _chargeAmt,
+        chargesLabel: _chargeLabel.text.trim().isEmpty ? 'Other charges' : _chargeLabel.text.trim(),
+        transportNote: _transport.text.trim().isEmpty ? null : _transport.text.trim(),
+      );
 
   void _finish(String mode) {
     if (mode == 'Credit' && _customer == null) {
       pickCustomer(context, widget.state).then((c) {
-        if (c != null && mounted) Navigator.pop(context, _CollectResult('Credit', c, 0));
+        if (c != null && mounted) Navigator.pop(context, _result('Credit', c, 0));
       });
       return;
     }
-    Navigator.pop(context, _CollectResult(mode, _customer, mode == 'Cash' ? _change : 0));
+    Navigator.pop(context, _result(mode, _customer, mode == 'Cash' ? _change : 0));
   }
 
   @override
@@ -1010,7 +1042,7 @@ class _CollectSheetState extends State<_CollectSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Center(child: Money(widget.total, style: BxText.valueHero.copyWith(fontSize: 34))),
+          Center(child: Money(_effectiveTotal, style: BxText.valueHero.copyWith(fontSize: 34))),
           const SizedBox(height: 2),
           Center(
             child: Text(L.of(context).amountToCollect, style: TextStyle(fontSize: 13, color: bx.muted)),
@@ -1023,6 +1055,47 @@ class _CollectSheetState extends State<_CollectSheet> {
             onChanged: (_) => setState(() {}),
             decoration: InputDecoration(prefixText: '₹ ', labelText: L.of(context).cashReceived, border: const OutlineInputBorder()),
           ),
+          const SizedBox(height: 8),
+          // Optional additional charges (delivery/packing) + transport details.
+          if (!_showCharges)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => setState(() => _showCharges = true),
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(L.of(context).addChargesTransport),
+              ),
+            )
+          else ...[
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextField(
+                    controller: _chargeLabel,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: InputDecoration(labelText: L.of(context).chargeLabel, hintText: L.of(context).chargeLabelHint, border: const OutlineInputBorder(), isDense: true),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: _charge,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (_) => setState(() {}),
+                    decoration: const InputDecoration(prefixText: '₹ ', border: OutlineInputBorder(), isDense: true),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _transport,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(labelText: L.of(context).transportDetails, hintText: L.of(context).transportHint, border: const OutlineInputBorder(), isDense: true),
+            ),
+          ],
           if (_change > 0) ...[
             const SizedBox(height: 8),
             Row(

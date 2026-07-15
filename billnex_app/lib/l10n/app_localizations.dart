@@ -795,6 +795,36 @@ abstract class L {
   /// **'QUICK QUANTITY'**
   String get quickQty;
 
+  /// No description provided for @addChargesTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Add charges / transport'**
+  String get addChargesTransport;
+
+  /// No description provided for @chargeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Charge'**
+  String get chargeLabel;
+
+  /// No description provided for @chargeLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Delivery'**
+  String get chargeLabelHint;
+
+  /// No description provided for @transportDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport details'**
+  String get transportDetails;
+
+  /// No description provided for @transportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle / transporter (optional)'**
+  String get transportHint;
+
   /// No description provided for @statement.
   ///
   /// In en, this message translates to:

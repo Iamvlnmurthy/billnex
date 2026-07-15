@@ -378,6 +378,21 @@ class LEn extends L {
   String get quickQty => 'QUICK QUANTITY';
 
   @override
+  String get addChargesTransport => 'Add charges / transport';
+
+  @override
+  String get chargeLabel => 'Charge';
+
+  @override
+  String get chargeLabelHint => 'e.g. Delivery';
+
+  @override
+  String get transportDetails => 'Transport details';
+
+  @override
+  String get transportHint => 'Vehicle / transporter (optional)';
+
+  @override
   String get statement => 'Statement';
 
   @override

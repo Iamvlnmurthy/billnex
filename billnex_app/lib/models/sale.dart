@@ -44,6 +44,9 @@ class Sale {
   final String? sellerPhone;
   final String? sellerAddress;
   final String? sourceInvoice; // the bill this credit note reverses (returns)
+  final double otherCharges; // non-taxable add-on (delivery/packing) folded into total
+  final String chargesLabel; // e.g. "Delivery" ('' when none)
+  final String? transportNote; // vehicle/transporter details printed on the bill
 
   const Sale({
     required this.invoiceNo,
@@ -62,6 +65,9 @@ class Sale {
     this.sellerPhone,
     this.sellerAddress,
     this.sourceInvoice,
+    this.otherCharges = 0,
+    this.chargesLabel = '',
+    this.transportNote,
   });
 
   bool get isReturn => paymentMode == 'Return';
@@ -105,6 +111,9 @@ class Sale {
     'sp': sellerPhone,
     'sa': sellerAddress,
     'src': sourceInvoice,
+    'oc': otherCharges,
+    'ocl': chargesLabel,
+    'tn': transportNote,
   };
 
   factory Sale.fromJson(Map<String, dynamic> j) => Sale(
@@ -124,5 +133,8 @@ class Sale {
     sellerPhone: j['sp'] as String?,
     sellerAddress: j['sa'] as String?,
     sourceInvoice: j['src'] as String?,
+    otherCharges: (j['oc'] as num?)?.toDouble() ?? 0,
+    chargesLabel: (j['ocl'] as String?) ?? '',
+    transportNote: j['tn'] as String?,
   );
 }

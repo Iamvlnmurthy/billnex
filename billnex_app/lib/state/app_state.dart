@@ -674,6 +674,9 @@ class AppState extends ChangeNotifier {
     bool roundOff = true,
     bool taxInclusive = true,
     Customer? customer,
+    double otherCharges = 0,
+    String chargesLabel = '',
+    String? transportNote,
     int nowMs = 0,
   }) {
     _seq += 1;
@@ -697,7 +700,7 @@ class AppState extends ChangeNotifier {
       lines: saleLines,
       subtotal: totals.taxable,
       gst: totals.tax,
-      total: totals.total,
+      total: totals.total + otherCharges, // non-taxable add-on folded into the grand total
       discount: totals.discountTotal,
       roundOff: totals.roundOff,
       taxInclusive: taxInclusive,
@@ -705,6 +708,9 @@ class AppState extends ChangeNotifier {
       sellerGstin: _profile?.gstin,
       sellerPhone: _profile?.phone,
       sellerAddress: _profile?.address,
+      otherCharges: otherCharges,
+      chargesLabel: chargesLabel,
+      transportNote: (transportNote ?? '').trim().isEmpty ? null : transportNote!.trim(),
     );
     _sales.add(sale);
     // Decrement stock only where a line matches an existing tracked SKU by name.

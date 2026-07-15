@@ -378,6 +378,21 @@ class LHi extends L {
   String get quickQty => 'त्वरित मात्रा';
 
   @override
+  String get addChargesTransport => 'शुल्क / परिवहन जोड़ें';
+
+  @override
+  String get chargeLabel => 'शुल्क';
+
+  @override
+  String get chargeLabelHint => 'जैसे डिलीवरी';
+
+  @override
+  String get transportDetails => 'परिवहन विवरण';
+
+  @override
+  String get transportHint => 'वाहन / ट्रांसपोर्टर (वैकल्पिक)';
+
+  @override
   String get statement => 'स्टेटमेंट';
 
   @override

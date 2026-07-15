@@ -138,6 +138,7 @@ class BtThermalService {
     if (sale.discount > 0) kv('Discount', '- ${_rs(sale.discount)}');
     kv('CGST', _rs(sale.cgst));
     kv('SGST', _rs(sale.sgst));
+    if (sale.otherCharges > 0) kv(sale.chargesLabel.isEmpty ? 'Charges' : sale.chargesLabel, _rs(sale.otherCharges));
     if (sale.roundOff != 0) kv('Round off', _rs(sale.roundOff));
     kv('TOTAL', _rs(sale.total), bold: true);
     b.addAll(gen.text(amountInWords(sale.total), styles: const PosStyles(align: PosAlign.center)));
