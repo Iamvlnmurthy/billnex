@@ -70,7 +70,9 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
 
   double get _grandRaw => (_subtotal - _discount).clamp(0, double.infinity);
   double get _grand => _roundOff ? _grandRaw.roundToDouble() : (_grandRaw * 100).round() / 100;
-  int get _count => _mode == _Mode.tally ? _tally.length + (_entry.isNotEmpty ? 1 : 0) : _items.length;
+  // A lone "." (or any non-numeric entry) must not count as a line — it enabled
+  // Collect at ₹0 while _saleLines() (which needs a positive parse) posts nothing.
+  int get _count => _mode == _Mode.tally ? _tally.length + ((double.tryParse(_entry) ?? 0) > 0 ? 1 : 0) : _items.length;
   bool get _hasLines => _count > 0;
 
   // ── build ─────────────────────────────────────────────────────────────

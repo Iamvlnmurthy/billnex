@@ -77,30 +77,47 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   /// when the merchant skipped selection). Never clears an already-onboarded
   /// catalogue.
   void _ensureOnboarded() {
-    if (_onboardedHere || _state.onboarded) {
+    final shop = _shop.text.trim();
+    final gst = _gstin.text.trim();
+    final firstTime = !(_onboardedHere || _state.onboarded);
+
+    if (firstTime) {
+      if (_bizKey != null) {
+        _state.setupBusiness(BusinessProfile(
+          bizType: _bizKey!,
+          shopName: shop.isEmpty ? businessByKey(_bizKey!).name : shop,
+          gstin: gst.isEmpty ? null : gst.toUpperCase(),
+          taxInclusive: _taxInclusive,
+        ));
+      } else {
+        _state.setupGenericStore();
+        if (shop.isNotEmpty || gst.isNotEmpty || !_taxInclusive) {
+          final base = _state.profile ?? const BusinessProfile(bizType: 'kirana', shopName: 'My Store');
+          _state.updateProfile(base.copyWith(shopName: shop.isEmpty ? base.shopName : shop, gstin: gst.isEmpty ? base.gstin : gst.toUpperCase(), taxInclusive: _taxInclusive));
+        }
+      }
       _onboardedHere = true;
       return;
     }
-    if (_bizKey != null) {
-      _state.setupBusiness(
-        BusinessProfile(
-          bizType: _bizKey!,
-          shopName: _shop.text.trim().isEmpty ? businessByKey(_bizKey!).name : _shop.text.trim(),
-          gstin: _gstin.text.trim().isEmpty ? null : _gstin.text.trim().toUpperCase(),
-          taxInclusive: _taxInclusive,
-        ),
-      );
+
+    // Already onboarded — honour edits made by navigating BACK. Re-run the preset
+    // ONLY when the business type actually changed (applyPreset clears stock);
+    // otherwise just update the editable profile fields (no stock reset).
+    if (_bizKey != null && _bizKey != _state.bizKey) {
+      _state.setupBusiness(BusinessProfile(
+        bizType: _bizKey!,
+        shopName: shop.isEmpty ? businessByKey(_bizKey!).name : shop,
+        gstin: gst.isEmpty ? null : gst.toUpperCase(),
+        taxInclusive: _taxInclusive,
+      ));
     } else {
-      _state.setupGenericStore();
-      // Keep the merchant's typed shop name / GST if they entered any.
-      final shop = _shop.text.trim();
-      final gst = _gstin.text.trim();
-      if (shop.isNotEmpty || gst.isNotEmpty || !_taxInclusive) {
-        final base = _state.profile ?? const BusinessProfile(bizType: 'kirana', shopName: 'My Store');
-        _state.updateProfile(base.copyWith(shopName: shop.isEmpty ? base.shopName : shop, gstin: gst.isEmpty ? base.gstin : gst.toUpperCase(), taxInclusive: _taxInclusive));
-      }
+      final base = _state.profile ?? BusinessProfile(bizType: _state.bizKey ?? 'kirana', shopName: 'My Store');
+      _state.updateProfile(base.copyWith(
+        shopName: shop.isEmpty ? base.shopName : shop,
+        gstin: gst.isEmpty ? base.gstin : gst.toUpperCase(),
+        taxInclusive: _taxInclusive,
+      ));
     }
-    _onboardedHere = true;
   }
 
   /// Finish (or globally skip) — guarantee onboarding, then hand back.

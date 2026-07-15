@@ -136,6 +136,12 @@ class InMemoryPersistence implements Persistence {
   @override
   Future<void> saveExpenses(List<Expense> list) async => _expenses = List.of(list);
 
+  int? _lastBackup;
+  @override
+  Future<int?> loadLastBackup() async => _lastBackup;
+  @override
+  Future<void> saveLastBackup(int ms) async => _lastBackup = ms;
+
   @override
   Future<List<SavedDoc>> loadDocs() async => _docs.map((e) => SavedDoc.fromJson(e.toJson())).toList();
   @override

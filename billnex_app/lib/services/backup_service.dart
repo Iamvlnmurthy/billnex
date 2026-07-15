@@ -31,8 +31,12 @@ class BackupService {
   /// Pick a backup file and restore it (replaces all current data).
   /// Returns true on success; throws [FormatException] for a non-BillNex file.
   static Future<bool> restoreFromFile(AppState s) async {
-    final res = await FilePicker.platform.pickFiles(dialogTitle: 'Choose a BillNex backup', type: FileType.custom, allowedExtensions: const ['json'], withData: true);
-    final bytes = res?.files.single.bytes;
+    // FileType.any (not custom+['json']): some OEM ROMs whose MimeTypeMap lacks
+    // "json" reject a custom filter outright, making restore impossible. The
+    // content is validated by importData's app/backupVersion check instead.
+    final res = await FilePicker.platform.pickFiles(dialogTitle: 'Choose a BillNex backup', withData: true);
+    if (res == null || res.files.isEmpty) return false; // cancelled / empty
+    final bytes = res.files.first.bytes;
     if (bytes == null) return false;
     final map = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
     await s.importData(map);

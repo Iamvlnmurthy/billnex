@@ -160,6 +160,11 @@ class BufferedStore implements Persistence {
   Future<void> saveExpenses(List<Expense> list) => _track(_d.saveExpenses(list));
 
   @override
+  Future<int?> loadLastBackup() => _d.loadLastBackup();
+  @override
+  Future<void> saveLastBackup(int ms) => _track(_d.saveLastBackup(ms));
+
+  @override
   Future<List<SavedDoc>> loadDocs() => _d.loadDocs();
   @override
   Future<void> saveDocs(List<SavedDoc> list) => _track(_d.saveDocs(list));

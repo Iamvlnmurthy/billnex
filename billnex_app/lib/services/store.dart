@@ -37,6 +37,7 @@ class Store implements Persistence {
   static const _kAppts = 'bx_appts';
   static const _kExpenses = 'bx_expenses';
   static const _kDocs = 'bx_docs';
+  static const _kLastBackup = 'bx_last_backup';
 
   SharedPreferences? _p;
   Future<SharedPreferences> get _prefs async => _p ??= await SharedPreferences.getInstance();
@@ -243,6 +244,11 @@ class Store implements Persistence {
 
   @override
   Future<void> saveExpenses(List<Expense> list) async => (await _prefs).setString(_kExpenses, jsonEncode(list.map((e) => e.toJson()).toList()));
+
+  @override
+  Future<int?> loadLastBackup() async => (await _prefs).getInt(_kLastBackup);
+  @override
+  Future<void> saveLastBackup(int ms) async => (await _prefs).setInt(_kLastBackup, ms);
 
   @override
   Future<List<SavedDoc>> loadDocs() async {

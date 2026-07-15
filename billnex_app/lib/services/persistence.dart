@@ -79,6 +79,9 @@ abstract interface class Persistence {
   Future<List<Expense>> loadExpenses();
   Future<void> saveExpenses(List<Expense> list);
 
+  Future<int?> loadLastBackup();
+  Future<void> saveLastBackup(int ms);
+
   Future<List<SavedDoc>> loadDocs();
   Future<void> saveDocs(List<SavedDoc> list);
 

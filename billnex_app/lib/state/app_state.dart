@@ -249,8 +249,8 @@ class AppState extends ChangeNotifier {
     );
     final saleLines = lines.map((l) {
       final key = l.name.trim();
-      final item = _stock[key];
-      return SaleLine(key.isEmpty ? 'Item' : key, l.qty, l.rate, gstRate: l.gstRate, sku: key, hsn: item?.hsn ?? '', cost: item?.cost ?? 0);
+      final item = _stockByName(key); // matches even after a rename
+      return SaleLine(key.isEmpty ? 'Item' : key, l.qty, l.rate, gstRate: l.gstRate, sku: item?.sku ?? key, hsn: item?.hsn ?? '', cost: item?.cost ?? 0);
     }).toList();
     final doc = SavedDoc(
       id: _uniqueId('D', _docs.map((x) => x.id)),
@@ -365,6 +365,21 @@ class AppState extends ChangeNotifier {
     return b.toString().trimRight();
   }
   double stockOf(String sku) => _stock[sku]?.qty ?? 0;
+
+  /// Resolve a stock item from a display name — by SKU key first, then by
+  /// (case-insensitive) name. Quick Bill posts by name, but the map is keyed by
+  /// the immutable SKU, so a renamed item would otherwise stop matching.
+  StockItem? _stockByName(String name) {
+    final k = name.trim();
+    if (k.isEmpty) return null;
+    final byKey = _stock[k];
+    if (byKey != null) return byKey;
+    final lower = k.toLowerCase();
+    for (final i in _stock.values) {
+      if (i.name.toLowerCase() == lower) return i;
+    }
+    return null;
+  }
   List<StockMovement> movementsFor(String sku) => _moves.where((m) => m.sku == sku).toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
 
   /// Restore persisted session (preset, flags, templates, sales) at startup.
@@ -405,6 +420,7 @@ class AppState extends ChangeNotifier {
     await _load(() async => _appts.addAll(await _store.loadAppointments()));
     await _load(() async => _expenses.addAll(await _store.loadExpenses()));
     await _load(() async => _docs.addAll(await _store.loadDocs()));
+    await _load(() async => _lastBackupMs = await _store.loadLastBackup());
     await _load(() async => _profile = await _store.loadProfile());
     await _load(() async {
       final savedStock = await _store.loadStock();
@@ -711,7 +727,7 @@ class AppState extends ChangeNotifier {
   /// Adds one unit. Returns false (and adds nothing) when a tracked item has no
   /// stock left, so the POS can warn instead of driving stock negative.
   bool addProduct(StockItem item) {
-    if (item.stockTracked && _available(item) < 1) return false;
+    if (item.stockTracked && _available(item) <= 0) return false;
     final existing = _cart.where((l) => l.sku == item.sku).firstOrNull;
     if (existing != null) {
       existing.qty += 1;
@@ -753,7 +769,7 @@ class AppState extends ChangeNotifier {
   void inc(int i) {
     final line = _cart[i];
     final item = _stock[line.sku];
-    if (item != null && item.stockTracked && _available(item) < 1) return; // no stock left
+    if (item != null && item.stockTracked && _available(item) <= 0) return; // no stock left
     line.qty += 1;
     notifyListeners();
   }
@@ -800,8 +816,9 @@ class AppState extends ChangeNotifier {
     for (final l in _cart) {
       final item = _stock[l.sku];
       if (item != null && item.stockTracked) {
-        item.qty = (item.qty - l.qty).clamp(0, double.infinity); // never negative
-        _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.sale, delta: -l.qty, ref: invoiceNo));
+        final before = item.qty;
+        item.qty = (before - l.qty).clamp(0, double.infinity); // never negative
+        _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.sale, delta: -(before - item.qty), ref: invoiceNo));
         stockTouched = true;
       }
     }
@@ -850,8 +867,8 @@ class AppState extends ChangeNotifier {
     );
     final saleLines = lines.map((l) {
       final key = l.name.trim();
-      final item = _stock[key];
-      return SaleLine(key.isEmpty ? 'Item' : key, l.qty, l.rate, gstRate: l.gstRate, sku: key, hsn: item?.hsn ?? '', cost: item?.cost ?? 0);
+      final item = _stockByName(key); // matches even after a rename
+      return SaleLine(key.isEmpty ? 'Item' : key, l.qty, l.rate, gstRate: l.gstRate, sku: item?.sku ?? key, hsn: item?.hsn ?? '', cost: item?.cost ?? 0);
     }).toList();
     final sale = Sale(
       invoiceNo: invoiceNo,
@@ -877,10 +894,13 @@ class AppState extends ChangeNotifier {
     // Decrement stock only where a line matches an existing tracked SKU by name.
     var stockTouched = false;
     for (final l in lines) {
-      final item = _stock[l.name.trim()];
+      final item = _stockByName(l.name);
       if (item != null && item.stockTracked) {
-        item.qty = (item.qty - l.qty).clamp(0, double.infinity);
-        _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.sale, delta: -l.qty, ref: invoiceNo));
+        final before = item.qty;
+        item.qty = (before - l.qty).clamp(0, double.infinity);
+        // Record the ACTUAL decrement so the movement ledger always reconciles
+        // with on-hand (recording the full requested qty on an oversell drifts).
+        _moves.add(StockMovement(sku: item.sku, epochMs: nowMs, kind: MoveKind.sale, delta: -(before - item.qty), ref: invoiceNo));
         stockTouched = true;
       }
     }
@@ -976,6 +996,11 @@ class AppState extends ChangeNotifier {
   /// every line and records a negative-total credit note so reports net out.
   /// Cash/UPI returns are a refund; for a credit bill, adjust the khata too.
   Sale returnSale(Sale original, {int nowMs = 0}) {
+    // Guard against a double return (double-tap / a second caller): re-restocking
+    // and posting a second credit note would inflate stock and net reports twice.
+    for (final s in _sales) {
+      if (s.isReturn && s.sourceInvoice == original.invoiceNo) return s;
+    }
     _seq += 1;
     final no = '#RET-$_seq';
     final ret = Sale(
@@ -1293,7 +1318,10 @@ class AppState extends ChangeNotifier {
   }
 
   PayableEntry paySupplier({required Supplier supplier, required double amount, required String mode, int nowMs = 0}) {
-    final entry = PayableEntry(supplierId: supplier.id, epochMs: nowMs, ref: '#SPAY-$nowMs', credit: amount, mode: mode);
+    // Cap at what's owed so an over-payment can't drive the payable negative
+    // (mirrors collect()); the UI clamps too, but the state enforces it.
+    final capped = amount.clamp(0, payableOf(supplier.id)).toDouble();
+    final entry = PayableEntry(supplierId: supplier.id, epochMs: nowMs, ref: '#SPAY-$nowMs', credit: capped, mode: mode);
     _payables.add(entry);
     _store.savePayables(_payables);
     notifyListeners();
@@ -1442,12 +1470,14 @@ class AppState extends ChangeNotifier {
     'expenses': _expenses.map((e) => e.toJson()).toList(),
     'docs': _docs.map((e) => e.toJson()).toList(),
     'audit': _audit.map((e) => e.toJson()).toList(),
+    'lastBackup': _lastBackupMs,
   };
 
   int? _lastBackupMs;
   int? get lastBackupMs => _lastBackupMs;
   void markBackedUp(int nowMs) {
     _lastBackupMs = nowMs;
+    _store.saveLastBackup(nowMs); // persist so a restart still knows we backed up
     notifyListeners();
   }
 
@@ -1552,9 +1582,15 @@ class AppState extends ChangeNotifier {
     _audit
       ..clear()
       ..addAll(audit);
+    // Stale sync events referred to the data we just replaced — drop them.
+    _outbox.clear();
+    // The restored data IS the backup, so don't immediately nag "backup due".
+    _lastBackupMs = (d['lastBackup'] as num?)?.toInt() ?? (d['exportedAt'] as num?)?.toInt();
 
     // Persist the restored state.
     _persistSession();
+    if (_lastBackupMs != null) await _store.saveLastBackup(_lastBackupMs!);
+    await _store.saveOutbox(_outbox);
     await _store.saveSeq(_seq);
     await _store.saveRcptSeq(_rcptSeq);
     await _store.savePurSeq(_purSeq);
