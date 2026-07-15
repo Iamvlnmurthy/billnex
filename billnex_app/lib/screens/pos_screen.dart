@@ -14,6 +14,7 @@ import '../widgets/customer_picker.dart';
 import '../widgets/empty_state.dart';
 import '../l10n/app_localizations.dart';
 import 'scanner_screen.dart';
+import 'subscription_screen.dart';
 
 class PosScreen extends StatelessWidget {
   final AppState state;
@@ -571,6 +572,8 @@ class _CartPanel extends StatelessWidget {
       messenger.showSnackBar(SnackBar(content: Text(l.addItemsFirst)));
       return;
     }
+    if (!await ensureBillingAllowed(context)) return; // subscription paywall
+    if (!context.mounted) return;
     Customer? customer;
     if (mode == 'Credit') {
       customer = state.selectedCustomer ?? await pickCustomer(context, state);

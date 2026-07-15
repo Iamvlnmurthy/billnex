@@ -9,6 +9,7 @@ import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/common.dart';
 import '../widgets/customer_picker.dart';
+import 'subscription_screen.dart';
 
 /// The fastest counter-billing flow — built for a rush-hour kirana counter.
 ///
@@ -903,6 +904,8 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
   Future<void> _collect() async {
     final lines = _saleLines();
     if (lines.isEmpty) return;
+    if (!await ensureBillingAllowed(context)) return; // subscription paywall
+    if (!mounted) return;
     final messenger = ScaffoldMessenger.of(context);
     final result = await showModalBottomSheet<_CollectResult>(
       context: context,

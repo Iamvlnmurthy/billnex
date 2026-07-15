@@ -378,6 +378,101 @@ class LEn extends L {
   String get quickQty => 'QUICK QUANTITY';
 
   @override
+  String get subTitle => 'Subscription';
+
+  @override
+  String get subStatusTrial => 'Free trial';
+
+  @override
+  String get subStatusActive => 'Active';
+
+  @override
+  String get subStatusGrace => 'Payment due';
+
+  @override
+  String get subStatusExpired => 'Expired';
+
+  @override
+  String subExpiresOn(Object date) {
+    return 'Expires on $date';
+  }
+
+  @override
+  String subExpiredOn(Object date) {
+    return 'Expired on $date';
+  }
+
+  @override
+  String subDaysLeft(Object days) {
+    return '$days days left';
+  }
+
+  @override
+  String get subExpiredLockNote => 'Billing is paused until you renew. Your data is safe and you can still view and export everything.';
+
+  @override
+  String get subGraceNote => 'Your plan has ended — you have a short grace period. Renew now to avoid interruption.';
+
+  @override
+  String get subChoosePlan => 'Choose a plan';
+
+  @override
+  String get planMonthly => 'Monthly';
+
+  @override
+  String get planYearly => 'Yearly';
+
+  @override
+  String get planLifetime => 'Lifetime';
+
+  @override
+  String get perMonth => '/month';
+
+  @override
+  String get perYear => '/year';
+
+  @override
+  String get oneTime => 'one-time';
+
+  @override
+  String get subBestValue => 'Best value';
+
+  @override
+  String get subBuy => 'Buy';
+
+  @override
+  String get subBuyVia => 'Request on WhatsApp';
+
+  @override
+  String get subBuyNote => 'Tap a plan to request it on WhatsApp. You\'ll receive an activation key to paste below.';
+
+  @override
+  String get subHaveKey => 'Have an activation key?';
+
+  @override
+  String get subEnterKey => 'Paste activation key';
+
+  @override
+  String get subActivate => 'Activate';
+
+  @override
+  String get subActivated => 'Activated — thank you!';
+
+  @override
+  String get subInvalidKey => 'That key is invalid or expired';
+
+  @override
+  String get subRenew => 'Renew now';
+
+  @override
+  String get subManage => 'Manage subscription';
+
+  @override
+  String subBuyMessage(Object plan) {
+    return 'Hi, I want to buy BillNex $plan plan.';
+  }
+
+  @override
   String get aboutTitle => 'About';
 
   @override

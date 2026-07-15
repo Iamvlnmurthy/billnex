@@ -795,6 +795,180 @@ abstract class L {
   /// **'QUICK QUANTITY'**
   String get quickQty;
 
+  /// No description provided for @subTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get subTitle;
+
+  /// No description provided for @subStatusTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial'**
+  String get subStatusTrial;
+
+  /// No description provided for @subStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get subStatusActive;
+
+  /// No description provided for @subStatusGrace.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment due'**
+  String get subStatusGrace;
+
+  /// No description provided for @subStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get subStatusExpired;
+
+  /// No description provided for @subExpiresOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires on {date}'**
+  String subExpiresOn(Object date);
+
+  /// No description provided for @subExpiredOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired on {date}'**
+  String subExpiredOn(Object date);
+
+  /// No description provided for @subDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String subDaysLeft(Object days);
+
+  /// No description provided for @subExpiredLockNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing is paused until you renew. Your data is safe and you can still view and export everything.'**
+  String get subExpiredLockNote;
+
+  /// No description provided for @subGraceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan has ended — you have a short grace period. Renew now to avoid interruption.'**
+  String get subGraceNote;
+
+  /// No description provided for @subChoosePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a plan'**
+  String get subChoosePlan;
+
+  /// No description provided for @planMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get planMonthly;
+
+  /// No description provided for @planYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get planYearly;
+
+  /// No description provided for @planLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime'**
+  String get planLifetime;
+
+  /// No description provided for @perMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/month'**
+  String get perMonth;
+
+  /// No description provided for @perYear.
+  ///
+  /// In en, this message translates to:
+  /// **'/year'**
+  String get perYear;
+
+  /// No description provided for @oneTime.
+  ///
+  /// In en, this message translates to:
+  /// **'one-time'**
+  String get oneTime;
+
+  /// No description provided for @subBestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Best value'**
+  String get subBestValue;
+
+  /// No description provided for @subBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get subBuy;
+
+  /// No description provided for @subBuyVia.
+  ///
+  /// In en, this message translates to:
+  /// **'Request on WhatsApp'**
+  String get subBuyVia;
+
+  /// No description provided for @subBuyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a plan to request it on WhatsApp. You\'ll receive an activation key to paste below.'**
+  String get subBuyNote;
+
+  /// No description provided for @subHaveKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Have an activation key?'**
+  String get subHaveKey;
+
+  /// No description provided for @subEnterKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste activation key'**
+  String get subEnterKey;
+
+  /// No description provided for @subActivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get subActivate;
+
+  /// No description provided for @subActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Activated — thank you!'**
+  String get subActivated;
+
+  /// No description provided for @subInvalidKey.
+  ///
+  /// In en, this message translates to:
+  /// **'That key is invalid or expired'**
+  String get subInvalidKey;
+
+  /// No description provided for @subRenew.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew now'**
+  String get subRenew;
+
+  /// No description provided for @subManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage subscription'**
+  String get subManage;
+
+  /// No description provided for @subBuyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi, I want to buy BillNex {plan} plan.'**
+  String subBuyMessage(Object plan);
+
   /// No description provided for @aboutTitle.
   ///
   /// In en, this message translates to:

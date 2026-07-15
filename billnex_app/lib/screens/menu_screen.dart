@@ -8,6 +8,7 @@ import 'business_setup_screen.dart';
 import 'data_io_screen.dart';
 import 'print_settings_screen.dart';
 import 'about_screen.dart';
+import 'subscription_screen.dart';
 import 'nav.dart';
 
 /// The grouped "Menu" hub (Vyapar-style) — the home for everything that isn't
@@ -57,6 +58,7 @@ class MenuScreen extends StatelessWidget {
           _Entry.action(l.printerSettings, Icons.print_outlined, () => _openPrintSettings(context)),
           _Entry.action(l.backupRestore, Icons.backup_outlined, () => _openBackup(context)),
           _Entry.action(l.dataIoTitle, Icons.import_export, () => _openDataIo(context)),
+          _Entry.action(l.subTitle, Icons.workspace_premium_outlined, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SubscriptionScreen()))),
           _Entry.action(l.aboutTitle, Icons.info_outline, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AboutScreen()))),
         ]),
       ],

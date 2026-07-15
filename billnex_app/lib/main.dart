@@ -6,6 +6,7 @@ import 'models/system.dart';
 import 'state/app_state.dart';
 import 'services/store.dart';
 import 'services/auth_service.dart';
+import 'services/license_service.dart';
 import 'services/error_reporter.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_shell.dart';
@@ -33,6 +34,7 @@ Future<void> _bootstrap() async {
   final savedLang = await store.loadLang();
   final locale = ValueNotifier<Locale?>(savedLang == null ? null : Locale(savedLang));
   await state.init();
+  await LicenseService.instance.init(); // starts the free trial on first run
 
   // Deep-link support (also drives previews): ?biz=restaurant&tab=1&theme=dark
   final q = Uri.base.queryParameters;

@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import '../state/app_state.dart';
 import '../models/system.dart';
 import '../services/auth_service.dart';
+import '../services/license_service.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import 'nav.dart';
+import 'subscription_screen.dart';
 import 'dashboard_screen.dart';
 import 'quick_bill_screen.dart';
 import 'menu_screen.dart';
@@ -146,6 +148,7 @@ class _HomeShellState extends State<HomeShell> {
                   _TopBar(state: widget.state, themeMode: widget.themeMode, auth: widget.auth, locale: widget.locale),
                   // (Status strip removed for a taller content area on every screen;
                   // online state stays in the top bar and backup-due warns on Dashboard.)
+                  const _RenewalBanner(),
                   Expanded(
                     child: Row(
                       children: [
@@ -186,6 +189,48 @@ class _HomeShellState extends State<HomeShell> {
     if (i >= 0) return i;
     // Viewing a screen reached via the hub → highlight the Menu tab.
     return tabs.indexOf(NavId.menu);
+  }
+}
+
+/// A slim strip that appears in the last 15 days of the subscription (and after
+/// expiry) prompting renewal. Tapping opens the Subscription screen.
+class _RenewalBanner extends StatelessWidget {
+  const _RenewalBanner();
+  @override
+  Widget build(BuildContext context) {
+    final bx = context.bx;
+    final l = L.of(context);
+    return AnimatedBuilder(
+      animation: LicenseService.instance,
+      builder: (context, _) {
+        final lic = LicenseService.instance;
+        if (!lic.isLoaded || !lic.showRenewalBanner) return const SizedBox.shrink();
+        final expired = lic.status == LicenseStatus.expired;
+        final color = expired ? bx.danger : bx.warn;
+        final bg = expired ? bx.dangerBg : bx.warnBg;
+        final msg = expired
+            ? l.subStatusExpired
+            : (lic.daysLeft <= 0 ? l.subStatusGrace : l.subDaysLeft('${lic.daysLeft}'));
+        return Material(
+          color: bg,
+          child: InkWell(
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+              child: Row(
+                children: [
+                  Icon(expired ? Icons.lock_clock : Icons.workspace_premium_outlined, size: 18, color: color),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text('${l.subTitle} · $msg', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: color))),
+                  Text(l.subRenew, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: color)),
+                  Icon(Icons.chevron_right, size: 18, color: color),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
