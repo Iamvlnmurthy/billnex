@@ -378,6 +378,18 @@ class LTe extends L {
   String get quickQty => 'త్వరిత పరిమాణం';
 
   @override
+  String get statement => 'స్టేట్‌మెంట్';
+
+  @override
+  String get ledgerCreditSale => 'అరువు అమ్మకం';
+
+  @override
+  String get ledgerPayment => 'చెల్లింపు అందింది';
+
+  @override
+  String get ledgerOpeningDue => 'ప్రారంభ నిల్వ';
+
+  @override
   String get subTitle => 'సబ్‌స్క్రిప్షన్';
 
   @override

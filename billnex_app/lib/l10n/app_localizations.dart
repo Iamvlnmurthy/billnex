@@ -795,6 +795,30 @@ abstract class L {
   /// **'QUICK QUANTITY'**
   String get quickQty;
 
+  /// No description provided for @statement.
+  ///
+  /// In en, this message translates to:
+  /// **'Statement'**
+  String get statement;
+
+  /// No description provided for @ledgerCreditSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit sale'**
+  String get ledgerCreditSale;
+
+  /// No description provided for @ledgerPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received'**
+  String get ledgerPayment;
+
+  /// No description provided for @ledgerOpeningDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening balance'**
+  String get ledgerOpeningDue;
+
   /// No description provided for @subTitle.
   ///
   /// In en, this message translates to:

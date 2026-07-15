@@ -378,6 +378,18 @@ class LHi extends L {
   String get quickQty => 'त्वरित मात्रा';
 
   @override
+  String get statement => 'स्टेटमेंट';
+
+  @override
+  String get ledgerCreditSale => 'उधार बिक्री';
+
+  @override
+  String get ledgerPayment => 'भुगतान प्राप्त';
+
+  @override
+  String get ledgerOpeningDue => 'प्रारंभिक बकाया';
+
+  @override
   String get subTitle => 'सदस्यता';
 
   @override

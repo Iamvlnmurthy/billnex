@@ -378,6 +378,18 @@ class LEn extends L {
   String get quickQty => 'QUICK QUANTITY';
 
   @override
+  String get statement => 'Statement';
+
+  @override
+  String get ledgerCreditSale => 'Credit sale';
+
+  @override
+  String get ledgerPayment => 'Payment received';
+
+  @override
+  String get ledgerOpeningDue => 'Opening balance';
+
+  @override
   String get subTitle => 'Subscription';
 
   @override

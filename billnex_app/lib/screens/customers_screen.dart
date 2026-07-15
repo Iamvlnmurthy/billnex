@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/customer.dart';
 import '../state/app_state.dart';
+import '../services/pdf_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/empty_state.dart';
@@ -323,6 +324,15 @@ class CustomerDetailView extends StatelessWidget {
                             style: FilledButton.styleFrom(backgroundColor: const Color(0xFF1677FF), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
                           ),
                         ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: chrono.isEmpty ? null : () => _statement(context, c, chrono, runningMap, bal),
+                            icon: const Icon(Icons.picture_as_pdf_outlined, size: 18, color: Colors.white),
+                            label: Text(l.statement, style: const TextStyle(color: Colors.white)),
+                            style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0x553988FF)), padding: const EdgeInsets.symmetric(vertical: 14)),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -406,6 +416,40 @@ class CustomerDetailView extends StatelessWidget {
       ),
     );
   }
+
+  /// Build the account-statement rows from the chronological ledger and share
+  /// the PDF (WhatsApp / email / save via the system sheet).
+  Future<void> _statement(BuildContext context, Customer c, List<LedgerEntry> chrono, Map<int, double> runningMap, double closing) async {
+    final l = L.of(context);
+    final rows = [
+      for (final e in chrono)
+        (
+          date: e.dateLabel,
+          particulars: '${_kindLabel(l, e.kind)}${e.ref.isEmpty ? '' : ' · ${e.ref}'}',
+          debit: e.debit,
+          credit: e.credit,
+          balance: runningMap[e.epochMs] ?? 0,
+        ),
+    ];
+    await PdfService.run(
+      context,
+      () => PdfService.sharePartyStatement(
+        businessName: state.shopName,
+        gstin: state.profile?.gstin,
+        customerName: c.name,
+        customerMobile: c.mobile,
+        rows: rows,
+        closing: closing,
+      ),
+      failure: l.shareFail,
+    );
+  }
+
+  String _kindLabel(L l, LedgerKind k) => switch (k) {
+        LedgerKind.creditSale => l.ledgerCreditSale,
+        LedgerKind.collection => l.ledgerPayment,
+        LedgerKind.openingDue => l.ledgerOpeningDue,
+      };
 
   Future<void> _collect(BuildContext context, Customer c, double due) async {
     final l = L.of(context);
