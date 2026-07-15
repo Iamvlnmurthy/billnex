@@ -4,6 +4,7 @@ import '../models/stock.dart';
 import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
+import '../models/expense.dart';
 import '../models/business_profile.dart';
 import 'persistence.dart';
 
@@ -28,6 +29,7 @@ class InMemoryPersistence implements Persistence {
   List<OutboxEvent> _outbox = [];
   List<AuditEvent> _audit = [];
   List<Appointment> _appts = [];
+  List<Expense> _expenses = [];
 
   @override
   Future<String?> loadBiz() async => _biz;
@@ -126,6 +128,11 @@ class InMemoryPersistence implements Persistence {
   Future<List<Appointment>> loadAppointments() async => _appts.map((e) => Appointment.fromJson(e.toJson())).toList();
   @override
   Future<void> saveAppointments(List<Appointment> list) async => _appts = List.of(list);
+
+  @override
+  Future<List<Expense>> loadExpenses() async => _expenses.map((e) => Expense.fromJson(e.toJson())).toList();
+  @override
+  Future<void> saveExpenses(List<Expense> list) async => _expenses = List.of(list);
 
   @override
   Future<void> reset() async {

@@ -393,6 +393,45 @@ class LTe extends L {
   String get transportHint => 'వాహనం / ట్రాన్స్‌పోర్టర్ (ఐచ్ఛికం)';
 
   @override
+  String get expensesTitle => 'ఖర్చులు';
+
+  @override
+  String get expensesSub => 'వ్యాపార ఖర్చులను ట్రాక్ చేయండి — ఇది మీ లాభ-నష్టంలో చేరుతుంది.';
+
+  @override
+  String get addExpenseTitle => 'ఖర్చు జోడించండి';
+
+  @override
+  String get expenseAmount => 'మొత్తం';
+
+  @override
+  String get expenseCategory => 'వర్గం';
+
+  @override
+  String get expenseNote => 'గమనిక (ఐచ్ఛికం)';
+
+  @override
+  String get expenseSaved => 'ఖర్చు సేవ్ అయింది';
+
+  @override
+  String get noExpenses => 'ఇంకా ఖర్చులు లేవు';
+
+  @override
+  String get totalExpensesLabel => 'మొత్తం ఖర్చులు';
+
+  @override
+  String get expenseDelete => 'ఖర్చును తొలగించాలా?';
+
+  @override
+  String get delete => 'తొలగించు';
+
+  @override
+  String get plExpenses => 'ఖర్చులు';
+
+  @override
+  String get plNetProfit => 'నికర లాభం';
+
+  @override
   String get statement => 'స్టేట్‌మెంట్';
 
   @override

@@ -825,6 +825,84 @@ abstract class L {
   /// **'Vehicle / transporter (optional)'**
   String get transportHint;
 
+  /// No description provided for @expensesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get expensesTitle;
+
+  /// No description provided for @expensesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Track business spending — it feeds your Profit & Loss.'**
+  String get expensesSub;
+
+  /// No description provided for @addExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add expense'**
+  String get addExpenseTitle;
+
+  /// No description provided for @expenseAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get expenseAmount;
+
+  /// No description provided for @expenseCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get expenseCategory;
+
+  /// No description provided for @expenseNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get expenseNote;
+
+  /// No description provided for @expenseSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense saved'**
+  String get expenseSaved;
+
+  /// No description provided for @noExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses yet'**
+  String get noExpenses;
+
+  /// No description provided for @totalExpensesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total expenses'**
+  String get totalExpensesLabel;
+
+  /// No description provided for @expenseDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete expense?'**
+  String get expenseDelete;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @plExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get plExpenses;
+
+  /// No description provided for @plNetProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Net profit'**
+  String get plNetProfit;
+
   /// No description provided for @statement.
   ///
   /// In en, this message translates to:

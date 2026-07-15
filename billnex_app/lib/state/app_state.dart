@@ -6,6 +6,7 @@ import '../models/stock.dart';
 import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
+import '../models/expense.dart';
 import '../models/business_profile.dart';
 import '../services/store.dart';
 import '../services/persistence.dart';
@@ -149,6 +150,45 @@ class AppState extends ChangeNotifier {
   // ---- vertical: appointments (salon/clinic) ----
   final List<Appointment> _appts = [];
   List<Appointment> get appointments => _appts.toList()..sort((a, b) => a.epochMs.compareTo(b.epochMs));
+
+  // ── Expenses (feed the P&L) ──
+  final List<Expense> _expenses = [];
+  List<Expense> get expenses => _expenses.toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
+  double get totalExpenses => _expenses.fold(0.0, (a, e) => a + e.amount);
+
+  Expense addExpense({required String category, required double amount, String note = '', String mode = 'Cash', int nowMs = 0}) {
+    final e = Expense(id: 'E${nowMs == 0 ? _expenses.length + 1 : nowMs}', epochMs: nowMs, category: category.trim().isEmpty ? 'Other' : category.trim(), amount: amount, note: note.trim(), mode: mode);
+    _expenses.add(e);
+    _store.saveExpenses(_expenses);
+    _audit0('Expense · ${e.category} ${amount.round()}', e.id, nowMs);
+    notifyListeners();
+    return e;
+  }
+
+  void deleteExpense(String id) {
+    _expenses.removeWhere((e) => e.id == id);
+    _store.saveExpenses(_expenses);
+    notifyListeners();
+  }
+
+  /// Expense totals grouped by category, largest first.
+  List<({String category, double amount})> expensesByCategory() {
+    final m = <String, double>{};
+    for (final e in _expenses) {
+      m[e.category] = (m[e.category] ?? 0) + e.amount;
+    }
+    final rows = m.entries.map((e) => (category: e.key, amount: e.value)).toList();
+    rows.sort((a, b) => b.amount.compareTo(a.amount));
+    return rows;
+  }
+
+  String expenseCsv() {
+    final b = StringBuffer('Date,Category,Amount,Mode,Note\n');
+    for (final e in expenses) {
+      b.writeln('${e.dateLabel},${e.category},${e.amount.toStringAsFixed(2)},${e.mode},"${e.note}"');
+    }
+    return b.toString();
+  }
   int get upcomingAppts => _appts.where((a) => a.status == ApptStatus.booked).length;
 
   Appointment addAppointment({required String customer, required String service, required String staff, required int slotMs, int nowMs = 0}) {
@@ -244,6 +284,7 @@ class AppState extends ChangeNotifier {
     await _load(() async => _outbox.addAll(await _store.loadOutbox()));
     await _load(() async => _audit.addAll(await _store.loadAudit()));
     await _load(() async => _appts.addAll(await _store.loadAppointments()));
+    await _load(() async => _expenses.addAll(await _store.loadExpenses()));
     await _load(() async => _profile = await _store.loadProfile());
     await _load(() async {
       final savedStock = await _store.loadStock();
@@ -931,10 +972,12 @@ class AppState extends ChangeNotifier {
   }
 
   /// Simple Profit & Loss (BNX reports): taxable sales − COGS = gross profit.
-  ({double sales, double cogs, double grossProfit, double gst}) profitAndLoss() {
+  ({double sales, double cogs, double grossProfit, double expenses, double netProfit, double gst}) profitAndLoss() {
     final sales = salesGross; // net taxable of all bills
     final cost = cogs;
-    return (sales: sales, cogs: cost, grossProfit: _r2(sales - cost), gst: gstCollected);
+    final gross = _r2(sales - cost);
+    final exp = totalExpenses;
+    return (sales: sales, cogs: cost, grossProfit: gross, expenses: exp, netProfit: _r2(gross - exp), gst: gstCollected);
   }
 
   /// Day Book — every posted transaction in time order (BNX day book). Sales &
@@ -1243,6 +1286,7 @@ class AppState extends ChangeNotifier {
     'purchases': _purchases.map((e) => e.toJson()).toList(),
     'payables': _payables.map((e) => e.toJson()).toList(),
     'appointments': _appts.map((e) => e.toJson()).toList(),
+    'expenses': _expenses.map((e) => e.toJson()).toList(),
     'audit': _audit.map((e) => e.toJson()).toList(),
   };
 
@@ -1284,6 +1328,7 @@ class AppState extends ChangeNotifier {
     final List<Purchase> purchases;
     final List<PayableEntry> payables;
     final List<Appointment> appts;
+    final List<Expense> expenses;
     final List<AuditEvent> audit;
     try {
       profile = d['profile'] == null ? null : BusinessProfile.fromJson((d['profile'] as Map).cast<String, dynamic>());
@@ -1296,6 +1341,7 @@ class AppState extends ChangeNotifier {
       purchases = rows('purchases').map(Purchase.fromJson).toList();
       payables = rows('payables').map(PayableEntry.fromJson).toList();
       appts = rows('appointments').map(Appointment.fromJson).toList();
+      expenses = rows('expenses').map(Expense.fromJson).toList();
       audit = rows('audit').map(AuditEvent.fromJson).toList();
     } catch (e) {
       throw FormatException('Backup is corrupt or incomplete — restore aborted, your data is unchanged ($e)');
@@ -1341,6 +1387,9 @@ class AppState extends ChangeNotifier {
     _appts
       ..clear()
       ..addAll(appts);
+    _expenses
+      ..clear()
+      ..addAll(expenses);
     _audit
       ..clear()
       ..addAll(audit);
@@ -1359,6 +1408,7 @@ class AppState extends ChangeNotifier {
     await _store.savePurchases(_purchases);
     await _store.savePayables(_payables);
     await _store.saveAppointments(_appts);
+    await _store.saveExpenses(_expenses);
     await _store.saveAudit(_audit);
     notifyListeners();
   }

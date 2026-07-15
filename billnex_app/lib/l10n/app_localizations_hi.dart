@@ -393,6 +393,45 @@ class LHi extends L {
   String get transportHint => 'वाहन / ट्रांसपोर्टर (वैकल्पिक)';
 
   @override
+  String get expensesTitle => 'खर्च';
+
+  @override
+  String get expensesSub => 'व्यापार खर्च ट्रैक करें — यह आपके लाभ-हानि में जुड़ता है।';
+
+  @override
+  String get addExpenseTitle => 'खर्च जोड़ें';
+
+  @override
+  String get expenseAmount => 'राशि';
+
+  @override
+  String get expenseCategory => 'श्रेणी';
+
+  @override
+  String get expenseNote => 'टिप्पणी (वैकल्पिक)';
+
+  @override
+  String get expenseSaved => 'खर्च सहेजा गया';
+
+  @override
+  String get noExpenses => 'अभी कोई खर्च नहीं';
+
+  @override
+  String get totalExpensesLabel => 'कुल खर्च';
+
+  @override
+  String get expenseDelete => 'खर्च हटाएं?';
+
+  @override
+  String get delete => 'हटाएं';
+
+  @override
+  String get plExpenses => 'खर्च';
+
+  @override
+  String get plNetProfit => 'शुद्ध लाभ';
+
+  @override
   String get statement => 'स्टेटमेंट';
 
   @override

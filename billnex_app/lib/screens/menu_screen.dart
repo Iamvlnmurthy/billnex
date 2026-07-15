@@ -9,6 +9,7 @@ import 'data_io_screen.dart';
 import 'print_settings_screen.dart';
 import 'about_screen.dart';
 import 'subscription_screen.dart';
+import 'expenses_screen.dart';
 import 'nav.dart';
 
 /// The grouped "Menu" hub (Vyapar-style) — the home for everything that isn't
@@ -38,7 +39,10 @@ class MenuScreen extends StatelessWidget {
       _Entry(NavId.purchasing, l.purchasesSuppliers, Icons.local_shipping_outlined),
     ].where((e) => can(e.id!)).toList();
 
-    final insights = <_Entry>[_Entry(NavId.reports, l.reportsAnalytics, Icons.bar_chart_outlined)].where((e) => can(e.id!)).toList();
+    final insights = <_Entry>[
+      if (can(NavId.reports)) _Entry(NavId.reports, l.reportsAnalytics, Icons.bar_chart_outlined),
+      _Entry.action(l.expensesTitle, Icons.trending_down, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ExpensesScreen(state: state)))),
+    ];
 
     final setup = <_Entry>[if (can(NavId.features)) _Entry(NavId.features, l.featuresToggles, Icons.tune_outlined), if (can(NavId.print)) _Entry(NavId.print, l.printTemplates, Icons.print_outlined)];
 

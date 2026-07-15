@@ -393,6 +393,45 @@ class LEn extends L {
   String get transportHint => 'Vehicle / transporter (optional)';
 
   @override
+  String get expensesTitle => 'Expenses';
+
+  @override
+  String get expensesSub => 'Track business spending — it feeds your Profit & Loss.';
+
+  @override
+  String get addExpenseTitle => 'Add expense';
+
+  @override
+  String get expenseAmount => 'Amount';
+
+  @override
+  String get expenseCategory => 'Category';
+
+  @override
+  String get expenseNote => 'Note (optional)';
+
+  @override
+  String get expenseSaved => 'Expense saved';
+
+  @override
+  String get noExpenses => 'No expenses yet';
+
+  @override
+  String get totalExpensesLabel => 'Total expenses';
+
+  @override
+  String get expenseDelete => 'Delete expense?';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get plExpenses => 'Expenses';
+
+  @override
+  String get plNetProfit => 'Net profit';
+
+  @override
   String get statement => 'Statement';
 
   @override
