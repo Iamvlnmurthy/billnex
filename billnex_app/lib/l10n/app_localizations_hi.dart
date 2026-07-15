@@ -432,6 +432,43 @@ class LHi extends L {
   String get plNetProfit => 'शुद्ध लाभ';
 
   @override
+  String get saveAsEstimate => 'अनुमान के रूप में सहेजें';
+
+  @override
+  String get saveAsOrder => 'ऑर्डर के रूप में सहेजें';
+
+  @override
+  String docSaved(Object number) {
+    return '$number सहेजा गया';
+  }
+
+  @override
+  String get estimatesOrdersTitle => 'अनुमान और ऑर्डर';
+
+  @override
+  String get estimatesTab => 'अनुमान';
+
+  @override
+  String get ordersTab => 'ऑर्डर';
+
+  @override
+  String get noEstimates => 'अभी कोई अनुमान नहीं';
+
+  @override
+  String get noOrders => 'अभी कोई ऑर्डर नहीं';
+
+  @override
+  String get convertToInvoice => 'बिल में बदलें';
+
+  @override
+  String docConverted(Object invoice) {
+    return '$invoice में बदला गया';
+  }
+
+  @override
+  String get deleteDoc => 'यह दस्तावेज़ हटाएं?';
+
+  @override
   String get statement => 'स्टेटमेंट';
 
   @override

@@ -7,6 +7,7 @@ import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
 import '../models/expense.dart';
+import '../models/saved_doc.dart';
 import '../models/business_profile.dart';
 import '../services/store.dart';
 import '../services/persistence.dart';
@@ -189,6 +190,101 @@ class AppState extends ChangeNotifier {
     }
     return b.toString();
   }
+
+  // ── Saved documents: Estimates / Quotations & Sale Orders ──
+  final List<SavedDoc> _docs = [];
+  List<SavedDoc> get savedDocs => _docs.toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
+  List<SavedDoc> docsOfType(DocType type) => savedDocs.where((d) => d.type == type).toList();
+
+  String _nextDocNumber(DocType type) {
+    final prefix = type == DocType.estimate ? 'EST' : 'ORD';
+    var max = 0;
+    for (final d in _docs.where((d) => d.type == type)) {
+      final n = int.tryParse(d.number.replaceAll('#', '').replaceAll('$prefix-', '')) ?? 0;
+      if (n > max) max = n;
+    }
+    return '#$prefix-${max + 1}';
+  }
+
+  /// Save the current ad-hoc lines as an Estimate or Sale Order (does NOT touch
+  /// stock or the khata — that only happens on conversion to an invoice).
+  SavedDoc saveDoc({
+    required DocType type,
+    required List<({String name, String unit, double qty, double rate, double gstRate})> lines,
+    double billDiscount = 0,
+    bool roundOff = true,
+    bool taxInclusive = true,
+    Customer? customer,
+    double otherCharges = 0,
+    String chargesLabel = '',
+    String? transportNote,
+    int nowMs = 0,
+  }) {
+    final totals = computeBill(
+      lines: lines.map((l) => BillInput(price: l.rate, qty: l.qty, gstRate: l.gstRate)).toList(),
+      taxInclusive: taxInclusive,
+      billDiscount: billDiscount,
+      roundToUnit: roundOff,
+    );
+    final saleLines = lines.map((l) {
+      final key = l.name.trim();
+      final item = _stock[key];
+      return SaleLine(key.isEmpty ? 'Item' : key, l.qty, l.rate, gstRate: l.gstRate, sku: key, hsn: item?.hsn ?? '', cost: item?.cost ?? 0);
+    }).toList();
+    final doc = SavedDoc(
+      id: 'D${nowMs == 0 ? _docs.length + 1 : nowMs}',
+      type: type,
+      number: _nextDocNumber(type),
+      epochMs: nowMs,
+      customerId: customer?.id,
+      customerName: customer?.name ?? 'Walk-in',
+      lines: saleLines,
+      subtotal: totals.taxable,
+      gst: totals.tax,
+      total: totals.total + otherCharges,
+      discount: totals.discountTotal,
+      roundOff: totals.roundOff,
+      taxInclusive: taxInclusive,
+      otherCharges: otherCharges,
+      chargesLabel: chargesLabel,
+      transportNote: (transportNote ?? '').trim().isEmpty ? null : transportNote!.trim(),
+      businessName: shopName,
+      sellerGstin: _profile?.gstin,
+      sellerPhone: _profile?.phone,
+      sellerAddress: _profile?.address,
+    );
+    _docs.add(doc);
+    _store.saveDocs(_docs);
+    _audit0('${type == DocType.estimate ? 'Estimate' : 'Order'} saved · ${doc.number}', doc.number, nowMs);
+    notifyListeners();
+    return doc;
+  }
+
+  void deleteDoc(String id) {
+    _docs.removeWhere((d) => d.id == id);
+    _store.saveDocs(_docs);
+    notifyListeners();
+  }
+
+  /// Convert a saved document into a posted invoice: this is the point where
+  /// stock is decremented and (for credit) the khata is updated. The document
+  /// is removed once converted.
+  Sale convertDoc(SavedDoc doc, {required String paymentMode, Customer? customer, int nowMs = 0}) {
+    final lines = doc.lines.map((sl) => (name: sl.name, unit: 'pc', qty: sl.qty, rate: sl.price, gstRate: sl.gstRate)).toList();
+    final sale = postCustomSale(
+      lines: lines,
+      paymentMode: paymentMode,
+      billDiscount: doc.discount,
+      taxInclusive: doc.taxInclusive,
+      customer: customer,
+      otherCharges: doc.otherCharges,
+      chargesLabel: doc.chargesLabel,
+      transportNote: doc.transportNote,
+      nowMs: nowMs,
+    );
+    deleteDoc(doc.id);
+    return sale;
+  }
   int get upcomingAppts => _appts.where((a) => a.status == ApptStatus.booked).length;
 
   Appointment addAppointment({required String customer, required String service, required String staff, required int slotMs, int nowMs = 0}) {
@@ -285,6 +381,7 @@ class AppState extends ChangeNotifier {
     await _load(() async => _audit.addAll(await _store.loadAudit()));
     await _load(() async => _appts.addAll(await _store.loadAppointments()));
     await _load(() async => _expenses.addAll(await _store.loadExpenses()));
+    await _load(() async => _docs.addAll(await _store.loadDocs()));
     await _load(() async => _profile = await _store.loadProfile());
     await _load(() async {
       final savedStock = await _store.loadStock();
@@ -1287,6 +1384,7 @@ class AppState extends ChangeNotifier {
     'payables': _payables.map((e) => e.toJson()).toList(),
     'appointments': _appts.map((e) => e.toJson()).toList(),
     'expenses': _expenses.map((e) => e.toJson()).toList(),
+    'docs': _docs.map((e) => e.toJson()).toList(),
     'audit': _audit.map((e) => e.toJson()).toList(),
   };
 
@@ -1329,6 +1427,7 @@ class AppState extends ChangeNotifier {
     final List<PayableEntry> payables;
     final List<Appointment> appts;
     final List<Expense> expenses;
+    final List<SavedDoc> docs;
     final List<AuditEvent> audit;
     try {
       profile = d['profile'] == null ? null : BusinessProfile.fromJson((d['profile'] as Map).cast<String, dynamic>());
@@ -1342,6 +1441,7 @@ class AppState extends ChangeNotifier {
       payables = rows('payables').map(PayableEntry.fromJson).toList();
       appts = rows('appointments').map(Appointment.fromJson).toList();
       expenses = rows('expenses').map(Expense.fromJson).toList();
+      docs = rows('docs').map(SavedDoc.fromJson).toList();
       audit = rows('audit').map(AuditEvent.fromJson).toList();
     } catch (e) {
       throw FormatException('Backup is corrupt or incomplete — restore aborted, your data is unchanged ($e)');
@@ -1390,6 +1490,9 @@ class AppState extends ChangeNotifier {
     _expenses
       ..clear()
       ..addAll(expenses);
+    _docs
+      ..clear()
+      ..addAll(docs);
     _audit
       ..clear()
       ..addAll(audit);
@@ -1409,6 +1512,7 @@ class AppState extends ChangeNotifier {
     await _store.savePayables(_payables);
     await _store.saveAppointments(_appts);
     await _store.saveExpenses(_expenses);
+    await _store.saveDocs(_docs);
     await _store.saveAudit(_audit);
     notifyListeners();
   }

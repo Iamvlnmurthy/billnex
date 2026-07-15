@@ -7,6 +7,7 @@ import '../services/pdf_service.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
+import '../models/saved_doc.dart';
 import '../widgets/common.dart';
 import '../widgets/customer_picker.dart';
 import 'subscription_screen.dart';
@@ -126,6 +127,10 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                   constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                   onSelected: (v) {
                     switch (v) {
+                      case 'saveEstimate':
+                        _saveDoc(DocType.estimate);
+                      case 'saveOrder':
+                        _saveDoc(DocType.order);
                       case 'estimate':
                         _shareDoc(context, 'quotation', 'Estimate');
                       case 'challan':
@@ -134,16 +139,24 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                         _confirmClear();
                     }
                   },
-                  itemBuilder: (ctx) => const [
+                  itemBuilder: (ctx) => [
                     PopupMenuItem(
+                      value: 'saveEstimate',
+                      child: ListTile(dense: true, leading: const Icon(Icons.request_quote_outlined), title: Text(L.of(ctx).saveAsEstimate)),
+                    ),
+                    PopupMenuItem(
+                      value: 'saveOrder',
+                      child: ListTile(dense: true, leading: const Icon(Icons.assignment_outlined), title: Text(L.of(ctx).saveAsOrder)),
+                    ),
+                    const PopupMenuItem(
                       value: 'estimate',
                       child: ListTile(dense: true, leading: Icon(Icons.description_outlined), title: Text('Share as estimate')),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: 'challan',
                       child: ListTile(dense: true, leading: Icon(Icons.local_shipping_outlined), title: Text('Share delivery challan')),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: 'clear',
                       child: ListTile(dense: true, leading: Icon(Icons.delete_sweep_outlined), title: Text('Clear bill')),
                     ),
@@ -899,6 +912,21 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
       sellerAddress: state.profile?.address,
     );
     await PdfService.run(context, () => PdfService.shareSale(doc), failure: "Couldn't share the $label");
+  }
+
+  void _saveDoc(DocType type) {
+    final lines = _saleLines();
+    if (lines.isEmpty) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final doc = state.saveDoc(
+      type: type,
+      lines: lines,
+      billDiscount: _discount,
+      roundOff: _roundOff,
+      nowMs: DateTime.now().millisecondsSinceEpoch,
+    );
+    _confirmClear();
+    messenger.showSnackBar(SnackBar(content: Text(L.of(context).docSaved(doc.number))));
   }
 
   Future<void> _collect() async {

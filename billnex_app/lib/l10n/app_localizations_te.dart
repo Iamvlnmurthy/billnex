@@ -432,6 +432,43 @@ class LTe extends L {
   String get plNetProfit => 'నికర లాభం';
 
   @override
+  String get saveAsEstimate => 'అంచనాగా సేవ్ చేయండి';
+
+  @override
+  String get saveAsOrder => 'ఆర్డర్‌గా సేవ్ చేయండి';
+
+  @override
+  String docSaved(Object number) {
+    return '$number సేవ్ అయింది';
+  }
+
+  @override
+  String get estimatesOrdersTitle => 'అంచనాలు & ఆర్డర్లు';
+
+  @override
+  String get estimatesTab => 'అంచనాలు';
+
+  @override
+  String get ordersTab => 'ఆర్డర్లు';
+
+  @override
+  String get noEstimates => 'ఇంకా అంచనాలు లేవు';
+
+  @override
+  String get noOrders => 'ఇంకా ఆర్డర్లు లేవు';
+
+  @override
+  String get convertToInvoice => 'బిల్లుగా మార్చండి';
+
+  @override
+  String docConverted(Object invoice) {
+    return '$invoice గా మార్చబడింది';
+  }
+
+  @override
+  String get deleteDoc => 'ఈ పత్రాన్ని తొలగించాలా?';
+
+  @override
   String get statement => 'స్టేట్‌మెంట్';
 
   @override

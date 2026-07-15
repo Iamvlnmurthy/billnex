@@ -10,6 +10,7 @@ import 'print_settings_screen.dart';
 import 'about_screen.dart';
 import 'subscription_screen.dart';
 import 'expenses_screen.dart';
+import 'estimates_screen.dart';
 import 'nav.dart';
 
 /// The grouped "Menu" hub (Vyapar-style) — the home for everything that isn't
@@ -33,6 +34,9 @@ class MenuScreen extends StatelessWidget {
       if (state.isOn('creditLedger')) _Entry(NavId.customers, l.customersKhata, Icons.groups_outlined),
       if (state.isOn('appointments')) _Entry(NavId.appointments, l.navAppointments, Icons.event_outlined),
     ].where((e) => can(e.id!)).toList();
+    if (business.isNotEmpty) {
+      business.add(_Entry.action(l.estimatesOrdersTitle, Icons.request_quote_outlined, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => EstimatesScreen(state: state)))));
+    }
 
     final stockGroup = <_Entry>[
       _Entry(NavId.inventory, l.itemsStock, Icons.inventory_2_outlined),

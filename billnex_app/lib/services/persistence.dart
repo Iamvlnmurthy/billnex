@@ -5,6 +5,7 @@ import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
 import '../models/expense.dart';
+import '../models/saved_doc.dart';
 import '../models/business_profile.dart';
 
 /// Persistence seam for the whole app.
@@ -77,6 +78,9 @@ abstract interface class Persistence {
 
   Future<List<Expense>> loadExpenses();
   Future<void> saveExpenses(List<Expense> list);
+
+  Future<List<SavedDoc>> loadDocs();
+  Future<void> saveDocs(List<SavedDoc> list);
 
   Future<void> reset();
 }

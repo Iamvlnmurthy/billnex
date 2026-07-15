@@ -432,6 +432,43 @@ class LEn extends L {
   String get plNetProfit => 'Net profit';
 
   @override
+  String get saveAsEstimate => 'Save as estimate';
+
+  @override
+  String get saveAsOrder => 'Save as order';
+
+  @override
+  String docSaved(Object number) {
+    return 'Saved $number';
+  }
+
+  @override
+  String get estimatesOrdersTitle => 'Estimates & Orders';
+
+  @override
+  String get estimatesTab => 'Estimates';
+
+  @override
+  String get ordersTab => 'Orders';
+
+  @override
+  String get noEstimates => 'No estimates yet';
+
+  @override
+  String get noOrders => 'No orders yet';
+
+  @override
+  String get convertToInvoice => 'Convert to invoice';
+
+  @override
+  String docConverted(Object invoice) {
+    return 'Converted to $invoice';
+  }
+
+  @override
+  String get deleteDoc => 'Delete this document?';
+
+  @override
   String get statement => 'Statement';
 
   @override

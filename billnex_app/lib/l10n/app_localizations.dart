@@ -903,6 +903,72 @@ abstract class L {
   /// **'Net profit'**
   String get plNetProfit;
 
+  /// No description provided for @saveAsEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as estimate'**
+  String get saveAsEstimate;
+
+  /// No description provided for @saveAsOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as order'**
+  String get saveAsOrder;
+
+  /// No description provided for @docSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {number}'**
+  String docSaved(Object number);
+
+  /// No description provided for @estimatesOrdersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimates & Orders'**
+  String get estimatesOrdersTitle;
+
+  /// No description provided for @estimatesTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimates'**
+  String get estimatesTab;
+
+  /// No description provided for @ordersTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get ordersTab;
+
+  /// No description provided for @noEstimates.
+  ///
+  /// In en, this message translates to:
+  /// **'No estimates yet'**
+  String get noEstimates;
+
+  /// No description provided for @noOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet'**
+  String get noOrders;
+
+  /// No description provided for @convertToInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert to invoice'**
+  String get convertToInvoice;
+
+  /// No description provided for @docConverted.
+  ///
+  /// In en, this message translates to:
+  /// **'Converted to {invoice}'**
+  String docConverted(Object invoice);
+
+  /// No description provided for @deleteDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this document?'**
+  String get deleteDoc;
+
   /// No description provided for @statement.
   ///
   /// In en, this message translates to:

@@ -6,6 +6,7 @@ import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
 import '../models/expense.dart';
+import '../models/saved_doc.dart';
 import '../models/business_profile.dart';
 import 'persistence.dart';
 
@@ -157,6 +158,11 @@ class BufferedStore implements Persistence {
   Future<List<Expense>> loadExpenses() => _d.loadExpenses();
   @override
   Future<void> saveExpenses(List<Expense> list) => _track(_d.saveExpenses(list));
+
+  @override
+  Future<List<SavedDoc>> loadDocs() => _d.loadDocs();
+  @override
+  Future<void> saveDocs(List<SavedDoc> list) => _track(_d.saveDocs(list));
   @override
   Future<void> reset() => _track(_d.reset());
 }

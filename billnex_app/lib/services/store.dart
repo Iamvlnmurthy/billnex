@@ -7,6 +7,7 @@ import '../models/supplier.dart';
 import '../models/system.dart';
 import '../models/appointment.dart';
 import '../models/expense.dart';
+import '../models/saved_doc.dart';
 import '../models/business_profile.dart';
 import 'persistence.dart';
 
@@ -35,6 +36,7 @@ class Store implements Persistence {
   static const _kAudit = 'bx_audit';
   static const _kAppts = 'bx_appts';
   static const _kExpenses = 'bx_expenses';
+  static const _kDocs = 'bx_docs';
 
   SharedPreferences? _p;
   Future<SharedPreferences> get _prefs async => _p ??= await SharedPreferences.getInstance();
@@ -241,6 +243,16 @@ class Store implements Persistence {
 
   @override
   Future<void> saveExpenses(List<Expense> list) async => (await _prefs).setString(_kExpenses, jsonEncode(list.map((e) => e.toJson()).toList()));
+
+  @override
+  Future<List<SavedDoc>> loadDocs() async {
+    final raw = (await _prefs).getString(_kDocs);
+    if (raw == null) return [];
+    return (jsonDecode(raw) as List).map((e) => SavedDoc.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  @override
+  Future<void> saveDocs(List<SavedDoc> list) async => (await _prefs).setString(_kDocs, jsonEncode(list.map((e) => e.toJson()).toList()));
 
   @override
   Future<void> reset() async {
