@@ -1062,20 +1062,14 @@ abstract class L {
   /// No description provided for @planMonthly.
   ///
   /// In en, this message translates to:
-  /// **'Monthly'**
+  /// **'Monthly Flex Plan'**
   String get planMonthly;
 
   /// No description provided for @planYearly.
   ///
   /// In en, this message translates to:
-  /// **'Yearly'**
+  /// **'Annual Smart Shop Kit'**
   String get planYearly;
-
-  /// No description provided for @planLifetime.
-  ///
-  /// In en, this message translates to:
-  /// **'Lifetime'**
-  String get planLifetime;
 
   /// No description provided for @perMonth.
   ///
@@ -1089,17 +1083,71 @@ abstract class L {
   /// **'/year'**
   String get perYear;
 
-  /// No description provided for @oneTime.
-  ///
-  /// In en, this message translates to:
-  /// **'one-time'**
-  String get oneTime;
-
   /// No description provided for @subBestValue.
   ///
   /// In en, this message translates to:
-  /// **'Best value'**
+  /// **'Best Value'**
   String get subBestValue;
+
+  /// No description provided for @subSaveYear1.
+  ///
+  /// In en, this message translates to:
+  /// **'You save ₹1,989 in Year 1'**
+  String get subSaveYear1;
+
+  /// No description provided for @featBilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing software + regular updates'**
+  String get featBilling;
+
+  /// No description provided for @featBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud backup'**
+  String get featBackup;
+
+  /// No description provided for @featCatalog1.
+  ///
+  /// In en, this message translates to:
+  /// **'1 catalogue update / month'**
+  String get featCatalog1;
+
+  /// No description provided for @featSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone & WhatsApp support'**
+  String get featSupport;
+
+  /// No description provided for @featPrinterExtra.
+  ///
+  /// In en, this message translates to:
+  /// **'Printer extra (~₹1,999)'**
+  String get featPrinterExtra;
+
+  /// No description provided for @featPrinterIncl.
+  ///
+  /// In en, this message translates to:
+  /// **'58mm thermal printer included'**
+  String get featPrinterIncl;
+
+  /// No description provided for @featInstall.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation & setup'**
+  String get featInstall;
+
+  /// No description provided for @featCatalogM.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly catalogue update'**
+  String get featCatalogM;
+
+  /// No description provided for @featTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Support + training'**
+  String get featTraining;
 
   /// No description provided for @subBuy.
   ///
@@ -1176,7 +1224,7 @@ abstract class L {
   /// No description provided for @aboutTagline.
   ///
   /// In en, this message translates to:
-  /// **'Billing & khata for Indian businesses'**
+  /// **'Smart Billing for Every Shop'**
   String get aboutTagline;
 
   /// No description provided for @aboutVersion.
@@ -1212,7 +1260,7 @@ abstract class L {
   /// No description provided for @aboutCopyright.
   ///
   /// In en, this message translates to:
-  /// **'© 2026 NexenLabs · Made in India'**
+  /// **'© 2026 Nexen Labs · Made in India'**
   String get aboutCopyright;
 
   /// No description provided for @lowStockTitle.

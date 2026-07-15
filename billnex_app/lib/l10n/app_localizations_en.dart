@@ -520,13 +520,10 @@ class LEn extends L {
   String get subChoosePlan => 'Choose a plan';
 
   @override
-  String get planMonthly => 'Monthly';
+  String get planMonthly => 'Monthly Flex Plan';
 
   @override
-  String get planYearly => 'Yearly';
-
-  @override
-  String get planLifetime => 'Lifetime';
+  String get planYearly => 'Annual Smart Shop Kit';
 
   @override
   String get perMonth => '/month';
@@ -535,10 +532,37 @@ class LEn extends L {
   String get perYear => '/year';
 
   @override
-  String get oneTime => 'one-time';
+  String get subBestValue => 'Best Value';
 
   @override
-  String get subBestValue => 'Best value';
+  String get subSaveYear1 => 'You save ₹1,989 in Year 1';
+
+  @override
+  String get featBilling => 'Billing software + regular updates';
+
+  @override
+  String get featBackup => 'Cloud backup';
+
+  @override
+  String get featCatalog1 => '1 catalogue update / month';
+
+  @override
+  String get featSupport => 'Phone & WhatsApp support';
+
+  @override
+  String get featPrinterExtra => 'Printer extra (~₹1,999)';
+
+  @override
+  String get featPrinterIncl => '58mm thermal printer included';
+
+  @override
+  String get featInstall => 'Installation & setup';
+
+  @override
+  String get featCatalogM => 'Monthly catalogue update';
+
+  @override
+  String get featTraining => 'Support + training';
 
   @override
   String get subBuy => 'Buy';
@@ -579,7 +603,7 @@ class LEn extends L {
   String get aboutTitle => 'About';
 
   @override
-  String get aboutTagline => 'Billing & khata for Indian businesses';
+  String get aboutTagline => 'Smart Billing for Every Shop';
 
   @override
   String get aboutVersion => 'Version';
@@ -597,7 +621,7 @@ class LEn extends L {
   String get aboutLicenceFree => 'Free';
 
   @override
-  String get aboutCopyright => '© 2026 NexenLabs · Made in India';
+  String get aboutCopyright => '© 2026 Nexen Labs · Made in India';
 
   @override
   String get lowStockTitle => 'Low stock · Reorder list';

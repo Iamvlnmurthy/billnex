@@ -56,7 +56,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     child: Column(
                       children: [
                         _row(bx, Icons.info_outline, l.aboutVersion, version, first: true),
-                        _row(bx, Icons.business_outlined, l.aboutPublisher, 'NexenLabs'),
+                        _row(bx, Icons.business_outlined, l.aboutPublisher, 'Nexen Labs'),
                         _row(bx, Icons.verified_user_outlined, l.aboutLicence, l.aboutLicenceFree),
                       ],
                     ),

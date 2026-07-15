@@ -134,11 +134,23 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       const SizedBox(height: 4),
                       Text(l.subBuyNote, style: TextStyle(fontSize: 12, color: bx.faint, height: 1.35)),
                       const SizedBox(height: 12),
-                      _plan(bx, l, l.planMonthly, '₹199', l.perMonth, null),
-                      const SizedBox(height: 10),
-                      _plan(bx, l, l.planYearly, '₹1,499', l.perYear, l.subBestValue),
-                      const SizedBox(height: 10),
-                      _plan(bx, l, l.planLifetime, '₹4,999', l.oneTime, null),
+                      _plan(
+                        bx, l,
+                        name: l.planMonthly,
+                        price: '₹499',
+                        per: l.perMonth,
+                        features: [l.featBilling, l.featBackup, l.featCatalog1, l.featSupport, l.featPrinterExtra],
+                      ),
+                      const SizedBox(height: 12),
+                      _plan(
+                        bx, l,
+                        name: l.planYearly,
+                        price: '₹5,999',
+                        per: l.perYear,
+                        badge: l.subBestValue,
+                        features: [l.featPrinterIncl, l.featInstall, l.featCatalogM, l.featTraining, l.featSupport],
+                        savings: l.subSaveYear1,
+                      ),
                       const SizedBox(height: 24),
                       // ── Activation ──
                       Text(l.subHaveKey, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
@@ -167,46 +179,82 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  Widget _plan(BxColors bx, L l, String name, String price, String per, String? badge) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                    if (badge != null) ...[
-                      const SizedBox(width: 8),
-                      StatusChip(badge, bx.pos, bx.posBg),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(price, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-                    const SizedBox(width: 3),
-                    Text(per, style: TextStyle(fontSize: 12, color: bx.muted)),
-                  ],
-                ),
-              ],
+  Widget _plan(
+    BxColors bx,
+    L l, {
+    required String name,
+    required String price,
+    required String per,
+    String? badge,
+    List<String> features = const [],
+    String? savings,
+  }) {
+    final highlight = badge != null;
+    return Container(
+      decoration: BoxDecoration(
+        color: highlight ? bx.accent.withValues(alpha: 0.06) : bx.surface2.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: highlight ? bx.accent : bx.border, width: highlight ? 1.6 : 1),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(child: Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800))),
+              if (badge != null) StatusChip(badge, bx.accent, bx.accent.withValues(alpha: 0.14)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(price, style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: highlight ? bx.accent : null)),
+              const SizedBox(width: 4),
+              Text(per, style: TextStyle(fontSize: 13, color: bx.muted)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          for (final f in features)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 7),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.check_circle, size: 17, color: bx.pos),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(f, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
+                ],
+              ),
             ),
-            const Spacer(),
-            FilledButton.icon(
-              onPressed: () => _buy(name),
-              icon: const Icon(Icons.chat_outlined, size: 18),
-              label: Text(l.subBuy),
-              style: FilledButton.styleFrom(backgroundColor: bx.brand, foregroundColor: bx.onAccent),
+          if (savings != null) ...[
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+              decoration: BoxDecoration(color: bx.warnBg, borderRadius: BorderRadius.circular(10)),
+              child: Row(
+                children: [
+                  Icon(Icons.local_offer, size: 15, color: bx.warn),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(savings, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: bx.warn))),
+                ],
+              ),
             ),
           ],
-        ),
+          const SizedBox(height: 14),
+          FilledButton.icon(
+            onPressed: () => _buy(name),
+            icon: const Icon(Icons.chat_outlined, size: 18),
+            label: Text(l.subBuy),
+            style: FilledButton.styleFrom(
+              backgroundColor: highlight ? bx.accent : bx.brand,
+              foregroundColor: bx.onAccent,
+              padding: const EdgeInsets.symmetric(vertical: 13),
+            ),
+          ),
+        ],
       ),
     );
   }

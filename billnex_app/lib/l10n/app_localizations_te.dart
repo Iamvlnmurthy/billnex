@@ -520,13 +520,10 @@ class LTe extends L {
   String get subChoosePlan => 'ఒక ప్లాన్ ఎంచుకోండి';
 
   @override
-  String get planMonthly => 'నెలవారీ';
+  String get planMonthly => 'మంత్లీ ఫ్లెక్స్ ప్లాన్';
 
   @override
-  String get planYearly => 'వార్షిక';
-
-  @override
-  String get planLifetime => 'జీవితకాలం';
+  String get planYearly => 'యాన్యువల్ స్మార్ట్ షాప్ కిట్';
 
   @override
   String get perMonth => '/నెల';
@@ -535,10 +532,37 @@ class LTe extends L {
   String get perYear => '/సంవత్సరం';
 
   @override
-  String get oneTime => 'ఒకసారి';
+  String get subBestValue => 'ఉత్తమ విలువ';
 
   @override
-  String get subBestValue => 'ఉత్తమ విలువ';
+  String get subSaveYear1 => 'మొదటి సంవత్సరంలో ₹1,989 ఆదా';
+
+  @override
+  String get featBilling => 'బిల్లింగ్ సాఫ్ట్‌వేర్ + రెగ్యులర్ అప్‌డేట్‌లు';
+
+  @override
+  String get featBackup => 'క్లౌడ్ బ్యాకప్';
+
+  @override
+  String get featCatalog1 => '1 క్యాటలాగ్ అప్‌డేట్ / నెల';
+
+  @override
+  String get featSupport => 'ఫోన్ & WhatsApp సపోర్ట్';
+
+  @override
+  String get featPrinterExtra => 'ప్రింటర్ అదనం (~₹1,999)';
+
+  @override
+  String get featPrinterIncl => '58mm థర్మల్ ప్రింటర్ కలిసి';
+
+  @override
+  String get featInstall => 'ఇన్‌స్టాలేషన్ & సెటప్';
+
+  @override
+  String get featCatalogM => 'నెలవారీ క్యాటలాగ్ అప్‌డేట్';
+
+  @override
+  String get featTraining => 'సపోర్ట్ + శిక్షణ';
 
   @override
   String get subBuy => 'కొనండి';
@@ -579,7 +603,7 @@ class LTe extends L {
   String get aboutTitle => 'గురించి';
 
   @override
-  String get aboutTagline => 'భారతీయ వ్యాపారాల కోసం బిల్లింగ్ & ఖాతా';
+  String get aboutTagline => 'ప్రతి దుకాణానికి స్మార్ట్ బిల్లింగ్';
 
   @override
   String get aboutVersion => 'వర్షన్';
@@ -597,7 +621,7 @@ class LTe extends L {
   String get aboutLicenceFree => 'ఉచితం';
 
   @override
-  String get aboutCopyright => '© 2026 NexenLabs · భారత్‌లో తయారు';
+  String get aboutCopyright => '© 2026 Nexen Labs · భారత్‌లో తయారు';
 
   @override
   String get lowStockTitle => 'తక్కువ స్టాక్ · రీఆర్డర్ జాబితా';

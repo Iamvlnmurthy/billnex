@@ -520,13 +520,10 @@ class LHi extends L {
   String get subChoosePlan => 'एक योजना चुनें';
 
   @override
-  String get planMonthly => 'मासिक';
+  String get planMonthly => 'मंथली फ्लेक्स प्लान';
 
   @override
-  String get planYearly => 'वार्षिक';
-
-  @override
-  String get planLifetime => 'आजीवन';
+  String get planYearly => 'एनुअल स्मार्ट शॉप किट';
 
   @override
   String get perMonth => '/माह';
@@ -535,10 +532,37 @@ class LHi extends L {
   String get perYear => '/वर्ष';
 
   @override
-  String get oneTime => 'एक बार';
+  String get subBestValue => 'सबसे किफ़ायती';
 
   @override
-  String get subBestValue => 'सबसे किफ़ायती';
+  String get subSaveYear1 => 'पहले वर्ष में ₹1,989 बचाएं';
+
+  @override
+  String get featBilling => 'बिलिंग सॉफ्टवेयर + नियमित अपडेट';
+
+  @override
+  String get featBackup => 'क्लाउड बैकअप';
+
+  @override
+  String get featCatalog1 => '1 कैटलॉग अपडेट / माह';
+
+  @override
+  String get featSupport => 'फोन और WhatsApp सपोर्ट';
+
+  @override
+  String get featPrinterExtra => 'प्रिंटर अलग (~₹1,999)';
+
+  @override
+  String get featPrinterIncl => '58mm थर्मल प्रिंटर शामिल';
+
+  @override
+  String get featInstall => 'इंस्टॉलेशन और सेटअप';
+
+  @override
+  String get featCatalogM => 'मासिक कैटलॉग अपडेट';
+
+  @override
+  String get featTraining => 'सपोर्ट + ट्रेनिंग';
 
   @override
   String get subBuy => 'खरीदें';
@@ -579,7 +603,7 @@ class LHi extends L {
   String get aboutTitle => 'ऐप के बारे में';
 
   @override
-  String get aboutTagline => 'भारतीय व्यवसायों के लिए बिलिंग और खाता';
+  String get aboutTagline => 'हर दुकान के लिए स्मार्ट बिलिंग';
 
   @override
   String get aboutVersion => 'वर्शन';
@@ -597,7 +621,7 @@ class LHi extends L {
   String get aboutLicenceFree => 'निःशुल्क';
 
   @override
-  String get aboutCopyright => '© 2026 NexenLabs · भारत में निर्मित';
+  String get aboutCopyright => '© 2026 Nexen Labs · भारत में निर्मित';
 
   @override
   String get lowStockTitle => 'कम स्टॉक · रीऑर्डर सूची';
