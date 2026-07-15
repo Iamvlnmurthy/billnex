@@ -157,8 +157,19 @@ class AppState extends ChangeNotifier {
   List<Expense> get expenses => _expenses.toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
   double get totalExpenses => _expenses.fold(0.0, (a, e) => a + e.amount);
 
+  /// A collision-free id: max existing numeric suffix + 1 (list length reused
+  /// after a delete, and same-millisecond timestamps, both cause duplicates).
+  String _uniqueId(String prefix, Iterable<String> existing) {
+    var max = 0;
+    for (final id in existing) {
+      final n = int.tryParse(id.replaceFirst(prefix, '')) ?? 0;
+      if (n > max) max = n;
+    }
+    return '$prefix${max + 1}';
+  }
+
   Expense addExpense({required String category, required double amount, String note = '', String mode = 'Cash', int nowMs = 0}) {
-    final e = Expense(id: 'E${nowMs == 0 ? _expenses.length + 1 : nowMs}', epochMs: nowMs, category: category.trim().isEmpty ? 'Other' : category.trim(), amount: amount, note: note.trim(), mode: mode);
+    final e = Expense(id: _uniqueId('E', _expenses.map((x) => x.id)), epochMs: nowMs, category: category.trim().isEmpty ? 'Other' : category.trim(), amount: amount, note: note.trim(), mode: mode);
     _expenses.add(e);
     _store.saveExpenses(_expenses);
     _audit0('Expense · ${e.category} ${amount.round()}', e.id, nowMs);
@@ -186,7 +197,7 @@ class AppState extends ChangeNotifier {
   String expenseCsv() {
     final b = StringBuffer('Date,Category,Amount,Mode,Note\n');
     for (final e in expenses) {
-      b.writeln('${e.dateLabel},${e.category},${e.amount.toStringAsFixed(2)},${e.mode},"${e.note}"');
+      b.writeln('${_csv(e.dateLabel)},${_csv(e.category)},${e.amount.toStringAsFixed(2)},${_csv(e.mode)},${_csv(e.note)}');
     }
     return b.toString();
   }
@@ -196,14 +207,24 @@ class AppState extends ChangeNotifier {
   List<SavedDoc> get savedDocs => _docs.toList()..sort((a, b) => b.epochMs.compareTo(a.epochMs));
   List<SavedDoc> docsOfType(DocType type) => savedDocs.where((d) => d.type == type).toList();
 
+  int _estSeq = 0, _ordSeq = 0; // monotonic per-type counters (don't reuse after delete/convert)
+
   String _nextDocNumber(DocType type) {
     final prefix = type == DocType.estimate ? 'EST' : 'ORD';
-    var max = 0;
+    // max(session counter, highest surviving doc) → never recycles a number the
+    // session already issued, even after the highest doc is converted/deleted.
+    var max = type == DocType.estimate ? _estSeq : _ordSeq;
     for (final d in _docs.where((d) => d.type == type)) {
       final n = int.tryParse(d.number.replaceAll('#', '').replaceAll('$prefix-', '')) ?? 0;
       if (n > max) max = n;
     }
-    return '#$prefix-${max + 1}';
+    final next = max + 1;
+    if (type == DocType.estimate) {
+      _estSeq = next;
+    } else {
+      _ordSeq = next;
+    }
+    return '#$prefix-$next';
   }
 
   /// Save the current ad-hoc lines as an Estimate or Sale Order (does NOT touch
@@ -232,7 +253,7 @@ class AppState extends ChangeNotifier {
       return SaleLine(key.isEmpty ? 'Item' : key, l.qty, l.rate, gstRate: l.gstRate, sku: key, hsn: item?.hsn ?? '', cost: item?.cost ?? 0);
     }).toList();
     final doc = SavedDoc(
-      id: 'D${nowMs == 0 ? _docs.length + 1 : nowMs}',
+      id: _uniqueId('D', _docs.map((x) => x.id)),
       type: type,
       number: _nextDocNumber(type),
       epochMs: nowMs,
@@ -244,6 +265,7 @@ class AppState extends ChangeNotifier {
       total: totals.total + otherCharges,
       discount: totals.discountTotal,
       roundOff: totals.roundOff,
+      roundEnabled: roundOff,
       taxInclusive: taxInclusive,
       otherCharges: otherCharges,
       chargesLabel: chargesLabel,
@@ -275,6 +297,7 @@ class AppState extends ChangeNotifier {
       lines: lines,
       paymentMode: paymentMode,
       billDiscount: doc.discount,
+      roundOff: doc.roundEnabled,
       taxInclusive: doc.taxInclusive,
       customer: customer,
       otherCharges: doc.otherCharges,
@@ -326,7 +349,7 @@ class AppState extends ChangeNotifier {
   String reorderCsv() {
     final b = StringBuffer('Item,Unit,In stock,Reorder at,Suggested order\n');
     for (final r in reorderList()) {
-      b.writeln('"${r.name}",${r.unit},${qtyLabel(r.qty)},${qtyLabel(r.reorder)},${qtyLabel(r.suggested)}');
+      b.writeln('${_csv(r.name)},${_csv(r.unit)},${qtyLabel(r.qty)},${qtyLabel(r.reorder)},${qtyLabel(r.suggested)}');
     }
     return b.toString();
   }
@@ -1037,14 +1060,15 @@ class AppState extends ChangeNotifier {
   List<({String hsn, double rate, double qty, double taxable, double tax})> hsnSummary() {
     final m = <String, ({double qty, double taxable, double tax})>{};
     for (final s in _sales) {
-      for (final l in s.lines) {
-        final hsn = l.hsn.isNotEmpty ? l.hsn : '—'; // snapshot at post time
-        final key = '$hsn|${l.gstRate}';
-        final gross = l.amount - l.discount;
-        final taxable = s.taxInclusive ? gross / (1 + l.gstRate / 100) : gross;
-        final tax = s.taxInclusive ? gross - taxable : gross * l.gstRate / 100;
+      // Scale each sale's raw per-line taxable/tax so the sums reconcile with the
+      // sale's stored subtotal/gst (which already net off any BILL-level discount
+      // that computeBill allocated proportionally but never wrote onto the lines).
+      final (rows, factors) = _saleLineTax(s);
+      for (final r in rows) {
+        final hsn = r.hsn.isNotEmpty ? r.hsn : '—';
+        final key = '$hsn|${r.rate}';
         final ex = m[key];
-        m[key] = (qty: (ex?.qty ?? 0) + l.qty, taxable: (ex?.taxable ?? 0) + taxable, tax: (ex?.tax ?? 0) + tax);
+        m[key] = (qty: (ex?.qty ?? 0) + r.qty, taxable: (ex?.taxable ?? 0) + r.taxable * factors.$1, tax: (ex?.tax ?? 0) + r.tax * factors.$2);
       }
     }
     final rows = m.entries.map((e) {
@@ -1055,7 +1079,37 @@ class AppState extends ChangeNotifier {
     return rows;
   }
 
+  /// Per-line raw taxable/tax for a sale, plus the (taxableFactor, taxFactor)
+  /// that scale them so the totals match the sale's stored subtotal/gst — i.e.
+  /// including the bill-level discount that isn't stored on the lines.
+  (List<({String hsn, double rate, double qty, double taxable, double tax})>, (double, double)) _saleLineTax(Sale s) {
+    final rows = <({String hsn, double rate, double qty, double taxable, double tax})>[];
+    double rawTaxable = 0, rawTax = 0;
+    for (final l in s.lines) {
+      final gross = l.amount - l.discount;
+      final t = s.taxInclusive ? gross / (1 + l.gstRate / 100) : gross;
+      final x = s.taxInclusive ? gross - t : gross * l.gstRate / 100;
+      rawTaxable += t;
+      rawTax += x;
+      rows.add((hsn: l.hsn, rate: l.gstRate, qty: l.qty, taxable: t, tax: x));
+    }
+    final ft = rawTaxable != 0 ? s.subtotal / rawTaxable : 1.0;
+    final fx = rawTax != 0 ? s.gst / rawTax : 1.0;
+    return (rows, (ft, fx));
+  }
+
   static double _r2(double v) => (v * 100).round() / 100;
+
+  /// RFC-4180-safe CSV field: quote when it contains a comma/quote/newline
+  /// (doubling embedded quotes), and neutralise spreadsheet formula injection.
+  static String _csv(String s) {
+    var v = s;
+    if (v.isNotEmpty && '=+-@'.contains(v[0])) v = "'$v";
+    if (v.contains(',') || v.contains('"') || v.contains('\n') || v.contains('\r')) {
+      v = '"${v.replaceAll('"', '""')}"';
+    }
+    return v;
+  }
 
   /// Cost of goods sold — catalogue cost × quantity for every sold line.
   double get cogs {
@@ -1106,7 +1160,7 @@ class AppState extends ChangeNotifier {
     for (final r in dayBook()) {
       final d = DateTime.fromMillisecondsSinceEpoch(r.epochMs);
       final date = '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
-      b.writeln('$date,${r.type},${r.ref},"${r.party}",${r.inAmt.toStringAsFixed(2)},${r.outAmt.toStringAsFixed(2)}');
+      b.writeln('${_csv(date)},${_csv(r.type)},${_csv(r.ref)},${_csv(r.party)},${r.inAmt.toStringAsFixed(2)},${r.outAmt.toStringAsFixed(2)}');
     }
     return b.toString();
   }
@@ -1115,7 +1169,7 @@ class AppState extends ChangeNotifier {
   String hsnCsv() {
     final b = StringBuffer('HSN/SAC,GST %,Qty,Taxable,Tax\n');
     for (final r in hsnSummary()) {
-      b.writeln('${r.hsn},${r.rate.toStringAsFixed(0)},${r.qty},${r.taxable.toStringAsFixed(2)},${r.tax.toStringAsFixed(2)}');
+      b.writeln('${_csv(r.hsn)},${r.rate.toStringAsFixed(0)},${r.qty},${r.taxable.toStringAsFixed(2)},${r.tax.toStringAsFixed(2)}');
     }
     return b.toString();
   }
@@ -1126,15 +1180,13 @@ class AppState extends ChangeNotifier {
   List<({double rate, double taxable, double cgst, double sgst, int invoices})> gstr1Summary() {
     final m = <double, ({double taxable, double tax, Set<String> inv})>{};
     for (final s in _sales) {
-      final sign = s.isReturn ? -1.0 : 1.0;
-      for (final l in s.lines) {
-        final gross = l.amount - l.discount;
-        final taxable = s.taxInclusive ? gross / (1 + l.gstRate / 100) : gross;
-        final tax = s.taxInclusive ? gross - taxable : gross * l.gstRate / 100;
-        final ex = m[l.gstRate];
+      // Reconciled to the sale's stored subtotal/gst (bill discount included).
+      final (rows, factors) = _saleLineTax(s);
+      for (final r in rows) {
+        final ex = m[r.rate];
         final inv = ex?.inv ?? <String>{};
-        inv.add(s.invoiceNo);
-        m[l.gstRate] = (taxable: (ex?.taxable ?? 0) + taxable * sign, tax: (ex?.tax ?? 0) + tax * sign, inv: inv);
+        if (!s.isReturn) inv.add(s.invoiceNo); // credit notes net the value but aren't counted as invoices
+        m[r.rate] = (taxable: (ex?.taxable ?? 0) + r.taxable * factors.$1, tax: (ex?.tax ?? 0) + r.tax * factors.$2, inv: inv);
       }
     }
     final rows = m.entries
@@ -1263,7 +1315,11 @@ class AppState extends ChangeNotifier {
   /// balance-due goes down (invoice-level khata, Vyapar-style Payment-In).
   LedgerEntry collect({required Customer customer, required double amount, required String mode, String? against, int nowMs = 0}) {
     _rcptSeq += 1;
-    final capped = amount.clamp(0, balanceOf(customer.id)).toDouble();
+    // Cap at the customer's balance; when tied to a specific invoice, also cap at
+    // that invoice's outstanding so an over-payment isn't mis-attributed to it.
+    var ceiling = balanceOf(customer.id);
+    if (against != null) ceiling = ceiling < invoiceBalance(against) ? ceiling : invoiceBalance(against);
+    final capped = amount.clamp(0, ceiling).toDouble();
     final entry = LedgerEntry(customerId: customer.id, epochMs: nowMs, kind: LedgerKind.collection, ref: '#RCPT-$_rcptSeq', credit: capped, mode: mode, against: against);
     _ledger.add(entry);
     _store.saveLedger(_ledger);

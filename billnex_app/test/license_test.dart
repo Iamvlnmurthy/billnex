@@ -56,4 +56,22 @@ void main() {
     expect(await lic.activate(tampered), false);
     expect(lic.isPaid, false); // still on trial, nothing accepted
   });
+
+  test('activating a shorter key never reduces remaining time', () async {
+    SharedPreferences.setMockInitialValues({});
+    final lic = LicenseService.instance;
+    await lic.init();
+    await lic.activate(await _mint('yearly', _inDays(365)));
+    final before = lic.expiryMs;
+    // Re-paste an older monthly key (only 30 days out) — must NOT move expiry back.
+    await lic.activate(await _mint('monthly', _inDays(30)));
+    expect(lic.expiryMs, before); // kept the later expiry
+  });
+
+  test('fresh trial does not show the renewal banner', () async {
+    SharedPreferences.setMockInitialValues({});
+    final lic = LicenseService.instance;
+    await lic.init();
+    expect(lic.showRenewalBanner, false); // 14-day trial must not nag from day one
+  });
 }

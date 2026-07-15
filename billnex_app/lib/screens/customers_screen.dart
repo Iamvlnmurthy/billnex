@@ -254,10 +254,12 @@ class CustomerDetailView extends StatelessWidget {
         double running = 0;
         // compute running balances oldest->newest for display
         final chrono = state.ledgerFor(c.id);
-        final runningMap = <int, double>{};
+        // Keyed by the entry object (identity), not epochMs — two entries can
+        // share a millisecond and would otherwise collide to the same balance.
+        final runningMap = <LedgerEntry, double>{};
         for (final e in chrono) {
           running += e.delta;
-          runningMap[e.epochMs] = running;
+          runningMap[e] = running;
         }
 
         return ListView(
@@ -368,7 +370,7 @@ class CustomerDetailView extends StatelessWidget {
                 ),
               )
             else
-              Card(child: Column(children: [for (int i = 0; i < entries.length; i++) _ledgerRow(context, entries[i], runningMap[entries[i].epochMs] ?? 0, i == 0)])),
+              Card(child: Column(children: [for (int i = 0; i < entries.length; i++) _ledgerRow(context, entries[i], runningMap[entries[i]] ?? 0, i == 0)])),
           ],
         );
       },
@@ -419,7 +421,7 @@ class CustomerDetailView extends StatelessWidget {
 
   /// Build the account-statement rows from the chronological ledger and share
   /// the PDF (WhatsApp / email / save via the system sheet).
-  Future<void> _statement(BuildContext context, Customer c, List<LedgerEntry> chrono, Map<int, double> runningMap, double closing) async {
+  Future<void> _statement(BuildContext context, Customer c, List<LedgerEntry> chrono, Map<LedgerEntry, double> runningMap, double closing) async {
     final l = L.of(context);
     final rows = [
       for (final e in chrono)
@@ -428,7 +430,7 @@ class CustomerDetailView extends StatelessWidget {
           particulars: '${_kindLabel(l, e.kind)}${e.ref.isEmpty ? '' : ' · ${e.ref}'}',
           debit: e.debit,
           credit: e.credit,
-          balance: runningMap[e.epochMs] ?? 0,
+          balance: runningMap[e] ?? 0,
         ),
     ];
     await PdfService.run(

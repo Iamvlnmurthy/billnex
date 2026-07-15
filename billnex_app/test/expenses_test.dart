@@ -35,4 +35,18 @@ void main() {
     s.deleteExpense(s.expenses.firstWhere((e) => e.category == 'Transport').id);
     expect(s.totalExpenses, 40);
   });
+
+  test('expense ids stay unique after a delete (no collision / duplicate-key)', () {
+    final s = AppState(persistence: InMemoryPersistence());
+    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test'));
+    final a = s.addExpense(category: 'Rent', amount: 1);
+    final b = s.addExpense(category: 'Rent', amount: 2);
+    s.addExpense(category: 'Rent', amount: 3);
+    s.deleteExpense(b.id); // ids a,c remain; naive length+1 would reissue c's number
+    final d = s.addExpense(category: 'Rent', amount: 4);
+    final ids = s.expenses.map((e) => e.id).toSet();
+    expect(ids.length, s.expenses.length); // all unique
+    expect(ids.contains(d.id), true);
+    expect(d.id == a.id, false);
+  });
 }

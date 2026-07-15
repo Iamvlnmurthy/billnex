@@ -43,6 +43,18 @@ void main() {
     expect(s.balanceOf(cust.id), 0);
   });
 
+  test('over-payment against one invoice is capped at that invoice balance', () {
+    final s = seeded();
+    final cust = s.addCustomer(name: 'Anu', mobile: '9848000001', creditLimit: 10000, nowMs: 1);
+    final a = s.postCustomSale(lines: [(name: 'A', unit: 'pc', qty: 1, rate: 100, gstRate: 0)], paymentMode: 'Credit', customer: cust, nowMs: 2);
+    final b = s.postCustomSale(lines: [(name: 'B', unit: 'pc', qty: 1, rate: 500, gstRate: 0)], paymentMode: 'Credit', customer: cust, nowMs: 3);
+    // Customer owes 600. Try to pay 500 against invoice A (which owes only 100).
+    s.collect(customer: cust, amount: 500, mode: 'Cash', against: a.invoiceNo, nowMs: 4);
+    expect(s.invoiceBalance(a.invoiceNo), 0); // A settled, not over-credited
+    expect(s.invoiceBalance(b.invoiceNo), 500); // B untouched
+    expect(s.balanceOf(cust.id), 500); // only 100 actually applied
+  });
+
   test('cash sale has zero invoice balance', () {
     final s = seeded();
     final sale = s.postCustomSale(

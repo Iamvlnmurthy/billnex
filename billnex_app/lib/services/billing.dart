@@ -36,10 +36,19 @@ String _threeDigit(int n) {
 
 /// Rupees amount in words, Indian numbering (crore/lakh/thousand), e.g.
 /// 1,25,430 → "One Lakh Twenty Five Thousand Four Hundred Thirty Rupees Only".
-/// Includes paise when non-zero. Used on invoices ("Amount in words").
+/// Includes paise when non-zero. Handles negatives (returns/credit notes) by
+/// prefixing "Minus", carries paise that rounds to 100 into rupees, and never
+/// overflows the number tables. Used on invoices ("Amount in words").
 String amountInWords(num amount) {
-  final rupees = amount.floor();
-  final paise = ((amount - rupees) * 100).round();
+  final negative = amount < 0;
+  final v = amount.abs();
+  var rupees = v.floor();
+  var paise = ((v - rupees) * 100).round();
+  if (paise >= 100) {
+    // e.g. 99.995 → paise 100: carry into rupees rather than overflow _twoDigit.
+    rupees += paise ~/ 100;
+    paise %= 100;
+  }
   if (rupees == 0 && paise == 0) return 'Zero Rupees Only';
 
   final parts = <String>[];
@@ -47,14 +56,16 @@ String amountInWords(num amount) {
   final lakh = (rupees % 10000000) ~/ 100000;
   final thousand = (rupees % 100000) ~/ 1000;
   final hundred = rupees % 1000;
-  if (crore > 0) parts.add('${_twoDigit(crore)} Crore');
+  // _threeDigit safely covers 0–999, so crore up to 999 (₹999 crore) is fine.
+  if (crore > 0) parts.add('${crore < 100 ? _twoDigit(crore) : _threeDigit(crore)} Crore');
   if (lakh > 0) parts.add('${_twoDigit(lakh)} Lakh');
   if (thousand > 0) parts.add('${_twoDigit(thousand)} Thousand');
   if (hundred > 0) parts.add(_threeDigit(hundred));
 
   final rupeeWords = parts.isEmpty ? '' : '${parts.join(' ')} Rupees';
   final paiseWords = paise > 0 ? '${rupeeWords.isEmpty ? '' : ' and '}${_twoDigit(paise)} Paise' : '';
-  return '${rupeeWords.isEmpty && paiseWords.isEmpty ? 'Zero Rupees' : '$rupeeWords$paiseWords'} Only'.trim();
+  final body = rupeeWords.isEmpty && paiseWords.isEmpty ? 'Zero Rupees' : '$rupeeWords$paiseWords';
+  return '${negative ? 'Minus ' : ''}$body Only'.trim();
 }
 
 /// Per-GST-rate aggregation (for the HSN/tax summary on the invoice).

@@ -20,4 +20,18 @@ void main() {
     expect(amountInWords(0.75), 'Seventy Five Paise Only');
     expect(amountInWords(100.25), 'One Hundred Rupees and Twenty Five Paise Only');
   });
+
+  test('paise rounding to 100 carries into rupees (no crash)', () {
+    expect(amountInWords(99.995), 'One Hundred Rupees Only'); // was a RangeError crash
+    expect(amountInWords(0.999), 'One Rupees Only');
+  });
+
+  test('negative totals (returns/credit notes) read as Minus', () {
+    expect(amountInWords(-590), 'Minus Five Hundred Ninety Rupees Only'); // was garbage via % on negatives
+    expect(amountInWords(-1250.5), 'Minus One Thousand Two Hundred Fifty Rupees and Fifty Paise Only');
+  });
+
+  test('large values ≥ 100 crore do not crash', () {
+    expect(amountInWords(1230000000), 'One Hundred Twenty Three Crore Rupees Only');
+  });
 }

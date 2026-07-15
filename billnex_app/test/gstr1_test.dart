@@ -40,4 +40,23 @@ void main() {
     // CSV has a header + two rate rows.
     expect(s.gstr1Csv().trim().split('\n').length, 3);
   });
+
+  test('GSTR-1 taxable reconciles with the sale when a bill discount applies', () {
+    final s = seeded();
+    // Exclusive-tax: line ₹1000 @18%, ₹100 bill discount → taxable 900, tax 162.
+    s.postCustomSale(
+      lines: [(name: 'Widget', unit: 'pc', qty: 1, rate: 1000, gstRate: 18)],
+      paymentMode: 'Cash',
+      taxInclusive: false,
+      billDiscount: 100,
+      roundOff: false,
+      nowMs: 1,
+    );
+    final g = s.gstr1Summary().firstWhere((r) => r.rate == 18);
+    expect(g.taxable, closeTo(900, 0.01)); // was 1000 (ignored bill discount)
+    expect(g.cgst + g.sgst, closeTo(162, 0.01)); // was 180
+    // HSN summary reconciles too.
+    final h = s.hsnSummary().first;
+    expect(h.taxable, closeTo(900, 0.01));
+  });
 }

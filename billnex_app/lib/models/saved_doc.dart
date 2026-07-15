@@ -25,6 +25,7 @@ class SavedDoc {
   final double total;
   final double discount;
   final double roundOff;
+  final bool roundEnabled; // whether round-to-unit was on (so convert reproduces the quoted total)
   final bool taxInclusive;
   final double otherCharges;
   final String chargesLabel;
@@ -47,6 +48,7 @@ class SavedDoc {
     required this.total,
     this.discount = 0,
     this.roundOff = 0,
+    this.roundEnabled = true,
     this.taxInclusive = true,
     this.otherCharges = 0,
     this.chargesLabel = '',
@@ -99,6 +101,7 @@ class SavedDoc {
         'tot': total,
         'disc': discount,
         'ro': roundOff,
+        're': roundEnabled,
         'ti': taxInclusive,
         'oc': otherCharges,
         'ocl': chargesLabel,
@@ -122,6 +125,7 @@ class SavedDoc {
         total: (j['tot'] as num).toDouble(),
         discount: (j['disc'] as num?)?.toDouble() ?? 0,
         roundOff: (j['ro'] as num?)?.toDouble() ?? 0,
+        roundEnabled: j['re'] != false,
         taxInclusive: j['ti'] != false,
         otherCharges: (j['oc'] as num?)?.toDouble() ?? 0,
         chargesLabel: (j['ocl'] as String?) ?? '',

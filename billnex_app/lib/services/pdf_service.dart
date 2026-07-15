@@ -39,8 +39,10 @@ class PdfService {
   };
 
   static String _rupee(num n) {
-    final s = n.round().toString();
-    if (s.length <= 3) return 'Rs $s';
+    final neg = n < 0;
+    final s = n.round().abs().toString();
+    final sign = neg ? '-' : '';
+    if (s.length <= 3) return 'Rs $sign$s';
     final last3 = s.substring(s.length - 3);
     var rest = s.substring(0, s.length - 3);
     final parts = <String>[];
@@ -49,7 +51,7 @@ class PdfService {
       rest = rest.substring(0, rest.length - 2);
     }
     if (rest.isNotEmpty) parts.insert(0, rest);
-    return 'Rs ${parts.join(',')},$last3';
+    return 'Rs $sign${parts.join(',')},$last3';
   }
 
   static String _sellerLine(Sale sale) => [
@@ -107,7 +109,9 @@ class PdfService {
     // Direct Bluetooth ESC-POS path for thermal receipts, when configured.
     if (isThermal && tpl.id != 'kot' && await PrintSettings.btEnabled()) {
       final mac = await PrintSettings.btMac();
-      final widthMm = (await PrintSettings.thermalWidthMm()).round();
+      // A 58mm template is physically 58mm — honour it over the roll preference
+      // (which only applies to the generic thermal80 template).
+      final widthMm = tpl.size == PaperSize.mm58 ? 58 : (await PrintSettings.thermalWidthMm()).round();
       if (mac != null && await BtThermalService.printSale(sale, mac: mac, widthMm: widthMm)) {
         return; // printed over Bluetooth
       }
@@ -483,8 +487,9 @@ class PdfService {
             width: 180,
             child: pw.Column(
               children: [
-                _kv('Taxable', _rupee(sale.subtotal)),
+                if (sale.discount > 0) _kv('Sub-total', _rupee(sale.subtotal + sale.discount)),
                 if (sale.discount > 0) _kv('Discount', '- ${_rupee(sale.discount)}'),
+                _kv('Taxable', _rupee(sale.subtotal)),
                 _kv('CGST', _rupee(sale.cgst)),
                 _kv('SGST', _rupee(sale.sgst)),
                 if (sale.otherCharges > 0) _kv(sale.chargesLabel.isEmpty ? 'Other charges' : sale.chargesLabel, _rupee(sale.otherCharges)),
@@ -608,8 +613,9 @@ class PdfService {
             ],
           ),
         _dash(),
-        _thKv('Taxable', _rupee(sale.subtotal)),
+        if (sale.discount > 0) _thKv('Sub-total', _rupee(sale.subtotal + sale.discount)),
         if (sale.discount > 0) _thKv('Discount', '- ${_rupee(sale.discount)}'),
+        _thKv('Taxable', _rupee(sale.subtotal)),
         _thKv('CGST', _rupee(sale.cgst)),
         _thKv('SGST', _rupee(sale.sgst)),
         if (sale.otherCharges > 0) _thKv(sale.chargesLabel.isEmpty ? 'Charges' : sale.chargesLabel, _rupee(sale.otherCharges)),

@@ -99,8 +99,10 @@ class BtThermalService {
 
   // Plain "Rs" money (avoids the ₹ glyph, which many thermal fonts lack).
   static String _rs(num n) {
-    final s = n.round().toString();
-    if (s.length <= 3) return 'Rs $s';
+    final neg = n < 0;
+    final s = n.round().abs().toString();
+    final sign = neg ? '-' : '';
+    if (s.length <= 3) return 'Rs $sign$s';
     final last3 = s.substring(s.length - 3);
     var rest = s.substring(0, s.length - 3);
     final parts = <String>[];
@@ -109,7 +111,7 @@ class BtThermalService {
       rest = rest.substring(0, rest.length - 2);
     }
     if (rest.isNotEmpty) parts.insert(0, rest);
-    return 'Rs ${parts.join(',')},$last3';
+    return 'Rs $sign${parts.join(',')},$last3';
   }
 
   static Future<List<int>> _receiptBytes(Sale sale, int widthMm) async {
@@ -134,8 +136,9 @@ class BtThermalService {
           PosColumn(text: k, width: 7, styles: PosStyles(bold: bold)),
           PosColumn(text: v, width: 5, styles: PosStyles(align: PosAlign.right, bold: bold)),
         ]));
-    kv('Taxable', _rs(sale.subtotal));
+    if (sale.discount > 0) kv('Sub-total', _rs(sale.subtotal + sale.discount));
     if (sale.discount > 0) kv('Discount', '- ${_rs(sale.discount)}');
+    kv('Taxable', _rs(sale.subtotal));
     kv('CGST', _rs(sale.cgst));
     kv('SGST', _rs(sale.sgst));
     if (sale.otherCharges > 0) kv(sale.chargesLabel.isEmpty ? 'Charges' : sale.chargesLabel, _rs(sale.otherCharges));

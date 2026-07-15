@@ -43,4 +43,16 @@ void main() {
     expect(a.number, '#ORD-1');
     expect(b.number, '#ORD-2');
   });
+
+  test('doc numbers are not reused after the highest is converted', () {
+    final s = AppState(persistence: InMemoryPersistence());
+    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test'));
+    final d1 = s.saveDoc(type: DocType.estimate, lines: [(name: 'A', unit: 'pc', qty: 1, rate: 50, gstRate: 0)], nowMs: 1);
+    final d2 = s.saveDoc(type: DocType.estimate, lines: [(name: 'B', unit: 'pc', qty: 1, rate: 50, gstRate: 0)], nowMs: 2);
+    expect(d1.number, '#EST-1');
+    expect(d2.number, '#EST-2');
+    s.convertDoc(d2, paymentMode: 'Cash', nowMs: 3); // removes #EST-2
+    final d3 = s.saveDoc(type: DocType.estimate, lines: [(name: 'C', unit: 'pc', qty: 1, rate: 50, gstRate: 0)], nowMs: 4);
+    expect(d3.number, '#EST-3'); // was '#EST-2' again (number reuse)
+  });
 }

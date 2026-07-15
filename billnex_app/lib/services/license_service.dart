@@ -83,8 +83,11 @@ class LicenseService extends ChangeNotifier {
   /// exporting stay allowed — we never hold the merchant's data hostage.
   bool get isBillingLocked => status == LicenseStatus.expired;
 
-  /// Show the renewal banner during the last [warnWithinDays] days and after.
-  bool get showRenewalBanner => status == LicenseStatus.expired || status == LicenseStatus.grace || daysLeft <= warnWithinDays;
+  /// Show the renewal banner in grace/expired, in the last [warnWithinDays] days
+  /// of a PAID plan, or only the last 3 days of a trial (a 14-day trial must not
+  /// nag from day one just because 14 <= 15).
+  bool get showRenewalBanner =>
+      status == LicenseStatus.expired || status == LicenseStatus.grace || (isPaid ? daysLeft <= warnWithinDays : daysLeft <= 3);
 
   /// Activate with a signed key. Returns true on success (valid signature and a
   /// future expiry). Persists plan + expiry.
@@ -93,9 +96,12 @@ class LicenseService extends ChangeNotifier {
     if (parsed == null) return false;
     final (plan, exp) = parsed;
     if (exp <= _now) return false; // already-expired key
+    // Never move expiry backwards — activating a shorter/older-but-valid key
+    // must not shorten remaining paid time.
+    final current = expiryMs;
     final p = await SharedPreferences.getInstance();
     _plan = plan;
-    _expMs = exp;
+    _expMs = exp > current ? exp : current;
     _activationKey = rawKey.trim();
     await p.setString(_kPlan, plan);
     await p.setInt(_kExp, exp);
