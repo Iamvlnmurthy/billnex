@@ -14,7 +14,7 @@ void main() {
 
   test('save estimate does not post; convert posts an invoice and removes it', () {
     final s = AppState(persistence: InMemoryPersistence());
-    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test', taxInclusive: true));
+    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test'));
     final item = s.addStockItem(name: 'Rice', unit: 'kg', price: 100, qty: 10, gstRate: 0, nowMs: 1)!;
 
     final doc = s.saveDoc(

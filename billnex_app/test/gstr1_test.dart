@@ -13,16 +13,16 @@ void main() {
 
   AppState seeded() {
     final s = AppState(persistence: InMemoryPersistence());
-    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test Kirana', taxInclusive: true));
+    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test Kirana'));
     return s;
   }
 
   test('rate-wise taxable and CGST/SGST split', () {
     final s = seeded();
     // ₹105 incl @5% → taxable 100, tax 5 (cgst 2.5 / sgst 2.5)
-    s.postCustomSale(lines: [(name: 'Rice', unit: 'kg', qty: 1, rate: 105, gstRate: 5)], paymentMode: 'Cash', taxInclusive: true, roundOff: false, nowMs: 1);
+    s.postCustomSale(lines: [(name: 'Rice', unit: 'kg', qty: 1, rate: 105, gstRate: 5)], paymentMode: 'Cash', roundOff: false, nowMs: 1);
     // ₹118 incl @18% → taxable 100, tax 18 (cgst 9 / sgst 9)
-    s.postCustomSale(lines: [(name: 'Soap', unit: 'pc', qty: 1, rate: 118, gstRate: 18)], paymentMode: 'UPI', taxInclusive: true, roundOff: false, nowMs: 2);
+    s.postCustomSale(lines: [(name: 'Soap', unit: 'pc', qty: 1, rate: 118, gstRate: 18)], paymentMode: 'UPI', roundOff: false, nowMs: 2);
 
     final g = s.gstr1Summary();
     expect(g.length, 2);

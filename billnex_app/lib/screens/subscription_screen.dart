@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/license_service.dart';
+import '../services/notification_service.dart';
 import '../services/pdf_service.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
@@ -58,6 +59,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _activating = true);
     final ok = await LicenseService.instance.activate(_keyC.text);
+    if (ok) await NotificationService.instance.syncFromLicense(); // reschedule reminders for the new expiry
     if (!mounted) return;
     setState(() => _activating = false);
     messenger.showSnackBar(SnackBar(content: Text(ok ? l.subActivated : l.subInvalidKey)));

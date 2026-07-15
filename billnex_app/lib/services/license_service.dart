@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:crypto/crypto.dart';
+import 'package:cryptography/cryptography.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,12 +12,11 @@ enum LicenseStatus { trialing, active, grace, expired }
 /// expiry. When the paid/trial period ends there is a short grace window, then
 /// billing actions are locked (data stays fully viewable + exportable).
 ///
-/// Activation keys are HMAC-SHA256 signed: `base64url(payload).base64url(sig)`
-/// where payload = {"p":plan,"e":expiryEpochMs}. This is an MVP scheme — the
-/// signing secret ships in the app, so it deters casual sharing but is not
-/// tamper-proof. For production, swap [_verify] for a server-issued Ed25519 /
-/// RSA token whose PUBLIC key alone lives in the app. Mint keys with
-/// tool/mint_license.dart.
+/// Activation keys are Ed25519-signed: `base64url(payload).base64url(sig)` where
+/// payload = {"p":plan,"e":expiryEpochMs}. The app embeds ONLY the public key
+/// ([kPublicKeyB64]), so keys cannot be forged without the private seed — which
+/// lives only in tool/mint_license.dart (a dev tool, never shipped). Mint keys
+/// with `dart run tool/mint_license.dart <plan> <months>`.
 class LicenseService extends ChangeNotifier {
   LicenseService._();
   static final LicenseService instance = LicenseService._();
@@ -26,8 +25,9 @@ class LicenseService extends ChangeNotifier {
   static const int trialDays = 14;
   static const int graceDays = 3;
   static const int warnWithinDays = 15; // show the renewal banner inside this window
-  // MVP signing secret. Replace with server-signed tokens for production.
-  static const String _secret = 'billnex-lic-v1-2f9c7a1e5b';
+  // Ed25519 PUBLIC verification key (base64url). Private seed is in the mint tool.
+  static const String kPublicKeyB64 = 'ze6_QxIKOjU91z4_hhWlGPD9E34IZhrMBSka0Y-YisY=';
+  static final _ed = Ed25519();
 
   static const _kFirstRun = 'lic.firstRunMs';
   static const _kPlan = 'lic.plan';
@@ -89,7 +89,7 @@ class LicenseService extends ChangeNotifier {
   /// Activate with a signed key. Returns true on success (valid signature and a
   /// future expiry). Persists plan + expiry.
   Future<bool> activate(String rawKey) async {
-    final parsed = _verify(rawKey.trim());
+    final parsed = await _verify(rawKey.trim());
     if (parsed == null) return false;
     final (plan, exp) = parsed;
     if (exp <= _now) return false; // already-expired key
@@ -104,21 +104,20 @@ class LicenseService extends ChangeNotifier {
     return true;
   }
 
-  /// Verify an activation key and return (plan, expiryMs), or null if invalid.
-  (String, int)? _verify(String key) {
+  /// Verify an activation key's Ed25519 signature and return (plan, expiryMs),
+  /// or null if the signature is invalid or the key is malformed.
+  Future<(String, int)?> _verify(String key) async {
     try {
       final dot = key.lastIndexOf('.');
       if (dot <= 0) return null;
       final payloadB64 = key.substring(0, dot);
-      final sigB64 = key.substring(dot + 1);
-      final expectedSig = base64Url.encode(Hmac(sha256, utf8.encode(_secret)).convert(utf8.encode(payloadB64)).bytes);
-      // Constant-time-ish compare.
-      if (expectedSig.length != sigB64.length) return null;
-      var diff = 0;
-      for (var i = 0; i < expectedSig.length; i++) {
-        diff |= expectedSig.codeUnitAt(i) ^ sigB64.codeUnitAt(i);
-      }
-      if (diff != 0) return null;
+      final sigBytes = base64Url.decode(key.substring(dot + 1));
+      final publicKey = SimplePublicKey(base64Url.decode(kPublicKeyB64), type: KeyPairType.ed25519);
+      final ok = await _ed.verify(
+        utf8.encode(payloadB64),
+        signature: Signature(sigBytes, publicKey: publicKey),
+      );
+      if (!ok) return null;
       final json = jsonDecode(utf8.decode(base64Url.decode(payloadB64))) as Map<String, dynamic>;
       return (json['p'] as String, (json['e'] as num).toInt());
     } catch (_) {

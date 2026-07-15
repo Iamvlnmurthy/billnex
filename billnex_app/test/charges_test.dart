@@ -14,7 +14,7 @@ void main() {
 
   test('delivery charge adds to total, not to taxable/GST', () {
     final s = AppState(persistence: InMemoryPersistence());
-    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test', taxInclusive: true));
+    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test'));
     final sale = s.postCustomSale(
       lines: [(name: 'Rice', unit: 'kg', qty: 1, rate: 100, gstRate: 0)],
       paymentMode: 'Cash',

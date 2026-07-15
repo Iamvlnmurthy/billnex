@@ -12,14 +12,14 @@ void main() {
 
   test('expenses feed totals, categories and net profit', () {
     final s = AppState(persistence: InMemoryPersistence());
-    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test', taxInclusive: true));
+    s.setupBusiness(const BusinessProfile(bizType: 'kirana', shopName: 'Test'));
 
     // A sale so gross profit is positive: sell 1 @ 100 (cost 0), gst 0.
     s.postCustomSale(lines: [(name: 'Rice', unit: 'kg', qty: 1, rate: 100, gstRate: 0)], paymentMode: 'Cash', roundOff: false, nowMs: 1);
 
-    s.addExpense(category: 'Rent', amount: 30, mode: 'Cash', nowMs: 2);
+    s.addExpense(category: 'Rent', amount: 30, nowMs: 2);
     s.addExpense(category: 'Transport', amount: 20, mode: 'UPI', nowMs: 3);
-    s.addExpense(category: 'Rent', amount: 10, mode: 'Cash', nowMs: 4);
+    s.addExpense(category: 'Rent', amount: 10, nowMs: 4);
 
     expect(s.totalExpenses, 60);
 
