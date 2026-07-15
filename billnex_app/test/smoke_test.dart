@@ -23,6 +23,8 @@ import 'package:billnex/screens/menu_screen.dart';
 import 'package:billnex/screens/onboarding_screen.dart';
 import 'package:billnex/screens/business_setup_screen.dart';
 import 'package:billnex/screens/backup_screen.dart';
+import 'package:billnex/screens/expenses_screen.dart';
+import 'package:billnex/screens/estimates_screen.dart';
 
 /// Wraps a screen with the real theme + localizations so context.bx / L.of work,
 /// then pumps it in every supported locale and both light/dark, asserting that
@@ -76,6 +78,8 @@ void main() {
     'Menu': (s) => MenuScreen(state: s, goTo: noop),
     'BusinessSetup': (s) => BusinessSetupScreen(state: s, bizType: 'kirana', existing: s.profile),
     'Backup': (s) => BackupScreen(state: s),
+    'Expenses': (s) => ExpensesScreen(state: s),
+    'Estimates': (s) => EstimatesScreen(state: s),
   };
 
   for (final entry in screens.entries) {
